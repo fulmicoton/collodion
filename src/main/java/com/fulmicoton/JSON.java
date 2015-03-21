@@ -12,11 +12,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.fulmicoton.semantic.Annotation;
-import com.fulmicoton.semantic.MatchingMethod;
+import com.fulmicoton.semantic.vocabularymatcher.MatchingMethod;
 import com.fulmicoton.semantic.ProcessorBuilder;
-import com.fulmicoton.semantic.Rule;
+import com.fulmicoton.semantic.vocabularymatcher.Rule;
 import com.fulmicoton.semantic.SemanticAnalyzer;
-import com.fulmicoton.semantic.VocabularyFilter;
+import com.fulmicoton.semantic.vocabularymatcher.VocabularyFilter;
 import org.apache.lucene.analysis.en.StemFilter;
 
 import java.lang.reflect.Type;

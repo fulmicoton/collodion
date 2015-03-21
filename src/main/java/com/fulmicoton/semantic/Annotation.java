@@ -22,9 +22,11 @@ public class Annotation {
         return newAnnotation;
     }
 
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override
     public boolean equals(Object o) {
         final Annotation that = (Annotation) o;
+        //noinspection StringEquality
         return (this.annotation == that.annotation);
     }
 

@@ -1,5 +1,7 @@
 package com.fulmicoton.semantic;
 
+import com.fulmicoton.semantic.stemmer.StemAttribute;
+import com.fulmicoton.semantic.vocabularymatcher.VocabularyAttribute;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 

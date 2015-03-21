@@ -2,10 +2,10 @@ package com.fulmicoton.semantic;
 
 
 import com.fulmicoton.JSON;
-import com.fulmicoton.utils.loader.ChainLoader;
-import com.fulmicoton.utils.loader.DirectoryLoader;
-import com.fulmicoton.utils.loader.Loader;
-import com.fulmicoton.utils.loader.ResourceLoader;
+import com.fulmicoton.common.loader.ChainLoader;
+import com.fulmicoton.common.loader.DirectoryLoader;
+import com.fulmicoton.common.loader.Loader;
+import com.fulmicoton.common.loader.ResourceLoader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;

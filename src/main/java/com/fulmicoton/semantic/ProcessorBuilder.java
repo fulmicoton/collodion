@@ -1,6 +1,6 @@
 package com.fulmicoton.semantic;
 
-import com.fulmicoton.utils.loader.Loader;
+import com.fulmicoton.common.loader.Loader;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 
