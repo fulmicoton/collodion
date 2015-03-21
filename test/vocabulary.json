@@ -1,0 +1,2 @@
+{"method": "regex" ,"value": ".*a.*", "annotation": "containsa"}
+{"method": "exact" ,"value": "jambon", "annotation": "jambon"}
