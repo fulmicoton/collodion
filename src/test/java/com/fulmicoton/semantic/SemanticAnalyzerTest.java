@@ -4,6 +4,7 @@ import com.fulmicoton.utils.loader.Loader;
 import com.fulmicoton.utils.loader.ResourceLoader;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class SemanticAnalyzerTest {
@@ -24,9 +25,43 @@ public class SemanticAnalyzerTest {
         CharTermAttribute charTerm = tokenStream.getAttribute(CharTermAttribute.class);
         VocabularyAttribute vocabularyAnnotation = tokenStream.getAttribute(VocabularyAttribute.class);
         StemAttribute stem = tokenStream.getAttribute(StemAttribute.class);
-        while (tokenStream.incrementToken()) {
-            System.out.println(charTerm.toString() + "-" + stem.toString() + "-" + vocabularyAnnotation.toString()) ;
+        {
+            Assert.assertTrue(tokenStream.incrementToken());
+            Assert.assertEquals(charTerm.toString(), "The");
+            Assert.assertEquals(stem.toString(), "The");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "");
         }
+        {
+            Assert.assertTrue(tokenStream.incrementToken());
+            Assert.assertEquals(charTerm.toString(), "baker");
+            Assert.assertEquals(stem.toString(), "baker");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "containsa");
+        }
+        {
+            Assert.assertTrue(tokenStream.incrementToken());
+            Assert.assertEquals(charTerm.toString(), "loves");
+            Assert.assertEquals(stem.toString(), "love");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "");
+        }
+        {
+            Assert.assertTrue(tokenStream.incrementToken());
+            Assert.assertEquals(charTerm.toString(), "bread");
+            Assert.assertEquals(stem.toString(), "bread");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "containsa");
+        }
+        {
+            Assert.assertTrue(tokenStream.incrementToken());
+            Assert.assertEquals(charTerm.toString(), "and");
+            Assert.assertEquals(stem.toString(), "and");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "containsa");
+        }
+        {
+            Assert.assertTrue(tokenStream.incrementToken());
+            Assert.assertEquals(charTerm.toString(), "jambon");
+            Assert.assertEquals(stem.toString(), "jambon");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "jambon; containsa");
+        }
+        Assert.assertFalse(tokenStream.incrementToken());
     }
 
 
