@@ -18,8 +18,6 @@ public class Main {
         while (tokenStream.incrementToken()) {
             System.out.println(charTerm.toString() + "-" + stem.toString() + "-" + vocabularyAnnotation.toString()) ;
         }
-
         System.out.println(analyzer.toJSON());
-
     }
 }

@@ -2,8 +2,12 @@ package com.fulmicoton.semantic;
 
 import com.fulmicoton.JSON;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -13,14 +17,22 @@ import java.util.List;
 
 public class Vocabulary implements Iterable<Rule> {
 
-    public static Vocabulary fromFile(File file) throws IOException {
-        final List<String> lines = Files.readAllLines(file.toPath(), Charset.forName("UTF-8"));
+    public static Vocabulary fromStream(final InputStream inputStream) throws IOException {
+        final InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+        final BufferedReader bufferedReader = new BufferedReader(reader);
         final List<Rule> rules = new ArrayList<>();
-        for (String ruleJson: lines) {
+        String ruleJson = bufferedReader.readLine();
+        while (ruleJson != null) {
             final Rule rule = JSON.GSON.fromJson(ruleJson, Rule.class);
             rules.add(rule);
+            ruleJson = bufferedReader.readLine();
         }
         return new Vocabulary(rules);
+    }
+
+
+    public static Vocabulary load(String path) throws IOException {
+        return fromStream(SemanticAnalyzer.DEFAULT_LOADER.open(path));
     }
 
     public final List<Rule> rules;

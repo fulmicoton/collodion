@@ -1,36 +1,57 @@
 package com.fulmicoton.semantic;
 
 
-import com.google.common.io.Files;
 import com.fulmicoton.JSON;
+import com.fulmicoton.utils.loader.ChainLoader;
+import com.fulmicoton.utils.loader.DirectoryLoader;
+import com.fulmicoton.utils.loader.Loader;
+import com.fulmicoton.utils.loader.ResourceLoader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.List;
 
 public class SemanticAnalyzer extends Analyzer {
 
+    private static final Charset UTF8 = Charset.forName("utf-8");
+
+    public static final Loader DEFAULT_LOADER = ChainLoader.of(
+        DirectoryLoader.forRoot(new File("/")),
+        DirectoryLoader.forRoot(new File(".")),
+        ResourceLoader.fromClass(SemanticAnalyzer.class)
+    );
+
+    private transient Loader loader = DEFAULT_LOADER;
+
     public final List<ProcessorBuilder> processorBuilders;
 
-    public SemanticAnalyzer(List<ProcessorBuilder> processorBuilders) {
-        this.processorBuilders = processorBuilders;
+
+    public SemanticAnalyzer(final List<ProcessorBuilder> processorBuilders) {
+        this(processorBuilders, DEFAULT_LOADER);
     }
 
-    private static SemanticAnalyzer loadFromFile(File configuration) throws FileNotFoundException {
-        return JSON.GSON.fromJson(new FileReader(configuration), SemanticAnalyzer.class);
+    public void prependLoader(Loader loader) {
+        this.loader = ChainLoader.of(loader, this.loader);
+    }
+
+    public SemanticAnalyzer(final List<ProcessorBuilder> processorBuilders,
+                            final Loader loader) {
+        this.processorBuilders = processorBuilders;
+        this.loader = loader;
     }
 
     public void init() throws Exception {
         for (ProcessorBuilder processorBuilder: this.processorBuilders) {
-            processorBuilder.init();
+            processorBuilder.init(this.loader);
         }
     }
 
@@ -49,13 +70,26 @@ public class SemanticAnalyzer extends Analyzer {
     }
 
     public static SemanticAnalyzer fromFile(final File inputFile) throws IOException {
-        final String json = Files.toString(inputFile, Charset.forName("utf-8"));
-        return fromJSON(json);
+        return fromStream(new FileInputStream(inputFile));
     }
 
-
-    public static SemanticAnalyzer fromJSON(String json) {
+    public static SemanticAnalyzer fromJSON(final String json) {
         return JSON.GSON.fromJson(json, SemanticAnalyzer.class);
+    }
+
+    public static SemanticAnalyzer fromPath(final Loader loader, final String path) {
+        final InputStream inputStream = loader.open(path);
+        final SemanticAnalyzer semanticAnalyzer = JSON.GSON.fromJson(new InputStreamReader(inputStream, UTF8), SemanticAnalyzer.class);
+        semanticAnalyzer.prependLoader(loader);
+        return semanticAnalyzer;
+    }
+
+    public static SemanticAnalyzer fromPath(final String path) {
+        return fromPath(DEFAULT_LOADER, path);
+    }
+
+    public static SemanticAnalyzer fromStream(final InputStream inputStream) {
+        return JSON.GSON.fromJson(new InputStreamReader(inputStream, UTF8), SemanticAnalyzer.class);
     }
 
     public String toJSON() {

@@ -3,7 +3,7 @@
     {"type": "stem"},
     {
    		"type": "vocabulary", 
-     	"filepath": "/home/paul/github/semantic-studio/test/vocabulary.json"
+     	"path": "vocabulary.json"
     }
   ]
 }

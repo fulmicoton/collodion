@@ -1,5 +1,6 @@
 package com.fulmicoton.semantic;
 
+import com.fulmicoton.utils.IndexBuilder;
 import jersey.repackaged.com.google.common.collect.Iterators;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.BytesRefBuilder;

@@ -1,4 +1,4 @@
-package com.fulmicoton.semantic;
+package com.fulmicoton.utils;
 
 import com.google.common.collect.Maps;
 

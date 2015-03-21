@@ -1,11 +1,12 @@
 package com.fulmicoton.semantic;
 
+import com.fulmicoton.utils.loader.Loader;
 import com.google.common.collect.Lists;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,11 +16,13 @@ public class VocabularyFilter extends TokenFilter {
 
     public static class Builder implements ProcessorBuilder<VocabularyFilter> {
 
-        public String filepath;
+        public String path;
         private transient Vocabulary vocabulary;
 
-        public void init() throws IOException {
-            this.vocabulary = Vocabulary.fromFile(new File(filepath));
+        @Override
+        public void init(final Loader loader) throws IOException {
+            final InputStream inputStream = loader.open(path);
+            this.vocabulary = Vocabulary.fromStream(inputStream);
         }
 
         @Override
@@ -45,7 +48,7 @@ public class VocabularyFilter extends TokenFilter {
     }
 
     @Override
-    public boolean incrementToken() throws IOException {
+    public final boolean incrementToken() throws IOException {
         boolean res = input.incrementToken();
         this.vocabularyAttr.reset();
         if (!res) return false;

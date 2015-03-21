@@ -1,7 +1,7 @@
 package com.fulmicoton.semantic;
 
 
-import com.sun.deploy.util.StringUtils;
+import com.google.common.base.Joiner;
 import org.apache.lucene.util.AttributeImpl;
 
 import java.util.ArrayList;
@@ -37,8 +37,18 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
             final Annotation ann = this.annotations[i];
             annotations.add(ann.toString());
         }
-        return StringUtils.join(annotations, ",");
+        return Joiner.on("; ").join(annotations);
 
+    }
+
+    @Override
+    public boolean contains(final Annotation annotation) {
+        for (Annotation ann: this.annotations) {
+            if (ann == annotation) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
