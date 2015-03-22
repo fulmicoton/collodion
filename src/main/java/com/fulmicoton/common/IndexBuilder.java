@@ -10,7 +10,7 @@ public class IndexBuilder<T> {
 
     private final Map<T, Integer> indexedElements = Maps.newHashMap();
 
-    public int add(T el) {
+    public int getId(final T el) {
         final Integer index = this.indexedElements.get(el);
         if (index != null) return index;
         final int newIndex = this.indexedElements.size();

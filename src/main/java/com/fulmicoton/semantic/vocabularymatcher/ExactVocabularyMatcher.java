@@ -32,7 +32,7 @@ public class ExactVocabularyMatcher extends VocabularyMatcher {
         try {
             for (final Rule rule: rules) {
                 scratchBytes.copyChars(rule.value);
-                final int annotationId = annotationIndexBuilder.add(rule.annotation);
+                final int annotationId = annotationIndexBuilder.getId(rule.annotation);
                 fstBuilder.add(Util.toIntsRef(scratchBytes.get(), scratchInts), (long)annotationId);
             }
             this.annotationMapping = annotationIndexBuilder.buildIndex(new Annotation[0]);

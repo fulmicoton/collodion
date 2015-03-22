@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.fulmicoton</groupId>
-    <artifactId>semantic-studio</artifactId>
+    <artifactId>collodion</artifactId>
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>semantic-studio</name>
