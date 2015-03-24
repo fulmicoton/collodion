@@ -31,6 +31,8 @@ public enum PatternTokenType {
         }
     },
 
+    DOT,
+
     PLUS,
 
     STAR,

@@ -5,20 +5,19 @@ import com.fulmicoton.multiregexp.Lexer;
 import com.fulmicoton.multiregexp.Token;
 import com.fulmicoton.semantic.tokenpattern.ParsedTokenPattern;
 import com.fulmicoton.semantic.tokenpattern.PatternTokenType;
-import com.google.common.collect.Lists;
 
 import java.util.List;
 
-public class LRParser {
+public class LRParser<T extends Enum> {
 
-    private final List<Rule> grammar;
-    private final Lexer<PatternTokenType> lexer;
-    private final IndexBuilder<Rule> ruleIndex;
-    private final Rule[] rules;
-    private final RuleMatcher[] ruleMatchers;
+    private final List<Rule<T>> grammar;
+    private final Lexer<T> lexer;
+    private final IndexBuilder<Rule<T>> ruleIndex;
+    private final Rule<T>[] rules;
+    private final RuleMatcher<T>[] ruleMatchers;
 
-    public LRParser(final Lexer<PatternTokenType> lexer,
-                    final List<Rule> grammar)
+    public LRParser(final Lexer<T> lexer,
+                    final List<Rule<T>> grammar)
     {
         this.lexer = lexer;
         this.grammar = grammar;
@@ -32,10 +31,12 @@ public class LRParser {
 
     }
 
+    /*
     public ParsedTokenPattern parse(final String pattern) {
-        final Iterable<Token<PatternTokenType>> tokens = this.lexer.scan(pattern);
+        final Iterable<Token<T>> tokens = this.lexer.scan(pattern);
         return parse(Lists.newArrayList(tokens));
     }
+    */
 
     private static boolean[][][] makeParseTable(int nbRules, int nbTokens) {
         final boolean[][][] ruleMatchTable = new boolean[nbRules][][];
