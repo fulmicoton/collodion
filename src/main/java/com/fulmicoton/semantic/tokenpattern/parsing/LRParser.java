@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
 
 public class LRParser<T extends Enum, V> {
 
@@ -36,6 +37,11 @@ public class LRParser<T extends Enum, V> {
 
     }
 
+    private RuleMatcher<T> matcherFromRule(final Rule<T> rule) {
+        final int ruleId = this.ruleIndex.getId(rule);
+        return this.ruleMatchers[ruleId];
+    }
+
     private static boolean[][][] makeParseTable(int nbRules, int nbTokens) {
         final boolean[][][] ruleMatchTable = new boolean[nbRules][][];
         for (int ruleId=0; ruleId < nbRules; ruleId++) {
@@ -59,6 +65,20 @@ public class LRParser<T extends Enum, V> {
             }
         }
         return -1;
+    }
+
+    private V parse(final Match<T> match,
+                    boolean[][][] table,
+                    final List<Token<T>> tokens) {
+        final RuleMatcher<T> ruleMatcher = this.matcherFromRule(match.rule);
+        List<Match<T>> matches = ruleMatcher.getMatches(table, match.start, match.stop);
+        List<V> childrenEmissions = new ArrayList<V>();
+        for (Match m: matches) {
+            final V childEmission = this.parse(m, table, tokens);
+            childrenEmissions.add(childEmission);
+        }
+        final Emitter<T, V> emitter = this.grammar.emitterMap.get(match.rule);
+        return emitter.emit(childrenEmissions, tokens.subList(match.start, match.stop));
     }
 
     private V parse(final List<Token<T>> tokens) {
