@@ -2,25 +2,25 @@ package com.fulmicoton.semantic.tokenpattern.parsing;
 
 import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Token;
-import com.fulmicoton.semantic.tokenpattern.PatternTokenType;
+import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
-public class Litteral implements Rule,  RuleMatcher {
+public class Literal<T> implements Rule<T>,  RuleMatcher<T> {
 
 
-    private final PatternTokenType patternTokenType;
+    private final T patternTokenType;
 
-    private Litteral(PatternTokenType patternTokenType) {
+    private Literal(T patternTokenType) {
         this.patternTokenType = patternTokenType;
     }
 
-    public static Litteral of(PatternTokenType tokenType) {
-        return new Litteral(tokenType);
+    public static <T> Literal<T> of(T tokenType) {
+        return new Literal<T>(tokenType);
     }
 
     @Override
-    public boolean evaluate(boolean[][][] table, int start, int l, final List<Token<PatternTokenType>> tokens) {
+    public boolean evaluate(boolean[][][] table, int start, int l, final List<Token<T>> tokens) {
         if (l != 1) {
             return false;
         }
@@ -34,7 +34,7 @@ public class Litteral implements Rule,  RuleMatcher {
     }
 
     @Override
-    public List<Rule> dependencies() {
-        return null;
+    public List<Rule<T>> dependencies() {
+        return ImmutableList.of();
     }
 }
