@@ -20,7 +20,7 @@ public class OrRule<T> implements Rule<T> {
     @Override
     public RuleMatcher<T> matcher(IndexBuilder<Rule<T>> indexBuilder) {
         final int[] ruleIds = new int[this.rules.size()];
-        final List<Rule> rules = new ArrayList<Rule>();
+        final List<Rule<T>> rules = this.rules;
 
         for (int i=0; i<this.rules.size(); i++) {
             final Rule rule = this.rules.get(i);
@@ -38,7 +38,7 @@ public class OrRule<T> implements Rule<T> {
 
             @Override
             public boolean evaluate(boolean[][][] table, int start, int l, List<Token<T>> tokens) {
-                return this.getMatchingRuleId(table, start, l) > 0;
+                return this.getMatchingRuleId(table, start, l) >= 0;
             }
 
             @Override

@@ -11,4 +11,9 @@ public class RepeatPattern extends TokenPattern {
         this.min = min;
         this.max = max;
     }
+
+    @Override
+    public String toDebugString() {
+        return "(" + this.pattern.toDebugString() + "){" + this.min + "," + this.max + "}";
+    }
 }

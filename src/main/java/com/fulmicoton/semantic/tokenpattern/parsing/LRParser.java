@@ -3,14 +3,10 @@ package com.fulmicoton.semantic.tokenpattern.parsing;
 import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Lexer;
 import com.fulmicoton.multiregexp.Token;
-import com.fulmicoton.semantic.tokenpattern.ParsedTokenPattern;
-import com.fulmicoton.semantic.tokenpattern.TokenT;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 
 public class LRParser<T extends Enum, V> {
 
@@ -45,15 +41,15 @@ public class LRParser<T extends Enum, V> {
     private static boolean[][][] makeParseTable(int nbRules, int nbTokens) {
         final boolean[][][] ruleMatchTable = new boolean[nbRules][][];
         for (int ruleId=0; ruleId < nbRules; ruleId++) {
-            ruleMatchTable[ruleId] = new boolean[nbTokens-1][];
+            ruleMatchTable[ruleId] = new boolean[nbTokens][];
             for (int start=0; start < nbTokens; start++) {
-                ruleMatchTable[ruleId][start] = new boolean[nbTokens - start];
+                ruleMatchTable[ruleId][start] = new boolean[nbTokens - start + 1];
             }
         }
         return ruleMatchTable;
     }
 
-    private V parse(final String s) {
+    public V parse(final String s) {
         final List<Token<T>> tokens = Lists.newArrayList(this.lexer.scan(s));
         return this.parse(tokens);
     }
@@ -78,12 +74,17 @@ public class LRParser<T extends Enum, V> {
             childrenEmissions.add(childEmission);
         }
         final Emitter<T, V> emitter = this.grammar.emitterMap.get(match.rule);
-        return emitter.emit(childrenEmissions, tokens.subList(match.start, match.stop));
+        if (emitter == null) {
+            return null;
+        }
+        else {
+            return emitter.emit(childrenEmissions, tokens.subList(match.start, match.stop));
+        }
     }
 
     private V parse(final List<Token<T>> tokens) {
         final boolean[][][] table = makeParseTable(this.rules.length, tokens.size());
-        for (int l = 1; l < tokens.size(); l++) {
+        for (int l = 1; l <= tokens.size(); l++) {
             for (int start=0; start < tokens.size() - l + 1; start++) {
                 for (int ruleId=0; ruleId< this.rules.length; ruleId++) {
                     final RuleMatcher ruleMatcher = this.ruleMatchers[ruleId];
@@ -96,6 +97,7 @@ public class LRParser<T extends Enum, V> {
             return null;
         }
         final Rule<T> matchingRule = this.rules[matchingRuleId];
-        return null;
+        final Match<T> match = new Match<>(matchingRule, 0, tokens.size());
+        return this.parse(match, table, tokens);
     }
 }

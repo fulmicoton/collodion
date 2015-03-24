@@ -25,6 +25,11 @@ public class TokenPatternTest {
         Assert.assertFalse(tokenIt.hasNext());
     }
 
+
+    public static void testParser(String ptn) {
+        System.out.println(TokenPattern.compile(ptn));
+    }
+
     @Test
     public void testTokenization() {
         testTokenizer(".*", DOT, STAR);
@@ -34,5 +39,14 @@ public class TokenPatternTest {
 
     }
 
+
+    @Test
+    public void testParser() {
+        testParser(".*");
+        testParser(".*");
+        testParser("<abc>{4,6}");
+        testParser("<abc>");
+        // testParser("(<abc>?)<bcd>");
+    }
 
 }

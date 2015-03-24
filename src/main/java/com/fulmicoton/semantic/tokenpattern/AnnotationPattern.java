@@ -10,4 +10,9 @@ public class AnnotationPattern extends TokenPattern {
     public AnnotationPattern(Annotation annotation) {
         this.annotation = annotation;
     }
+
+    @Override
+    public String toDebugString() {
+        return "<" + this.annotation + ">";
+    }
 }

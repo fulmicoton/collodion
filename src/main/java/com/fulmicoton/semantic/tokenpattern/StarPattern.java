@@ -7,4 +7,8 @@ public class StarPattern extends TokenPattern {
     public StarPattern(TokenPattern pattern) {
         this.pattern = pattern;
     }
+
+    public String toDebugString() {
+        return "(" + this.pattern.toDebugString() +")*";
+    }
 }

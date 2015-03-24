@@ -19,7 +19,7 @@ public class IndexBuilder<T> {
     }
 
     public T[] buildIndex(T[] arr) {
-        final ArrayList<T> index = new ArrayList<>(Collections.<T>nCopies(60, null));
+        final ArrayList<T> index = new ArrayList<>(Collections.<T>nCopies(this.indexedElements.size(), null));
         for (Map.Entry<T, Integer> e: this.indexedElements.entrySet()) {
             index.set(e.getValue(), e.getKey());
         }

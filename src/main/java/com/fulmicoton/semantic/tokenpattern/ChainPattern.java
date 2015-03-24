@@ -1,7 +1,5 @@
 package com.fulmicoton.semantic.tokenpattern;
 
-import com.fulmicoton.semantic.tokenpattern.TokenPattern;
-
 public class ChainPattern extends TokenPattern {
 
     private final TokenPattern left;
@@ -13,4 +11,8 @@ public class ChainPattern extends TokenPattern {
     }
 
 
+    @Override
+    public String toDebugString() {
+        return this.left.toDebugString() + this.right.toDebugString();
+    }
 }
