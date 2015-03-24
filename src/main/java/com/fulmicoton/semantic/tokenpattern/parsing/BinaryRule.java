@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
 
-class BinaryRule<T> implements Rule<T> {
+public class BinaryRule<T> implements Rule<T> {
 
     final Rule<T> left;
     final Rule<T> right;

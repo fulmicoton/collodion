@@ -15,11 +15,6 @@ public class OrRule<T> implements Rule<T> {
         return this;
     }
 
-    public OrRule addSeqRule(Rule<T>... rules) {
-        this.rules.add(BinaryRule.makeSequence(rules));
-        return this;
-    }
-
     @Override
     public RuleMatcher<T> matcher(IndexBuilder<Rule<T>> indexBuilder) {
         final int[] ruleIds = new int[this.rules.size()];
