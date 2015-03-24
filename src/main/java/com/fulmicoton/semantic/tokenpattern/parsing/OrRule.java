@@ -3,18 +3,20 @@ package com.fulmicoton.semantic.tokenpattern.parsing;
 import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Token;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrRule<T> implements Rule<T> {
 
-    final List<Rule<T>> rules;
-
-    public OrRule(List<Rule<T>> rules) {
-        this.rules = rules;
-    }
+    final List<Rule<T>> rules = new ArrayList<>();
 
     public OrRule addRule(Rule<T> rule) {
         this.rules.add(rule);
+        return this;
+    }
+
+    public OrRule addSeqRule(Rule<T>... rules) {
+        this.rules.add(BinaryRule.makeSequence(rules));
         return this;
     }
 

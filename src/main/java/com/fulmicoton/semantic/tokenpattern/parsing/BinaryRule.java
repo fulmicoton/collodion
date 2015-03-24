@@ -2,7 +2,6 @@ package com.fulmicoton.semantic.tokenpattern.parsing;
 
 import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Token;
-import com.fulmicoton.semantic.tokenpattern.PatternTokenType;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Arrays;

@@ -6,20 +6,20 @@ import org.junit.Test;
 
 import java.util.Iterator;
 
-import static com.fulmicoton.semantic.tokenpattern.PatternTokenType.ANNOTATION;
-import static com.fulmicoton.semantic.tokenpattern.PatternTokenType.CLOSE_PARENTHESIS;
-import static com.fulmicoton.semantic.tokenpattern.PatternTokenType.COUNT;
-import static com.fulmicoton.semantic.tokenpattern.PatternTokenType.DOT;
-import static com.fulmicoton.semantic.tokenpattern.PatternTokenType.OPEN_PARENTHESIS;
-import static com.fulmicoton.semantic.tokenpattern.PatternTokenType.QUESTION_MARK;
-import static com.fulmicoton.semantic.tokenpattern.PatternTokenType.STAR;
+import static com.fulmicoton.semantic.tokenpattern.TokenT.ANNOTATION;
+import static com.fulmicoton.semantic.tokenpattern.TokenT.CLOSE_PARENTHESIS;
+import static com.fulmicoton.semantic.tokenpattern.TokenT.COUNT;
+import static com.fulmicoton.semantic.tokenpattern.TokenT.DOT;
+import static com.fulmicoton.semantic.tokenpattern.TokenT.OPEN_PARENTHESIS;
+import static com.fulmicoton.semantic.tokenpattern.TokenT.QUESTION_MARK;
+import static com.fulmicoton.semantic.tokenpattern.TokenT.STAR;
 
 public class TokenPatternTest {
 
-    public static void testTokenizer(String ptn, PatternTokenType... expectedTokenTypes) {
-        final Iterator<Token<PatternTokenType>> tokenIt = TokenPattern.LEXER.scan(ptn).iterator();
-        for (PatternTokenType tokenType: expectedTokenTypes) {
-            final Token<PatternTokenType> token = tokenIt.next();
+    public static void testTokenizer(String ptn, TokenT... expectedTokenTypes) {
+        final Iterator<Token<TokenT>> tokenIt = TokenPattern.LEXER.scan(ptn).iterator();
+        for (TokenT tokenType: expectedTokenTypes) {
+            final Token<TokenT> token = tokenIt.next();
             Assert.assertEquals(tokenType, token.type);
         }
         Assert.assertFalse(tokenIt.hasNext());

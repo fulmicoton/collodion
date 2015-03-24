@@ -1,8 +1,15 @@
 package com.fulmicoton.semantic.tokenpattern;
 
+import com.fulmicoton.common.IndexBuilder;
+import com.fulmicoton.multiregexp.Token;
 import com.fulmicoton.semantic.Annotation;
+import com.fulmicoton.semantic.tokenpattern.parsing.Rule;
+import com.fulmicoton.semantic.tokenpattern.parsing.RuleMatcher;
+import com.google.common.collect.ImmutableList;
 
-public enum PatternTokenType {
+import java.util.List;
+
+public enum TokenT implements Rule<TokenT>, RuleMatcher<TokenT> {
 
     OPEN_PARENTHESIS,
 
@@ -37,6 +44,26 @@ public enum PatternTokenType {
 
     STAR,
 
-    QUESTION_MARK
+    QUESTION_MARK;
+
+
+    @Override
+    public boolean evaluate(boolean[][][] table, int start, int l, final List<Token<TokenT>> tokens) {
+        if (l != 1) {
+            return false;
+        }
+        return tokens.get(start).type == this;
+    }
+
+    @Override
+    public RuleMatcher<TokenT> matcher(IndexBuilder<Rule<TokenT>> indexBuilder) {
+        return this;
+
+    }
+
+    @Override
+    public List<Rule<TokenT>> dependencies() {
+        return ImmutableList.of();
+    }
 
 }
