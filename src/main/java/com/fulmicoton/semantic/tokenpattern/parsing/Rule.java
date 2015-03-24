@@ -4,9 +4,9 @@ import com.fulmicoton.common.IndexBuilder;
 
 import java.util.List;
 
-public interface Rule {
+public interface Rule<T> {
 
-    RuleMatcher matcher(final IndexBuilder<Rule> indexBuilder);
-    List<Rule> dependencies();
+    RuleMatcher<T> matcher(final IndexBuilder<Rule<T>> indexBuilder);
+    List<Rule<T>> dependencies();
 
 }

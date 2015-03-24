@@ -1,10 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern;
 
 import com.fulmicoton.semantic.Annotation;
-import com.fulmicoton.semantic.tokenpattern.CountParam;
-import com.fulmicoton.semantic.tokenpattern.ParsingError;
-import com.sun.deploy.util.StringUtils;
-
 
 public enum PatternTokenType {
 
@@ -22,7 +18,7 @@ public enum PatternTokenType {
     COUNT {
         CountParam parse(final String match) throws ParsingError {
             final String countString = match.substring(0, match.length() - 1);
-            String[] parts = StringUtils.splitString(countString, ",");
+            String[] parts = countString.split(",");
             if (parts.length == 1) {
                 int val = Integer.valueOf(parts[0]);
                 return new CountParam(val, val);

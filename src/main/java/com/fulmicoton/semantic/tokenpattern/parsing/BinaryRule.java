@@ -8,10 +8,10 @@ import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
 
-class BinaryRule implements Rule {
+class BinaryRule<T> implements Rule<T> {
 
-    final Rule left;
-    final Rule right;
+    final Rule<T> left;
+    final Rule<T> right;
 
     public BinaryRule(final Rule left,
                       final Rule right)
@@ -20,29 +20,30 @@ class BinaryRule implements Rule {
         this.right = right;
     }
 
-    public static Rule makeSequence(final List<Rule> ruleSequence) {
+    public static <T> Rule<T> makeSequence(final List<Rule<T>> ruleSequence) {
         if (ruleSequence.size() == 1) {
             return ruleSequence.get(0);
         }
         else {
-            final Rule tailRule = makeSequence(ruleSequence.subList(1, ruleSequence.size()));
+            final Rule<T> tailRule = makeSequence(ruleSequence.subList(1, ruleSequence.size()));
             return new BinaryRule(ruleSequence.get(0), tailRule);
         }
     }
 
-    public static Rule makeSequence(Rule... ruleSequence) {
-        return makeSequence(Arrays.asList(ruleSequence));
+    public static <T> Rule<T> makeSequence(Rule<T>... ruleSequence) {
+        final List<Rule<T>> ruleList = Arrays.asList(ruleSequence);
+        return makeSequence(ruleList);
     }
 
 
     @Override
-    public RuleMatcher matcher(IndexBuilder<Rule> indexBuilder) {
+    public RuleMatcher<T> matcher(IndexBuilder<Rule<T>> indexBuilder) {
         final int leftRuleId = indexBuilder.getId(this.left);
         final int rightRuleId = indexBuilder.getId(this.right);
-        return new RuleMatcher() {
+        return new RuleMatcher<T>() {
 
             @Override
-            public boolean evaluate(boolean[][][] table, int start, int totalLength, final List<Token<PatternTokenType>> tokens) {
+            public boolean evaluate(boolean[][][] table, int start, int totalLength, final List<Token<T>> tokens) {
                 for (int leftLength = 1; leftLength<totalLength - 1; leftLength++) {
                     final int rightLength = totalLength - leftLength;
                     if ((table[leftRuleId][start][leftLength]) &&
@@ -56,7 +57,7 @@ class BinaryRule implements Rule {
         };
     }
 
-    public List<Rule> dependencies() {
+    public List<Rule<T>> dependencies() {
         return ImmutableList.of(this.left, this.right);
     }
 

@@ -28,7 +28,7 @@ public class Literal<T> implements Rule<T>,  RuleMatcher<T> {
     }
 
     @Override
-    public RuleMatcher matcher(IndexBuilder<Rule> indexBuilder) {
+    public RuleMatcher<T> matcher(IndexBuilder<Rule<T>> indexBuilder) {
         return this;
 
     }
