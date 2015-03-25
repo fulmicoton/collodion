@@ -29,7 +29,7 @@ public abstract class TokenPattern {
     public abstract String toDebugString();
 
     public String toString() {
-        return this.getClass().getName() + "[" + this.toDebugString() +"]";
+        return this.getClass().getSimpleName() + "[" + this.toDebugString() +"]";
     };
 
     private static CountParam parse(final String match) throws ParsingError {
@@ -50,7 +50,6 @@ public abstract class TokenPattern {
         final Grammar<TokenT, TokenPattern> grammar = new Grammar<>();
         final Rule<TokenT> EXPR = grammar.expr;
         return grammar
-
             .addRule(BinaryRule.makeSequence(OPEN_PARENTHESIS, EXPR, CLOSE_PARENTHESIS),
                     new Emitter<TokenT, TokenPattern>() {
                         @Override
@@ -110,7 +109,7 @@ public abstract class TokenPattern {
                         @Override
                         public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
                             final String match = tokens.get(0).str;
-                            final String annotationName = match.substring(0, match.length() - 1);
+                            final String annotationName = match.substring(1, match.length() - 1);
                             final Annotation annotation = Annotation.of(annotationName);
                             return new AnnotationPattern(annotation);
                         }

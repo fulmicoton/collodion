@@ -67,10 +67,10 @@ public class LRParser<T extends Enum, V> {
                     boolean[][][] table,
                     final List<Token<T>> tokens) {
         final RuleMatcher<T> ruleMatcher = this.matcherFromRule(match.rule);
-        List<Match<T>> matches = ruleMatcher.getMatches(table, match.start, match.stop);
+        List<Match<T>> matches = ruleMatcher.getMatches(table, match.start, match.stop - match.start);
         List<V> childrenEmissions = new ArrayList<V>();
         for (Match m: matches) {
-            final V childEmission = this.parse(m, table, tokens);
+            final V childEmission = (V)this.parse(m, table, tokens);
             childrenEmissions.add(childEmission);
         }
         final Emitter<T, V> emitter = this.grammar.emitterMap.get(match.rule);

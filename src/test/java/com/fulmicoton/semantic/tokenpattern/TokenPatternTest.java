@@ -26,8 +26,11 @@ public class TokenPatternTest {
     }
 
 
-    public static void testParser(String ptn) {
-        System.out.println(TokenPattern.compile(ptn));
+    public static void testParser(String ptn, String expected) {
+        final TokenPattern tokenPattern = TokenPattern.compile(ptn);
+        System.out.println(tokenPattern.toDebugString());
+        // Assert.assertEquals(tokenPattern.toDebugString(), expected);
+        //System.out.println(TokenPattern.compile(ptn));
     }
 
     @Test
@@ -36,16 +39,17 @@ public class TokenPatternTest {
         testTokenizer("<abc>{1,2}", ANNOTATION, COUNT);
         testTokenizer("<abc>", ANNOTATION);
         testTokenizer("(<abc>?)<bcd>", OPEN_PARENTHESIS, ANNOTATION, QUESTION_MARK, CLOSE_PARENTHESIS, ANNOTATION);
-
     }
 
 
     @Test
     public void testParser() {
-        testParser(".*");
-        testParser(".*");
-        testParser("<abc>{4,6}");
-        testParser("<abc>");
+        testParser(".*", "(.)*");
+        testParser("..", "..");
+        testParser("(.)", ".");
+        testParser("<abc>{4,6}", "(<abc>){4,6}");
+        testParser("<abc>{4,6}", "(<abc>){4,6}");
+        testParser("<abc>", "<abc>");
         // testParser("(<abc>?)<bcd>");
     }
 
