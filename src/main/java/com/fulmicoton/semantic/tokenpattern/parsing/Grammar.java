@@ -8,11 +8,12 @@ import java.util.Map;
 
 public class Grammar<T, V> {
 
-    public final OrRule<T> expr = new OrRule<>();
+    public final OrRule<T> expr;
 
     public final Map<Rule<T>, Emitter<T, V>> emitterMap = new HashMap<>();
 
     public Grammar() {
+        this.expr = new OrRule<>();
         this.emitterMap.put(expr, new Emitter<T,V>() {
 
             @Override

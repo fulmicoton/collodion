@@ -23,13 +23,13 @@ public class OrRule<T> implements Rule<T> {
         final List<Rule<T>> rules = this.rules;
 
         for (int i=0; i<this.rules.size(); i++) {
-            final Rule rule = this.rules.get(i);
+            final Rule<T> rule = this.rules.get(i);
             ruleIds[i] = indexBuilder.getId(rule);
         }
         return new RuleMatcher<T>() {
-            private int getMatchingRuleId(boolean[][][] table, int start, int l) {
+            private int getMatchingRuleId(boolean[][][] table, int start, int length) {
                 for (int ruleId: ruleIds) {
-                    if (table[ruleId][start][l]) {
+                    if (table[ruleId][start][length]) {
                         return ruleId;
                     }
                 }
@@ -44,8 +44,8 @@ public class OrRule<T> implements Rule<T> {
             @Override
             public List<Match<T>> getMatches(boolean[][][] table, int start, int length) {
                 final int ruleId =  this.getMatchingRuleId(table, start, length);
-                final Rule rule = rules.get(Ints.indexOf(ruleIds, ruleId));
-                final Match<T> match = new Match<T>(rule, start, length);
+                final Rule<T> rule = rules.get(Ints.indexOf(ruleIds, ruleId));
+                final Match<T> match = new Match<>(rule, start, length);
                 return ImmutableList.of(match);
             }
         };

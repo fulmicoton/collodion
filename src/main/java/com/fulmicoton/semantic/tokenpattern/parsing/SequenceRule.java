@@ -4,11 +4,10 @@ package com.fulmicoton.semantic.tokenpattern.parsing;
 import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Token;
 import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Lists;
 
+import java.util.Collections;
 import java.util.List;
 
 public class SequenceRule<T> implements Rule<T> {
@@ -23,19 +22,18 @@ public class SequenceRule<T> implements Rule<T> {
      * The quirky API is just here to enforce more than two arguments
      * at compile time.
      */
+    @SafeVarargs
     public static <T> SequenceRule<T> seq(Rule<T> a, Rule<T> b, Rule<T>... others) {
         List<Rule<T>> rules = Lists.newArrayList();
         rules.add(a);
         rules.add(b);
-        for (Rule<T> rule: others) {
-            rules.add(rule);
-        }
+        Collections.addAll(rules, others);
         return of(rules);
     }
 
     private static <T> SequenceRule<T> of(List<Rule<T>> rules) {
         final List<BinaryRule<T>> binaryRules = makeChain(rules);
-        return new SequenceRule(binaryRules);
+        return new SequenceRule<>(binaryRules);
     }
 
     public static <T> List<BinaryRule<T>> makeChain(final List<Rule<T>> subRules) {
@@ -55,7 +53,6 @@ public class SequenceRule<T> implements Rule<T> {
 
     @Override
     public RuleMatcher<T> matcher(final IndexBuilder<Rule<T>> indexBuilder) {
-        final SequenceRule<T> me = this;
         final List<RuleMatcher<T>> ruleMatchers = Lists.transform(this.rules,
                 new Function<Rule<T>, RuleMatcher<T>>() {
 

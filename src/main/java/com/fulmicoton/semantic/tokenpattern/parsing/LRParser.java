@@ -24,10 +24,10 @@ public class LRParser<T extends Enum, V> {
         this.lexer = lexer;
         this.grammar = grammar;
         this.ruleIndex = RuleTopoSorter.sortedDependencies(this.grammar.expr);
-        this.rules = this.ruleIndex.buildIndex(new Rule[0]);
-        this.ruleMatchers = new RuleMatcher[this.rules.length];
+        this.rules = this.ruleIndex.buildIndex((Rule<T>[])new Rule[0]);
+        this.ruleMatchers = (RuleMatcher<T>[])new RuleMatcher[this.rules.length];
         for (int ruleId=0; ruleId<this.rules.length; ruleId++) {
-            final Rule rule = this.rules[ruleId];
+            final Rule<T> rule = this.rules[ruleId];
             this.ruleMatchers[ruleId] = rule.matcher(this.ruleIndex);
         }
 
@@ -54,21 +54,12 @@ public class LRParser<T extends Enum, V> {
         return this.parse(tokens);
     }
 
-    private int getMatchingRuleId(boolean[][][] table, int length) {
-        for (int ruleId = 0; ruleId < table.length; ruleId++) {
-            if (table[ruleId][0][length]) {
-                return ruleId;
-            }
-        }
-        return -1;
-    }
-
     private V parse(final Match<T> match,
                     boolean[][][] table,
                     final List<Token<T>> tokens) {
         final RuleMatcher<T> ruleMatcher = this.matcherFromRule(match.rule);
         List<Match<T>> matches = ruleMatcher.getMatches(table, match.start, match.length);
-        List<V> childrenEmissions = new ArrayList<V>();
+        List<V> childrenEmissions = new ArrayList<>();
         for (Match m: matches) {
             final V childEmission = (V)this.parse(m, table, tokens);
             childrenEmissions.add(childEmission);
@@ -87,7 +78,7 @@ public class LRParser<T extends Enum, V> {
         for (int l = 1; l <= tokens.size(); l++) {
             for (int start=0; start < tokens.size() - l + 1; start++) {
                 for (int ruleId=0; ruleId< this.rules.length; ruleId++) {
-                    final RuleMatcher ruleMatcher = this.ruleMatchers[ruleId];
+                    final RuleMatcher<T> ruleMatcher = this.ruleMatchers[ruleId];
                     table[ruleId][start][l] = ruleMatcher.evaluate(table, start, l, tokens);
                 }
             }

@@ -4,12 +4,11 @@ import com.fulmicoton.multiregexp.Lexer;
 import static com.fulmicoton.semantic.tokenpattern.TokenT.*;
 import com.fulmicoton.multiregexp.Token;
 import com.fulmicoton.semantic.Annotation;
-import com.fulmicoton.semantic.tokenpattern.parsing.BinaryRule;
 import com.fulmicoton.semantic.tokenpattern.parsing.Emitter;
 import com.fulmicoton.semantic.tokenpattern.parsing.Grammar;
 import com.fulmicoton.semantic.tokenpattern.parsing.LRParser;
 import com.fulmicoton.semantic.tokenpattern.parsing.Rule;
-import com.fulmicoton.semantic.tokenpattern.parsing.SequenceRule;
+import static com.fulmicoton.semantic.tokenpattern.parsing.SequenceRule.seq;
 
 import java.util.List;
 
@@ -31,27 +30,13 @@ public abstract class TokenPattern {
 
     public String toString() {
         return this.getClass().getSimpleName() + "[" + this.toDebugString() +"]";
-    };
-
-    private static CountParam parse(final String match) throws ParsingError {
-        final String countString = match.substring(0, match.length() - 1);
-        String[] parts = countString.split(",");
-        if (parts.length == 1) {
-            int val = Integer.valueOf(parts[0]);
-            return new CountParam(val, val);
-        }
-        else {
-            int minCount = Integer.valueOf(parts[0]);
-            int maxCount = Integer.valueOf(parts[1]);
-            return new CountParam(minCount, maxCount);
-        }
     }
 
-    private static Grammar buildGrammar() {
+    private static Grammar<TokenT, TokenPattern>  buildGrammar() {
         final Grammar<TokenT, TokenPattern> grammar = new Grammar<>();
         final Rule<TokenT> EXPR = grammar.expr;
         return grammar
-            .addRule(SequenceRule.seq(OPEN_PARENTHESIS, EXPR, CLOSE_PARENTHESIS),
+            .addRule(seq(OPEN_PARENTHESIS, EXPR, CLOSE_PARENTHESIS),
                     new Emitter<TokenT, TokenPattern>() {
                         @Override
                         public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
@@ -64,14 +49,14 @@ public abstract class TokenPattern {
                     return new DotPattern();
                 }
             })
-            .addRule(BinaryRule.makeSequence(EXPR, STAR),
+            .addRule(seq(EXPR, STAR),
                     new Emitter<TokenT, TokenPattern>() {
                         @Override
                         public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
                             return new StarPattern(childrenEmission.get(0));
                         }
                     })
-            .addRule(BinaryRule.makeSequence(EXPR, PLUS),
+            .addRule(seq(EXPR, PLUS),
                     new Emitter<TokenT, TokenPattern>() {
                         @Override
                         public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
@@ -80,14 +65,14 @@ public abstract class TokenPattern {
                         }
                     })
 
-            .addRule(BinaryRule.makeSequence(EXPR, QUESTION_MARK),
+            .addRule(seq(EXPR, QUESTION_MARK),
                     new Emitter<TokenT, TokenPattern>() {
                         @Override
                         public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
                             return new RepeatPattern(childrenEmission.get(0), 0, 1);
                         }
                     })
-            .addRule(BinaryRule.makeSequence(EXPR, COUNT),
+            .addRule(seq(EXPR, COUNT),
                         new Emitter<TokenT, TokenPattern>() {
                             @Override
                             public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
@@ -116,7 +101,7 @@ public abstract class TokenPattern {
                             return new AnnotationPattern(annotation);
                         }
                     })
-            .addRule(new BinaryRule(EXPR, EXPR),
+            .addRule(seq(EXPR, EXPR),
                     new Emitter<TokenT, TokenPattern>() {
                         @Override
                         public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
