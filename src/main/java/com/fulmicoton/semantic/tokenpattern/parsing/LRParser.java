@@ -23,7 +23,7 @@ public class LRParser<T extends Enum, V> {
     {
         this.lexer = lexer;
         this.grammar = grammar;
-        this.ruleIndex = RuleTopoSorter.sortedDependencies(this.grammar.expr.rules);
+        this.ruleIndex = RuleTopoSorter.sortedDependencies(this.grammar.expr);
         this.rules = this.ruleIndex.buildIndex(new Rule[0]);
         this.ruleMatchers = new RuleMatcher[this.rules.length];
         for (int ruleId=0; ruleId<this.rules.length; ruleId++) {
@@ -67,7 +67,7 @@ public class LRParser<T extends Enum, V> {
                     boolean[][][] table,
                     final List<Token<T>> tokens) {
         final RuleMatcher<T> ruleMatcher = this.matcherFromRule(match.rule);
-        List<Match<T>> matches = ruleMatcher.getMatches(table, match.start, match.stop - match.start);
+        List<Match<T>> matches = ruleMatcher.getMatches(table, match.start, match.length);
         List<V> childrenEmissions = new ArrayList<V>();
         for (Match m: matches) {
             final V childEmission = (V)this.parse(m, table, tokens);
@@ -78,7 +78,7 @@ public class LRParser<T extends Enum, V> {
             return null;
         }
         else {
-            return emitter.emit(childrenEmissions, tokens.subList(match.start, match.stop));
+            return emitter.emit(childrenEmissions, tokens.subList(match.start, match.start + match.length));
         }
     }
 
@@ -92,12 +92,11 @@ public class LRParser<T extends Enum, V> {
                 }
             }
         }
-        int matchingRuleId = getMatchingRuleId(table, tokens.size());
-        if (matchingRuleId == -1) {
+        int grammarRuleId = this.ruleIndex.getId(this.grammar.expr);
+        if (!table[grammarRuleId][0][tokens.size()]) {
             return null;
         }
-        final Rule<T> matchingRule = this.rules[matchingRuleId];
-        final Match<T> match = new Match<>(matchingRule, 0, tokens.size());
+        final Match<T> match = new Match<>(this.grammar.expr, 0, tokens.size());
         return this.parse(match, table, tokens);
     }
 }

@@ -28,9 +28,7 @@ public class TokenPatternTest {
 
     public static void testParser(String ptn, String expected) {
         final TokenPattern tokenPattern = TokenPattern.compile(ptn);
-        System.out.println(tokenPattern.toDebugString());
-        // Assert.assertEquals(tokenPattern.toDebugString(), expected);
-        //System.out.println(TokenPattern.compile(ptn));
+        Assert.assertEquals(tokenPattern.toDebugString(), expected);
     }
 
     @Test
@@ -44,13 +42,13 @@ public class TokenPatternTest {
 
     @Test
     public void testParser() {
+        testParser("(.)", ".");
         testParser(".*", "(.)*");
         testParser("..", "..");
-        testParser("(.)", ".");
-        testParser("<abc>{4,6}", "(<abc>){4,6}");
         testParser("<abc>{4,6}", "(<abc>){4,6}");
         testParser("<abc>", "<abc>");
-        // testParser("(<abc>?)<bcd>");
+        testParser("(.)", ".");
+        testParser("(<abc>?)<bcd>", "(<abc>){0,1}<bcd>");
     }
 
 }

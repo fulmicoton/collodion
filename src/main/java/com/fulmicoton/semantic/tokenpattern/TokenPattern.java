@@ -9,6 +9,7 @@ import com.fulmicoton.semantic.tokenpattern.parsing.Emitter;
 import com.fulmicoton.semantic.tokenpattern.parsing.Grammar;
 import com.fulmicoton.semantic.tokenpattern.parsing.LRParser;
 import com.fulmicoton.semantic.tokenpattern.parsing.Rule;
+import com.fulmicoton.semantic.tokenpattern.parsing.SequenceRule;
 
 import java.util.List;
 
@@ -50,13 +51,19 @@ public abstract class TokenPattern {
         final Grammar<TokenT, TokenPattern> grammar = new Grammar<>();
         final Rule<TokenT> EXPR = grammar.expr;
         return grammar
-            .addRule(BinaryRule.makeSequence(OPEN_PARENTHESIS, EXPR, CLOSE_PARENTHESIS),
+            .addRule(SequenceRule.seq(OPEN_PARENTHESIS, EXPR, CLOSE_PARENTHESIS),
                     new Emitter<TokenT, TokenPattern>() {
                         @Override
                         public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
                             return childrenEmission.get(1);
                         }
                     })
+            .addRule(DOT, new Emitter<TokenT, TokenPattern>() {
+                @Override
+                public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
+                    return new DotPattern();
+                }
+            })
             .addRule(BinaryRule.makeSequence(EXPR, STAR),
                     new Emitter<TokenT, TokenPattern>() {
                         @Override
@@ -72,12 +79,7 @@ public abstract class TokenPattern {
                             return new ChainPattern(pattern, new StarPattern(pattern));
                         }
                     })
-            .addRule(DOT, new Emitter<TokenT, TokenPattern>() {
-                        @Override
-                        public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<TokenT>> tokens) {
-                            return new DotPattern();
-                        }
-                    })
+
             .addRule(BinaryRule.makeSequence(EXPR, QUESTION_MARK),
                     new Emitter<TokenT, TokenPattern>() {
                         @Override

@@ -42,7 +42,7 @@ public class BinaryRule<T> implements Rule<T> {
         final int rightRuleId = indexBuilder.getId(this.right);
         return new RuleMatcher<T>() {
 
-            public int searchSplit(boolean[][][] table, int start, int totalLength) {
+            public int searchLeftLength(final boolean[][][] table, final int start, final int totalLength) {
                 for (int leftLength = 1; leftLength < totalLength; leftLength++) {
                     final int rightLength = totalLength - leftLength;
                     if ((table[leftRuleId][start][leftLength]) &&
@@ -56,16 +56,17 @@ public class BinaryRule<T> implements Rule<T> {
 
             @Override
             public boolean evaluate(boolean[][][] table, int start, int totalLength, final List<Token<T>> tokens) {
-                final int split = this.searchSplit(table, start, totalLength);
-                return split >= 0;
+                final int leftLength = this.searchLeftLength(table, start, totalLength);
+                return leftLength >= 1;
             }
 
             @Override
-            public List<Match<T>> getMatches(boolean[][][] table, int start, int l) {
-                final int split = this.searchSplit(table, start, l);
+            public List<Match<T>> getMatches(boolean[][][] table, int start, int totalLength) {
+                final int leftLength = this.searchLeftLength(table, start, totalLength);
+                final int rightLength = totalLength - leftLength;
                 return ImmutableList.of(
-                    new Match<T>(rule.left, start, start + split),
-                    new Match<T>(rule.right, start + split, start + l)
+                    new Match<T>(rule.left, start, leftLength),
+                    new Match<T>(rule.right, start + leftLength, rightLength)
                 );
             }
         };

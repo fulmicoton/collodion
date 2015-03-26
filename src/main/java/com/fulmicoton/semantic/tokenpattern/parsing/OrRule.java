@@ -42,10 +42,10 @@ public class OrRule<T> implements Rule<T> {
             }
 
             @Override
-            public List<Match<T>> getMatches(boolean[][][] table, int start, int l) {
-                final int ruleId =  this.getMatchingRuleId(table, start, l);
+            public List<Match<T>> getMatches(boolean[][][] table, int start, int length) {
+                final int ruleId =  this.getMatchingRuleId(table, start, length);
                 final Rule rule = rules.get(Ints.indexOf(ruleIds, ruleId));
-                final Match<T> match = new Match<T>(rule, start, l);
+                final Match<T> match = new Match<T>(rule, start, length);
                 return ImmutableList.of(match);
             }
         };
