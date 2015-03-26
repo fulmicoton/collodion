@@ -23,8 +23,9 @@ public class LRParser<T extends Enum, V> {
     {
         this.lexer = lexer;
         this.grammar = grammar;
-        this.ruleIndex = RuleTopoSorter.sortedDependencies(this.grammar.expr);
+        this.ruleIndex = grammar.getRuleIndex();
         this.rules = this.ruleIndex.buildIndex((Rule<T>[])new Rule[0]);
+        this.ruleIndex.setImmutable();
         this.ruleMatchers = (RuleMatcher<T>[])new RuleMatcher[this.rules.length];
         for (int ruleId=0; ruleId<this.rules.length; ruleId++) {
             final Rule<T> rule = this.rules[ruleId];
@@ -34,7 +35,7 @@ public class LRParser<T extends Enum, V> {
     }
 
     private RuleMatcher<T> matcherFromRule(final Rule<T> rule) {
-        final int ruleId = this.ruleIndex.getId(rule);
+        final int ruleId = this.ruleIndex.get(rule);
         return this.ruleMatchers[ruleId];
     }
 
@@ -77,13 +78,13 @@ public class LRParser<T extends Enum, V> {
         final boolean[][][] table = makeParseTable(this.rules.length, tokens.size());
         for (int l = 1; l <= tokens.size(); l++) {
             for (int start=0; start < tokens.size() - l + 1; start++) {
-                for (int ruleId=0; ruleId< this.rules.length; ruleId++) {
+                for (int ruleId=this.rules.length - 1; ruleId >= 0; ruleId--) {
                     final RuleMatcher<T> ruleMatcher = this.ruleMatchers[ruleId];
                     table[ruleId][start][l] = ruleMatcher.evaluate(table, start, l, tokens);
                 }
             }
         }
-        int grammarRuleId = this.ruleIndex.getId(this.grammar.expr);
+        int grammarRuleId = this.ruleIndex.get(this.grammar.expr);
         if (!table[grammarRuleId][0][tokens.size()]) {
             return null;
         }

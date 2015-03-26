@@ -3,7 +3,6 @@ package com.fulmicoton.semantic.tokenpattern.parsing;
 
 import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Token;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -38,7 +37,7 @@ public class SequenceRule<T> implements Rule<T> {
 
     public static <T> List<BinaryRule<T>> makeChain(final List<Rule<T>> subRules) {
         if (subRules.size() == 2) {
-            return ImmutableList.of(new BinaryRule<T>(subRules.get(0), subRules.get(1)));
+            return ImmutableList.of(new BinaryRule<>(subRules.get(0), subRules.get(1)));
         }
         else {
             final List<BinaryRule<T>> tail = makeChain(subRules.subList(1, subRules.size()));
@@ -52,16 +51,12 @@ public class SequenceRule<T> implements Rule<T> {
 
 
     @Override
-    public RuleMatcher<T> matcher(final IndexBuilder<Rule<T>> indexBuilder) {
-        final List<RuleMatcher<T>> ruleMatchers = Lists.transform(this.rules,
-                new Function<Rule<T>, RuleMatcher<T>>() {
+    public RuleMatcher<T> matcher(IndexBuilder<Rule<T>> indexBuilder) {
 
-                    @Override
-                    public RuleMatcher<T> apply(Rule<T> tRule) {
-                        return tRule.matcher(indexBuilder);
-                    }
-                });
-
+        final List<RuleMatcher<T>> ruleMatchers = Lists.newArrayList();
+        for (Rule<T> rule: this.rules) {
+            ruleMatchers.add(rule.matcher(indexBuilder));
+        }
         return new RuleMatcher<T>() {
 
             @Override
@@ -86,12 +81,4 @@ public class SequenceRule<T> implements Rule<T> {
         };
     }
 
-    private BinaryRule<T> head() {
-        return this.rules.get(0);
-    }
-
-    @Override
-    public List<Rule<T>> dependencies() {
-        return ImmutableList.of((Rule<T>) head());
-    }
 }

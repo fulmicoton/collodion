@@ -1,10 +1,13 @@
 package com.fulmicoton.semantic.tokenpattern.parsing;
 
+import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Token;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class Grammar<T, V> {
 
@@ -29,5 +32,23 @@ public class Grammar<T, V> {
         return this;
     }
 
-
+    public IndexBuilder<Rule<T>> getRuleIndex() {
+        final IndexBuilder<Rule<T>> indexBuilder = new IndexBuilder<>();
+        indexBuilder.get(this.expr);
+        final Queue<Rule<T>> toVisit = new LinkedList<>();
+        final IndexBuilder<Rule<T>> fakeIndexBuilder = new IndexBuilder<Rule<T>>() {
+            @Override
+            public int get(final Rule<T> el) {
+                if (!indexBuilder.contains(el)) {
+                    toVisit.add(el);
+                }
+                return indexBuilder.get(el);
+            }
+        };
+        toVisit.add(this.expr);
+        while (!toVisit.isEmpty()) {
+            toVisit.poll().matcher(fakeIndexBuilder);
+        }
+        return indexBuilder;
+    }
 }

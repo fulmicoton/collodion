@@ -1,5 +1,6 @@
 package com.fulmicoton.common;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 import java.util.ArrayList;
@@ -8,14 +9,25 @@ import java.util.Map;
 
 public class IndexBuilder<T> {
 
-    private final Map<T, Integer> indexedElements = Maps.newHashMap();
+    protected final Map<T, Integer> indexedElements = Maps.newHashMap();
 
-    public int getId(final T el) {
+    private boolean immutable;
+
+    public int get(final T el) {
         final Integer index = this.indexedElements.get(el);
         if (index != null) return index;
+        if (immutable) throw new IllegalArgumentException();
         final int newIndex = this.indexedElements.size();
         this.indexedElements.put(el, newIndex);
         return newIndex;
+    }
+
+    public boolean contains(final T el) {
+        return this.indexedElements.containsKey(el);
+    }
+
+    public Map<T, Integer> getMap() {
+        return ImmutableMap.copyOf(this.indexedElements);
     }
 
     public T[] buildIndex(T[] arr) {
@@ -26,4 +38,7 @@ public class IndexBuilder<T> {
         return index.toArray(arr);
     }
 
+    public void setImmutable() {
+        this.immutable = true;
+    }
 }

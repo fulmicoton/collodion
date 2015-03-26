@@ -52,9 +52,4 @@ public enum TokenT implements Rule<TokenT>, RuleMatcher<TokenT> {
         return ImmutableList.of();
     }
 
-    @Override
-    public List<Rule<TokenT>> dependencies() {
-        return ImmutableList.of();
-    }
-
 }

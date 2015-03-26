@@ -21,8 +21,8 @@ class BinaryRule<T> implements Rule<T> {
     @Override
     public RuleMatcher<T> matcher(IndexBuilder<Rule<T>> indexBuilder) {
         final BinaryRule<T> rule = this;
-        final int leftRuleId = indexBuilder.getId(this.left);
-        final int rightRuleId = indexBuilder.getId(this.right);
+        final int leftRuleId = indexBuilder.get(this.left);
+        final int rightRuleId = indexBuilder.get(this.right);
         return new RuleMatcher<T>() {
 
             public int searchLeftLength(final boolean[][][] table, final int start, final int totalLength) {
@@ -54,10 +54,5 @@ class BinaryRule<T> implements Rule<T> {
             }
         };
     }
-
-    public List<Rule<T>> dependencies() {
-        return ImmutableList.of(this.left, this.right);
-    }
-
 
 }

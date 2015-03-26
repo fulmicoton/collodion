@@ -24,7 +24,7 @@ public class OrRule<T> implements Rule<T> {
 
         for (int i=0; i<this.rules.size(); i++) {
             final Rule<T> rule = this.rules.get(i);
-            ruleIds[i] = indexBuilder.getId(rule);
+            ruleIds[i] = indexBuilder.get(rule);
         }
         return new RuleMatcher<T>() {
             private int getMatchingRuleId(boolean[][][] table, int start, int length) {
@@ -49,10 +49,5 @@ public class OrRule<T> implements Rule<T> {
                 return ImmutableList.of(match);
             }
         };
-    }
-
-    @Override
-    public List<Rule<T>> dependencies() {
-        return rules;
     }
 }
