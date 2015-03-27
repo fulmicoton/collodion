@@ -1,4 +1,4 @@
-package com.fulmicoton.semantic.tokenpattern;
+package com.fulmicoton.semantic.tokenpattern.regex;
 
 public class ParsingError extends Exception {
 

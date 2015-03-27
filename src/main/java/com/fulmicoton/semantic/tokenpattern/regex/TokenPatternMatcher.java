@@ -1,4 +1,4 @@
-package com.fulmicoton.semantic.tokenpattern;
+package com.fulmicoton.semantic.tokenpattern.regex;
 
 import com.fulmicoton.common.loader.Loader;
 import com.fulmicoton.semantic.ProcessorBuilder;

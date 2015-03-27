@@ -1,6 +1,4 @@
-package com.fulmicoton.semantic.tokenpattern;
-
-import com.fulmicoton.semantic.tokenpattern.ParsingError;
+package com.fulmicoton.semantic.tokenpattern.regex;
 
 
 class CountParam {

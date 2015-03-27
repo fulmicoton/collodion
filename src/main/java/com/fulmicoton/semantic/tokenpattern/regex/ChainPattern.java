@@ -1,4 +1,6 @@
-package com.fulmicoton.semantic.tokenpattern;
+package com.fulmicoton.semantic.tokenpattern.regex;
+
+import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
 
 public class ChainPattern extends TokenPattern {
 
@@ -10,9 +12,14 @@ public class ChainPattern extends TokenPattern {
         this.right = right;
     }
 
-
     @Override
     public String toDebugString() {
         return this.left.toDebugString() + this.right.toDebugString();
+    }
+
+    @Override
+    public SimpleState<SemToken> buildMachine(SimpleState<SemToken> fromState) {
+        final SimpleState<SemToken> afterLeft = left.buildMachine(fromState);
+        return right.buildMachine(afterLeft);
     }
 }

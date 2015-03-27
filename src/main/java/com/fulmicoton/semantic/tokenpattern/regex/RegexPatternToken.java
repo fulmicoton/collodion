@@ -1,4 +1,4 @@
-package com.fulmicoton.semantic.tokenpattern;
+package com.fulmicoton.semantic.tokenpattern.regex;
 
 import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Token;
@@ -10,7 +10,7 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
-public enum TokenT implements Rule<TokenT>, RuleMatcher<TokenT> {
+public enum RegexPatternToken implements Rule<RegexPatternToken>, RuleMatcher<RegexPatternToken> {
 
     OPEN_PARENTHESIS,
 
@@ -35,7 +35,7 @@ public enum TokenT implements Rule<TokenT>, RuleMatcher<TokenT> {
 
 
     @Override
-    public boolean evaluate(boolean[][][] table, int start, int l, final List<Token<TokenT>> tokens) {
+    public boolean evaluate(boolean[][][] table, int start, int l, final List<Token<RegexPatternToken>> tokens) {
         if (l != 1) {
             return false;
         }
@@ -43,12 +43,12 @@ public enum TokenT implements Rule<TokenT>, RuleMatcher<TokenT> {
     }
 
     @Override
-    public RuleMatcher<TokenT> matcher(IndexBuilder<Rule<TokenT>> indexBuilder) {
+    public RuleMatcher<RegexPatternToken> matcher(IndexBuilder<Rule<RegexPatternToken>> indexBuilder) {
         return this;
     }
 
     @Override
-    public List<Match<TokenT>> getMatches(boolean[][][] table, int start, int l) {
+    public List<Match<RegexPatternToken>> getMatches(boolean[][][] table, int start, int l) {
         return ImmutableList.of();
     }
 

@@ -1,26 +1,28 @@
 package com.fulmicoton.semantic.tokenpattern;
 
 import com.fulmicoton.multiregexp.Token;
+import com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken;
+import com.fulmicoton.semantic.tokenpattern.regex.TokenPattern;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Iterator;
 
-import static com.fulmicoton.semantic.tokenpattern.TokenT.ANNOTATION;
-import static com.fulmicoton.semantic.tokenpattern.TokenT.CLOSE_PARENTHESIS;
-import static com.fulmicoton.semantic.tokenpattern.TokenT.COUNT;
-import static com.fulmicoton.semantic.tokenpattern.TokenT.DOT;
-import static com.fulmicoton.semantic.tokenpattern.TokenT.OPEN_PARENTHESIS;
-import static com.fulmicoton.semantic.tokenpattern.TokenT.QUESTION_MARK;
-import static com.fulmicoton.semantic.tokenpattern.TokenT.STAR;
+import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.ANNOTATION;
+import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.CLOSE_PARENTHESIS;
+import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.COUNT;
+import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.DOT;
+import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.OPEN_PARENTHESIS;
+import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.QUESTION_MARK;
+import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.STAR;
 
 public class TokenPatternTest {
 
-    public static void testTokenizer(String ptn, TokenT... expectedTokenTypes) {
-        final Iterator<Token<TokenT>> tokenIt = TokenPattern.LEXER.scan(ptn).iterator();
-        for (TokenT tokenType: expectedTokenTypes) {
-            final Token<TokenT> token = tokenIt.next();
-            Assert.assertEquals(tokenType, token.type);
+    public static void testTokenizer(String ptn, RegexPatternToken... expectedRegexPatternTokenTypes) {
+        final Iterator<Token<RegexPatternToken>> tokenIt = TokenPattern.LEXER.scan(ptn).iterator();
+        for (RegexPatternToken regexPatternTokenType : expectedRegexPatternTokenTypes) {
+            final Token<RegexPatternToken> token = tokenIt.next();
+            Assert.assertEquals(regexPatternTokenType, token.type);
         }
         Assert.assertFalse(tokenIt.hasNext());
     }
