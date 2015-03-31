@@ -1,4 +1,4 @@
-package com.fulmicoton.semantic.tokenpattern.regex;
+package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.semantic.Annotation;
 

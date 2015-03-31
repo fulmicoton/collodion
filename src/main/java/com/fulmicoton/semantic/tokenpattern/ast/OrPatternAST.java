@@ -1,14 +1,14 @@
-package com.fulmicoton.semantic.tokenpattern.regex;
+package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
 import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
 
-public class OrPattern extends TokenPattern {
+public class OrPatternAST extends TokenPatternAST {
 
-    final TokenPattern left;
-    final TokenPattern right;
+    final TokenPatternAST left;
+    final TokenPatternAST right;
 
-    public OrPattern(TokenPattern left, TokenPattern right) {
+    public OrPatternAST(TokenPatternAST left, TokenPatternAST right) {
         this.left = left;
         this.right = right;
     }

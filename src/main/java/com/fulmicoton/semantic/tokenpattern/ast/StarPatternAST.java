@@ -1,13 +1,13 @@
-package com.fulmicoton.semantic.tokenpattern.regex;
+package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
 import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
 
-public class StarPattern extends TokenPattern {
+public class StarPatternAST extends TokenPatternAST {
 
-    private final TokenPattern pattern;
+    private final TokenPatternAST pattern;
 
-    public StarPattern(TokenPattern pattern) {
+    public StarPatternAST(TokenPatternAST pattern) {
         this.pattern = pattern;
     }
 

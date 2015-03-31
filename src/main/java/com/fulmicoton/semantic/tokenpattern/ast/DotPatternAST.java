@@ -1,7 +1,7 @@
-package com.fulmicoton.semantic.tokenpattern.regex;
+package com.fulmicoton.semantic.tokenpattern.ast;
 
 
-public class DotPattern extends PredicatePattern {
+public class DotPatternAST extends PredicatePatternAST {
 
     @Override
     public String toDebugString() {

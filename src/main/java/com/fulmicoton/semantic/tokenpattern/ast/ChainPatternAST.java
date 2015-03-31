@@ -1,13 +1,13 @@
-package com.fulmicoton.semantic.tokenpattern.regex;
+package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
 
-public class ChainPattern extends TokenPattern {
+public class ChainPatternAST extends TokenPatternAST {
 
-    private final TokenPattern left;
-    private final TokenPattern right;
+    private final TokenPatternAST left;
+    private final TokenPatternAST right;
 
-    public ChainPattern(TokenPattern left, TokenPattern right) {
+    public ChainPatternAST(TokenPatternAST left, TokenPatternAST right) {
         this.left = left;
         this.right = right;
     }

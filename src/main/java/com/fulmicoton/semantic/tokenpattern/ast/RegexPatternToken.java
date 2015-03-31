@@ -1,4 +1,4 @@
-package com.fulmicoton.semantic.tokenpattern.regex;
+package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Token;

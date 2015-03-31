@@ -1,4 +1,4 @@
-package com.fulmicoton.semantic.tokenpattern.regex;
+package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
 import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
@@ -6,13 +6,13 @@ import com.google.common.collect.Sets;
 
 import java.util.Set;
 
-public class RepeatPattern extends TokenPattern {
+public class RepeatPatternAST extends TokenPatternAST {
 
-    private final TokenPattern pattern;
+    private final TokenPatternAST pattern;
     private final int min;
     private final int max;
 
-    public RepeatPattern(TokenPattern pattern, int min, int max) {
+    public RepeatPatternAST(TokenPatternAST pattern, int min, int max) {
         this.pattern = pattern;
         this.min = min;
         this.max = max;

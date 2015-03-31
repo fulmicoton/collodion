@@ -1,13 +1,13 @@
-package com.fulmicoton.semantic.tokenpattern.regex;
+package com.fulmicoton.semantic.tokenpattern.ast;
 
 
 import com.fulmicoton.semantic.Annotation;
 
-public class AnnotationPattern extends PredicatePattern {
+public class AnnotationPatternAST extends PredicatePatternAST {
 
     private final Annotation annotation;
 
-    public AnnotationPattern(Annotation annotation) {
+    public AnnotationPatternAST(Annotation annotation) {
         this.annotation = annotation;
     }
 

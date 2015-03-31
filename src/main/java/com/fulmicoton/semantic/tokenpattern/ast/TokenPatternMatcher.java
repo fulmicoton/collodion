@@ -1,4 +1,4 @@
-package com.fulmicoton.semantic.tokenpattern.regex;
+package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.common.loader.Loader;
 import com.fulmicoton.semantic.ProcessorBuilder;
@@ -15,7 +15,7 @@ public class TokenPatternMatcher extends TokenFilter {
     public static class Builder implements ProcessorBuilder<TokenPatternMatcher> {
 
         public String path;
-        private transient List<TokenPattern> patterns;
+        private transient List<TokenPatternAST> patterns;
 
         @Override
         public void init(final Loader loader) throws IOException {
