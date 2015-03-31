@@ -36,7 +36,7 @@ public class TokenPatternTest {
         testTokenPatternMatch("<b><a>{2,3}", "b a a a a", false);
         testTokenPatternMatch("<b>|<a>", "a", true);
         testTokenPatternMatch("<b>|<a>", "b", true);
-        // testTokenPatternMatch("(<b>|<a>)+", "abb", true);
-        //testTokenPatternMatch("(<b>|<a>)+", "", false);
+        testTokenPatternMatch("(<b>|<a>)+", "a b b", true);
+        testTokenPatternMatch("(<b>|<a>)+", "", false);
     }
 }

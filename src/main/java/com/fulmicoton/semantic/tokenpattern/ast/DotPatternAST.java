@@ -1,6 +1,9 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+
 public class DotPatternAST extends PredicatePatternAST {
 
     @Override
@@ -9,7 +12,7 @@ public class DotPatternAST extends PredicatePatternAST {
     }
 
     @Override
-    public boolean apply(SemToken semToken) {
-        return true;
+    public Predicate<SemToken> predicate() {
+        return Predicates.alwaysTrue();
     }
 }

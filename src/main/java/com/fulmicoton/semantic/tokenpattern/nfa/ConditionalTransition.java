@@ -9,8 +9,9 @@ public class ConditionalTransition<T> implements Transition<T> {
     private final State<T> destination;
     private final Predicate<T> predicate;
 
-    public ConditionalTransition(final State destination,
-                      final Predicate<T> predicate) {
+    public ConditionalTransition(
+            final State destination,
+            final Predicate<T> predicate) {
         this.destination = destination;
         this.predicate = predicate;
     }
