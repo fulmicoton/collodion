@@ -12,8 +12,7 @@ public class OrderedSet<T> implements Iterable<T> {
     public List<T> items = new ArrayList<>();
 
     public boolean add(final T item) {
-        if (!this.itemSet.contains(item)) {
-            this.itemSet.add(item);
+        if (this.itemSet.add(item)) {
             this.items.add(item);
             return true;
         }

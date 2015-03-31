@@ -1,8 +1,8 @@
 package com.fulmicoton.semantic.vocabularymatcher;
 
+import com.fulmicoton.common.loader.Loader;
 import com.fulmicoton.semantic.Annotation;
 import com.fulmicoton.semantic.ProcessorBuilder;
-import com.fulmicoton.common.loader.Loader;
 import com.google.common.collect.Lists;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;

@@ -1,6 +1,7 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
 
+import com.fulmicoton.semantic.tokenpattern.SemToken;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 

@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleState<T> implements State<T> {
+public class StateImpl<T> implements State<T> {
 
     public List<Transition<T>> transitions = new ArrayList<>();
 

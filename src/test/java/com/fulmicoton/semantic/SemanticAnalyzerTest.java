@@ -1,9 +1,9 @@
 package com.fulmicoton.semantic;
 
-import com.fulmicoton.semantic.stemmer.StemAttribute;
-import com.fulmicoton.semantic.vocabularymatcher.VocabularyAttribute;
 import com.fulmicoton.common.loader.Loader;
 import com.fulmicoton.common.loader.ResourceLoader;
+import com.fulmicoton.semantic.stemmer.StemAttribute;
+import com.fulmicoton.semantic.vocabularymatcher.VocabularyAttribute;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.junit.Assert;

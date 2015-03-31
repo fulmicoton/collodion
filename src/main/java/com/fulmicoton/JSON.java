@@ -1,6 +1,12 @@
 package com.fulmicoton;
 
 
+import com.fulmicoton.semantic.Annotation;
+import com.fulmicoton.semantic.ProcessorBuilder;
+import com.fulmicoton.semantic.SemanticAnalyzer;
+import com.fulmicoton.semantic.vocabularymatcher.MatchingMethod;
+import com.fulmicoton.semantic.vocabularymatcher.Rule;
+import com.fulmicoton.semantic.vocabularymatcher.VocabularyFilter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -11,12 +17,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.fulmicoton.semantic.Annotation;
-import com.fulmicoton.semantic.vocabularymatcher.MatchingMethod;
-import com.fulmicoton.semantic.ProcessorBuilder;
-import com.fulmicoton.semantic.vocabularymatcher.Rule;
-import com.fulmicoton.semantic.SemanticAnalyzer;
-import com.fulmicoton.semantic.vocabularymatcher.VocabularyFilter;
 import org.apache.lucene.analysis.en.StemFilter;
 
 import java.lang.reflect.Type;

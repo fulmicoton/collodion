@@ -1,7 +1,8 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
+import com.fulmicoton.semantic.tokenpattern.SemToken;
 import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
-import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
+import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
 import com.google.common.collect.Sets;
 
 import java.util.Set;
@@ -24,16 +25,16 @@ public class RepeatPatternAST extends TokenPatternAST {
     }
 
     @Override
-    public SimpleState<SemToken> buildMachine(final SimpleState<SemToken> fromState) {
-        SimpleState<SemToken> finalState = fromState;
-        final Set<SimpleState<SemToken>> okStates = Sets.newHashSet();
+    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState) {
+        StateImpl<SemToken> finalState = fromState;
+        final Set<StateImpl<SemToken>> okStates = Sets.newHashSet();
         for (int i = 0; i < max; i++) {
             if (i >= min) {
                 okStates.add(finalState);
             }
             finalState = pattern.buildMachine(finalState);
         }
-        for (SimpleState<SemToken> state: okStates) {
+        for (StateImpl<SemToken> state: okStates) {
             state.addTransition(new EpsilonTransition<SemToken>(finalState));
         }
         return finalState;

@@ -2,6 +2,7 @@ package com.fulmicoton.semantic.tokenpattern.ast;
 
 
 import com.fulmicoton.semantic.Annotation;
+import com.fulmicoton.semantic.tokenpattern.SemToken;
 import com.google.common.base.Predicate;
 
 public class AnnotationPatternAST extends PredicatePatternAST {

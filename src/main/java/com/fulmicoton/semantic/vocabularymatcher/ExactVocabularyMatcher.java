@@ -1,7 +1,7 @@
 package com.fulmicoton.semantic.vocabularymatcher;
 
-import com.fulmicoton.semantic.Annotation;
 import com.fulmicoton.common.IndexBuilder;
+import com.fulmicoton.semantic.Annotation;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import org.apache.lucene.util.BytesRef;

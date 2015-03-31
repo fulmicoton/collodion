@@ -3,27 +3,16 @@ package com.fulmicoton.semantic.tokenpattern.ast;
 import com.fulmicoton.multiregexp.Lexer;
 import com.fulmicoton.multiregexp.Token;
 import com.fulmicoton.semantic.Annotation;
-import com.fulmicoton.semantic.tokenpattern.nfa.Machine;
-import com.fulmicoton.semantic.tokenpattern.nfa.Matcher;
-import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
+import com.fulmicoton.semantic.tokenpattern.SemToken;
+import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
 import com.fulmicoton.semantic.tokenpattern.parsing.Emitter;
 import com.fulmicoton.semantic.tokenpattern.parsing.Grammar;
 import com.fulmicoton.semantic.tokenpattern.parsing.LRParser;
 import com.fulmicoton.semantic.tokenpattern.parsing.Rule;
-import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.ANNOTATION;
-import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.CLOSE_PARENTHESIS;
-import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.COUNT;
-import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.DOT;
-import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.OR;
-import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.OPEN_PARENTHESIS;
-import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.QUESTION_MARK;
-import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.STAR;
-import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.PLUS;
 
-
-import java.util.Iterator;
 import java.util.List;
 
+import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.*;
 import static com.fulmicoton.semantic.tokenpattern.parsing.SequenceRule.seq;
 
 public abstract class TokenPatternAST {
@@ -135,5 +124,5 @@ public abstract class TokenPatternAST {
     public static TokenPatternAST compile(final String regex) {
         return PARSER.parse(regex);
     }
-    public abstract SimpleState<SemToken> buildMachine(final SimpleState<SemToken> fromState);
+    public abstract StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState);
 }

@@ -1,7 +1,5 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
-import java.util.regex.MatchResult;
-
 public class Matcher<T> /* implements MatchResult*/ {
 
     final boolean matches;

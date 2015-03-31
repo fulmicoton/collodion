@@ -2,7 +2,6 @@ package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.common.IndexBuilder;
 import com.fulmicoton.multiregexp.Token;
-import com.fulmicoton.semantic.Annotation;
 import com.fulmicoton.semantic.tokenpattern.parsing.Match;
 import com.fulmicoton.semantic.tokenpattern.parsing.Rule;
 import com.fulmicoton.semantic.tokenpattern.parsing.RuleMatcher;
@@ -16,12 +15,7 @@ public enum RegexPatternToken implements Rule<RegexPatternToken>, RuleMatcher<Re
 
     CLOSE_PARENTHESIS,
 
-    ANNOTATION {
-        public Annotation parse(final String match) {
-            final String annotationName = match.substring(0, match.length() - 1);
-            return Annotation.of(annotationName);
-        }
-    },
+    ANNOTATION,
 
     OR,
 

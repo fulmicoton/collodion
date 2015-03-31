@@ -1,13 +1,10 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.multiregexp.Token;
-import com.fulmicoton.semantic.Annotation;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 public class TokenPatternASTTest {
 
@@ -23,6 +20,7 @@ public class TokenPatternASTTest {
 
     public static void testParser(String ptn, String expected) {
         final TokenPatternAST tokenPattern = TokenPatternAST.compile(ptn);
+        System.out.println(tokenPattern.toString());
         Assert.assertEquals(tokenPattern.toDebugString(), expected);
     }
 
@@ -35,10 +33,26 @@ public class TokenPatternASTTest {
         testTokenizer("<abc>|<bcd>", RegexPatternToken.ANNOTATION, RegexPatternToken.OR, RegexPatternToken.ANNOTATION);
     }
 
+    public boolean isValidExpression(String ptn) {
+        try {
+            TokenPatternAST.compile(ptn);
+            return true;
+        }
+        catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @Test
+    public void testASTCompileThrows() {
+        Assert.assertTrue(isValidExpression("(<a>)"));
+        Assert.assertFalse(isValidExpression("(<a>"));
+        Assert.assertFalse(isValidExpression(""));
+    }
 
 
     @Test
-    public void testParser() {
+    public void testASTCompile() {
         testParser("(.)", ".");
         testParser(".*", "(.)*");
         testParser("..", "..");
@@ -49,6 +63,7 @@ public class TokenPatternASTTest {
         testParser("<abc><bcd>+", "<abc><bcd>(<bcd>)*");
         testParser("(<abc><bcd>)+", "<abc><bcd>(<abc><bcd>)*");
         testParser("(<b>|<a>)+", "(<b>)|(<a>)((<b>)|(<a>))*");
+        testParser(".+", ".(.)*");
     }
 
 

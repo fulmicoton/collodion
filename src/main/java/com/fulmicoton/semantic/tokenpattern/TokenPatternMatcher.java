@@ -1,7 +1,8 @@
-package com.fulmicoton.semantic.tokenpattern.ast;
+package com.fulmicoton.semantic.tokenpattern;
 
 import com.fulmicoton.common.loader.Loader;
 import com.fulmicoton.semantic.ProcessorBuilder;
+import com.fulmicoton.semantic.tokenpattern.ast.TokenPatternAST;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 
@@ -20,12 +21,10 @@ public class TokenPatternMatcher extends TokenFilter {
         @Override
         public void init(final Loader loader) throws IOException {
             final InputStream inputStream = loader.open(path);
-            // this.vocabulary = Vocabulary.fromStream(inputStream);
         }
 
         @Override
         public TokenPatternMatcher createFilter(TokenStream prev) throws IOException {
-            //return new VocabularyFilter(prev, vocabulary);
             return null;
         }
     }

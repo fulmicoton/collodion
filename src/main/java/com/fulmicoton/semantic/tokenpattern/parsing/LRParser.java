@@ -86,7 +86,7 @@ public class LRParser<T extends Enum, V> {
         }
         int grammarRuleId = this.ruleIndex.get(this.grammar.expr);
         if (!table[grammarRuleId][0][tokens.size()]) {
-            return null;
+            throw new IllegalArgumentException("Invalid format");
         }
         final Match<T> match = new Match<>(this.grammar.expr, 0, tokens.size());
         return this.parse(match, table, tokens);
