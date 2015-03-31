@@ -17,6 +17,7 @@ import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.ANNOT
 import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.CLOSE_PARENTHESIS;
 import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.COUNT;
 import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.DOT;
+import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.OR;
 import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.OPEN_PARENTHESIS;
 import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.QUESTION_MARK;
 import static com.fulmicoton.semantic.tokenpattern.regex.RegexPatternToken.STAR;
@@ -44,7 +45,9 @@ public class TokenPatternTest {
         testTokenizer("<abc>{1,2}", ANNOTATION, COUNT);
         testTokenizer("<abc>", ANNOTATION);
         testTokenizer("(<abc>?)<bcd>", OPEN_PARENTHESIS, ANNOTATION, QUESTION_MARK, CLOSE_PARENTHESIS, ANNOTATION);
+        testTokenizer("<abc>|<bcd>", ANNOTATION, OR, ANNOTATION);
     }
+
 
 
     @Test
@@ -58,6 +61,7 @@ public class TokenPatternTest {
         testParser("(<abc>?)<bcd>", "(<abc>){0,1}<bcd>");
         testParser("<abc><bcd>+", "<abc><bcd>(<bcd>)*");
         testParser("(<abc><bcd>)+", "<abc><bcd>(<abc><bcd>)*");
+        testParser("(<b>|<a>)+", "(<b>)|(<a>)((<b>)|(<a>))*");
     }
 
 
@@ -72,6 +76,7 @@ public class TokenPatternTest {
 
     @Test
     public void testPatternNFA() {
+        /*
         testTokenPatternMatch("<a>*", "a a a", true);
         testTokenPatternMatch("<a>+", "a a b", false);
         testTokenPatternMatch("<a>+<b>+<a>", "a a a", false);
@@ -84,6 +89,11 @@ public class TokenPatternTest {
         testTokenPatternMatch("<b><a>{2,3}", "b a", false);
         testTokenPatternMatch("<b><a>{2,3}", "b a a a", true);
         testTokenPatternMatch("<b><a>{2,3}", "b a a a a", false);
+        testTokenPatternMatch("<b>|<a>", "a", true);
+        testTokenPatternMatch("<b>|<a>", "b", true);
+        */
+        testTokenPatternMatch("(<b>|<a>)+", "abb", true);
+        //testTokenPatternMatch("(<b>|<a>)+", "", false);
     }
 
 }

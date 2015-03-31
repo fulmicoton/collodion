@@ -10,7 +10,7 @@ public abstract class PredicatePattern extends TokenPattern implements Predicate
     @Override
     public SimpleState<SemToken> buildMachine(SimpleState<SemToken> fromState) {
         final SimpleState<SemToken> targetState = new SimpleState<>();
-        final Transition<SemToken> transition = new ConditionalTransition<SemToken>(targetState, this);
+        final Transition<SemToken> transition = new ConditionalTransition<>(targetState, this);
         fromState.addTransition(transition);
         return targetState;
     }

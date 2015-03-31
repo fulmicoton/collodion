@@ -23,6 +23,8 @@ public enum RegexPatternToken implements Rule<RegexPatternToken>, RuleMatcher<Re
         }
     },
 
+    OR,
+
     COUNT,
 
     DOT,
