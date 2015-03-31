@@ -1,5 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.regex;
 
+import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
 import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
 
 public class StarPattern extends TokenPattern {
@@ -17,7 +18,7 @@ public class StarPattern extends TokenPattern {
     @Override
     public SimpleState<SemToken> buildMachine(SimpleState<SemToken> fromState) {
         final SimpleState<SemToken> dest = this.pattern.buildMachine(fromState);
-        dest.addEpsilon(fromState);
-        return dest;
+        dest.addTransition(new EpsilonTransition<>(fromState));
+        return fromState;
     }
 }

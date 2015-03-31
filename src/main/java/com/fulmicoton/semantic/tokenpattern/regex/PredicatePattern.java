@@ -1,5 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.regex;
 
+import com.fulmicoton.semantic.tokenpattern.nfa.ConditionalTransition;
 import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
 import com.fulmicoton.semantic.tokenpattern.nfa.Transition;
 import com.google.common.base.Predicate;
@@ -9,7 +10,7 @@ public abstract class PredicatePattern extends TokenPattern implements Predicate
     @Override
     public SimpleState<SemToken> buildMachine(SimpleState<SemToken> fromState) {
         final SimpleState<SemToken> targetState = new SimpleState<>();
-        final Transition<SemToken> transition = new Transition<>(targetState, this);
+        final Transition<SemToken> transition = new ConditionalTransition<SemToken>(targetState, this);
         fromState.addTransition(transition);
         return targetState;
     }

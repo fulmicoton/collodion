@@ -3,19 +3,22 @@ package com.fulmicoton.semantic.tokenpattern.regex;
 import com.fulmicoton.multiregexp.Lexer;
 import com.fulmicoton.multiregexp.Token;
 import com.fulmicoton.semantic.Annotation;
+import com.fulmicoton.semantic.tokenpattern.nfa.Machine;
+import com.fulmicoton.semantic.tokenpattern.nfa.Matcher;
 import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
 import com.fulmicoton.semantic.tokenpattern.parsing.Emitter;
 import com.fulmicoton.semantic.tokenpattern.parsing.Grammar;
 import com.fulmicoton.semantic.tokenpattern.parsing.LRParser;
 import com.fulmicoton.semantic.tokenpattern.parsing.Rule;
 
+import java.util.Iterator;
 import java.util.List;
 
 import static com.fulmicoton.semantic.tokenpattern.parsing.SequenceRule.seq;
 
 public abstract class TokenPattern {
 
-    final static Lexer<RegexPatternToken> LEXER = new Lexer<RegexPatternToken>()
+    public final static Lexer<RegexPatternToken> LEXER = new Lexer<RegexPatternToken>()
         .addRule(RegexPatternToken.OPEN_PARENTHESIS, "\\(")
         .addRule(RegexPatternToken.CLOSE_PARENTHESIS, "\\)")
         .addRule(RegexPatternToken.PLUS, "\\+")
@@ -44,6 +47,13 @@ public abstract class TokenPattern {
                             return childrenEmission.get(1);
                         }
                     })
+            .addRule(seq(EXPR, EXPR),
+                        new Emitter<RegexPatternToken, TokenPattern>() {
+                            @Override
+                            public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<RegexPatternToken>> tokens) {
+                                return new ChainPattern(childrenEmission.get(0), childrenEmission.get(1));
+                            }
+                        })
             .addRule(RegexPatternToken.DOT, new Emitter<RegexPatternToken, TokenPattern>() {
                 @Override
                 public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<RegexPatternToken>> tokens) {
@@ -101,19 +111,19 @@ public abstract class TokenPattern {
                             final Annotation annotation = Annotation.of(annotationName);
                             return new AnnotationPattern(annotation);
                         }
-                    })
-            .addRule(seq(EXPR, EXPR),
-                    new Emitter<RegexPatternToken, TokenPattern>() {
-                        @Override
-                        public TokenPattern emit(List<TokenPattern> childrenEmission, List<Token<RegexPatternToken>> tokens) {
-                            return new ChainPattern(childrenEmission.get(0), childrenEmission.get(1));
-                        }
                     });
     }
     final static Grammar<RegexPatternToken, TokenPattern> GRAMMAR = buildGrammar();
     final static LRParser<RegexPatternToken, TokenPattern> PARSER = new LRParser<>(LEXER, GRAMMAR);
     public static TokenPattern compile(final String regex) {
         return PARSER.parse(regex);
+    }
+    public Matcher<SemToken> match(final Iterator<SemToken> tokens) {
+        final SimpleState<SemToken> initialState = new SimpleState<>();
+        final SimpleState<SemToken> endState = this.buildMachine(initialState);
+        final Machine<SemToken> machine = new Machine<>(initialState, endState);
+        return machine.match(tokens);
+
     }
     public abstract SimpleState<SemToken> buildMachine(final SimpleState<SemToken> fromState);
 }

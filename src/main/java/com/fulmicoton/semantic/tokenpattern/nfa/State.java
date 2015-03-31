@@ -1,8 +1,8 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
-import java.util.List;
 
 public interface State<T> {
-    public abstract Iterable<State<T>> transition(final T token);
-    public abstract Iterable<State<T>> afterEpsilonTransitions();
+    public Iterable<State<T>> transition(final T token);
+    public Iterable<State<T>> successors();
+    public Iterable<State<T>> epsilonSuccessors();
 }

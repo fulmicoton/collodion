@@ -1,5 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.regex;
 
+import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
 import com.fulmicoton.semantic.tokenpattern.nfa.SimpleState;
 import com.google.common.collect.Sets;
 
@@ -24,7 +25,7 @@ public class RepeatPattern extends TokenPattern {
 
     @Override
     public SimpleState<SemToken> buildMachine(final SimpleState<SemToken> fromState) {
-        SimpleState<SemToken> finalState = null;
+        SimpleState<SemToken> finalState = fromState;
         final Set<SimpleState<SemToken>> okStates = Sets.newHashSet();
         for (int i = 0; i < max; i++) {
             if (i >= min) {
@@ -33,7 +34,7 @@ public class RepeatPattern extends TokenPattern {
             finalState = pattern.buildMachine(finalState);
         }
         for (SimpleState<SemToken> state: okStates) {
-            state.addEpsilon(finalState);
+            state.addTransition(new EpsilonTransition<SemToken>(finalState));
         }
         return finalState;
     }

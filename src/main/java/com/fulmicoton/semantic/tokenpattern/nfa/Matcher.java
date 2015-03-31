@@ -10,7 +10,7 @@ public class Matcher<T> /* implements MatchResult*/ {
         this.matches = matches;
     }
 
-    boolean matches() {
+    public boolean matches() {
         return this.matches;
     }
 
