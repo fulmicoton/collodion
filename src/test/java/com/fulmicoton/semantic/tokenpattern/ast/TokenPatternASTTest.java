@@ -62,7 +62,7 @@ public class TokenPatternASTTest {
         testParser("(<abc>?)<bcd>", "(<abc>){0,1}<bcd>");
         testParser("<abc><bcd>+", "<abc><bcd>(<bcd>)*");
         testParser("(<abc><bcd>)+", "<abc><bcd>(<abc><bcd>)*");
-        testParser("(<b>|<a>)+", "(<b>)|(<a>)((<b>)|(<a>))*");
+        testParser("(<b>|<a>)+", "((<b>)|(<a>))(((<b>)|(<a>)))*");
         testParser(".+", ".(.)*");
     }
 

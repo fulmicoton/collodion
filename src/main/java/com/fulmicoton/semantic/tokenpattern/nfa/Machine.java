@@ -92,9 +92,9 @@ public class Machine<T> {
     }
 
     public Iterable<State<T>> getStates() {
-        Set<State<T>> states = new HashSet<>();
-        states.add(this.initialState);
+        final Set<State<T>> states = new HashSet<>();
         List<State<T>> frontier = ImmutableList.of(this.initialState);
+        states.add(this.initialState);
         while (!frontier.isEmpty()) {
             List<State<T>> newFrontier = new ArrayList<>();
             for (State<T> state: frontier) {

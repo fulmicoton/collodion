@@ -6,11 +6,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Collections in which the state are unique but keep
+ * the ordered in which they have been added for the first time.
+ *
+ * @param <T>
+ */
 public class OrderedSet<T> implements Iterable<T> {
 
     public Set<T> itemSet = new HashSet<>();
     public List<T> items = new ArrayList<>();
 
+    /**
+     * @param item
+     * @return true if the collections ended up being changed
+     * by the addition.
+     */
     public boolean add(final T item) {
         if (this.itemSet.add(item)) {
             this.items.add(item);

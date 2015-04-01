@@ -24,6 +24,7 @@ public class TokenPatternTest {
     public void testPatternNFA() {
         testTokenPatternMatch("<a>*", "a a a", true);
         testTokenPatternMatch("<a>+", "a a b", false);
+        testTokenPatternMatch("((<a>|<b>)|.)+", "a a b", true);
         testTokenPatternMatch("<a>+<b>+<a>", "a a a", false);
         testTokenPatternMatch("<a>+<b>*<a>", "a a a", true);
         testTokenPatternMatch("<a>?<a><b>", "a a b", true);

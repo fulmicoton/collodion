@@ -16,7 +16,7 @@ public class OrPatternAST extends TokenPatternAST {
 
     @Override
     public String toDebugString() {
-        return "(" + this.left.toDebugString() + ")" + "|" + "(" + this.right.toDebugString() + ")";
+        return "((" + this.left.toDebugString() + ")|(" + this.right.toDebugString() + "))";
     }
 
     @Override
