@@ -25,17 +25,17 @@ public class RepeatPatternAST extends TokenPatternAST {
     }
 
     @Override
-    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState) {
+    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState, final GroupAllocator groupAllocator) {
         StateImpl<SemToken> finalState = fromState;
         final Set<StateImpl<SemToken>> okStates = Sets.newHashSet();
         for (int i = 0; i < max; i++) {
             if (i >= min) {
                 okStates.add(finalState);
             }
-            finalState = pattern.buildMachine(finalState);
+            finalState = pattern.buildMachine(finalState, groupAllocator);
         }
         for (StateImpl<SemToken> state: okStates) {
-            state.addTransition(new EpsilonTransition<SemToken>(finalState));
+            state.addTransition(new EpsilonTransition<>(finalState));
         }
         return finalState;
     }

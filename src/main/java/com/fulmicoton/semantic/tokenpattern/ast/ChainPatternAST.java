@@ -19,8 +19,9 @@ public class ChainPatternAST extends TokenPatternAST {
     }
 
     @Override
-    public StateImpl<SemToken> buildMachine(StateImpl<SemToken> fromState) {
-        final StateImpl<SemToken> afterLeft = left.buildMachine(fromState);
-        return right.buildMachine(afterLeft);
+    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState,
+                                            final GroupAllocator groupAllocator) {
+        final StateImpl<SemToken> afterLeft = left.buildMachine(fromState, groupAllocator);
+        return right.buildMachine(afterLeft, groupAllocator);
     }
 }

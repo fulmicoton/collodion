@@ -1,15 +1,46 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
-public class Matcher<T> /* implements MatchResult*/ {
+import java.util.Arrays;
+
+public class Matcher<T> {
 
     final boolean matches;
+    final int nbGroups;
+    final int[] groupStarts;
+    final int[] groupEnds;
 
-    public Matcher(boolean matches) {
+    private Matcher(final boolean matches,
+                   final Groups groups,
+                   final int nbGroups) {
+        this.nbGroups = nbGroups;
         this.matches = matches;
+        this.groupStarts = new int[nbGroups];
+        this.groupEnds = new int[nbGroups];
+        Arrays.fill(this.groupStarts, -1);
+        Arrays.fill(this.groupEnds, -1);
+        for (Groups groupCur = groups;
+             groupCur != null;
+             groupCur = groupCur.next) {
+            if (this.groupStarts[groupCur.groupId] >= 0) {
+                assert this.groupEnds[groupCur.groupId] == -1;
+                this.groupEnds[groupCur.groupId] = groupCur.offset;
+            }
+            else {
+                this.groupStarts[groupCur.groupId] = groupCur.offset;
+            }
+        }
     }
 
     public boolean matches() {
         return this.matches;
+    }
+
+    public static <T> Matcher<T> doesMatch(final Groups groups, final int nbGroups) {
+        return new Matcher<>(true, groups, nbGroups);
+    }
+
+    public static <T> Matcher<T> doesNotMatch() {
+        return new Matcher<>(false, null, 0);
     }
 
 //    @Override

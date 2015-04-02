@@ -18,6 +18,7 @@ import static com.fulmicoton.semantic.tokenpattern.parsing.SequenceRule.seq;
 public abstract class TokenPatternAST {
 
     public final static Lexer<RegexPatternToken> LEXER = new Lexer<RegexPatternToken>()
+        .addRule(OPEN_NON_GROUPING, "\\(\\?\\:")
         .addRule(OPEN_PARENTHESIS, "\\(")
         .addRule(CLOSE_PARENTHESIS, "\\)")
         .addRule(PLUS, "\\+")
@@ -40,11 +41,18 @@ public abstract class TokenPatternAST {
         final Grammar<RegexPatternToken, TokenPatternAST> grammar = new Grammar<>();
         final Rule<RegexPatternToken> EXPR = grammar.expr;
         return grammar
+            .addRule(seq(OPEN_NON_GROUPING, EXPR, CLOSE_PARENTHESIS),
+                        new Emitter<RegexPatternToken, TokenPatternAST>() {
+                            @Override
+                            public TokenPatternAST emit(List<TokenPatternAST> childrenEmission, List<Token<RegexPatternToken>> tokens) {
+                                return new NonCapturingGroupAST(childrenEmission.get(1));
+                            }
+                        })
             .addRule(seq(OPEN_PARENTHESIS, EXPR, CLOSE_PARENTHESIS),
                     new Emitter<RegexPatternToken, TokenPatternAST>() {
                         @Override
                         public TokenPatternAST emit(List<TokenPatternAST> childrenEmission, List<Token<RegexPatternToken>> tokens) {
-                            return childrenEmission.get(1);
+                            return new CapturingGroupAST(childrenEmission.get(1));
                         }
                     })
             .addRule(seq(EXPR, EXPR),
@@ -124,5 +132,5 @@ public abstract class TokenPatternAST {
     public static TokenPatternAST compile(final String regex) {
         return PARSER.parse(regex);
     }
-    public abstract StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState);
+    public abstract StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState, final GroupAllocator groupAllocator);
 }

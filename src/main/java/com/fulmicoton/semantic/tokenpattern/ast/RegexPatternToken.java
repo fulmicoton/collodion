@@ -11,6 +11,8 @@ import java.util.List;
 
 public enum RegexPatternToken implements Rule<RegexPatternToken>, RuleMatcher<RegexPatternToken> {
 
+    OPEN_NON_GROUPING,
+
     OPEN_PARENTHESIS,
 
     CLOSE_PARENTHESIS,

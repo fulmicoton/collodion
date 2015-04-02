@@ -1,6 +1,7 @@
 package com.fulmicoton.semantic.tokenpattern;
 
 
+import com.fulmicoton.semantic.tokenpattern.ast.GroupAllocator;
 import com.fulmicoton.semantic.tokenpattern.ast.TokenPatternAST;
 import com.fulmicoton.semantic.tokenpattern.nfa.Machine;
 import com.fulmicoton.semantic.tokenpattern.nfa.Matcher;
@@ -21,8 +22,9 @@ public class TokenPattern {
     public static TokenPattern compile(final String pattern) {
         final TokenPatternAST tokenPatternAST = TokenPatternAST.compile(pattern);
         final StateImpl<SemToken> initialState = new StateImpl<>();
-        final StateImpl<SemToken> endState = tokenPatternAST.buildMachine(initialState);
-        final Machine<SemToken> machine = new Machine<>(initialState, endState);
+        final GroupAllocator groupAllocator = new GroupAllocator();
+        final StateImpl<SemToken> endState = tokenPatternAST.buildMachine(initialState, groupAllocator);
+        final Machine<SemToken> machine = new Machine<>(initialState, endState, groupAllocator);
         return new TokenPattern(pattern, machine);
     }
 

@@ -20,9 +20,9 @@ public class OrPatternAST extends TokenPatternAST {
     }
 
     @Override
-    public StateImpl<SemToken> buildMachine(StateImpl<SemToken> fromState) {
-        final StateImpl<SemToken> leftFinalState = this.left.buildMachine(fromState);
-        final StateImpl<SemToken> rightFinalState = this.right.buildMachine(fromState);
+    public StateImpl<SemToken> buildMachine(StateImpl<SemToken> fromState, final GroupAllocator groupAllocator) {
+        final StateImpl<SemToken> leftFinalState = this.left.buildMachine(fromState, groupAllocator);
+        final StateImpl<SemToken> rightFinalState = this.right.buildMachine(fromState, groupAllocator);
         rightFinalState.addTransition(new EpsilonTransition<>(leftFinalState));
         return leftFinalState;
     }

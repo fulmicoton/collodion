@@ -17,8 +17,8 @@ public class StarPatternAST extends TokenPatternAST {
     }
 
     @Override
-    public StateImpl<SemToken> buildMachine(StateImpl<SemToken> fromState) {
-        final StateImpl<SemToken> dest = this.pattern.buildMachine(fromState);
+    public StateImpl<SemToken> buildMachine(StateImpl<SemToken> fromState, final GroupAllocator groupAllocator) {
+        final StateImpl<SemToken> dest = this.pattern.buildMachine(fromState, groupAllocator);
         dest.addTransition(new EpsilonTransition<>(fromState));
         return fromState;
     }

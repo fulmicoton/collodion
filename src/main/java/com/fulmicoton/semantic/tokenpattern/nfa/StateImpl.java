@@ -7,6 +7,9 @@ import java.util.List;
 
 public class StateImpl<T> implements State<T> {
 
+    public int openGroup = -1;
+    public int closeGroup = -1;
+
     public List<Transition<T>> transitions = new ArrayList<>();
 
     public void addTransition(Transition<T> transition) {
@@ -40,6 +43,22 @@ public class StateImpl<T> implements State<T> {
             }
         }
         return epsilonSuccessors;
+    }
+
+
+    @Override
+    public Groups updateGroups(final Groups groups, int offset) {
+        Groups result = groups;
+        if (this.openGroup >= 0) {
+            result = Groups.openGroup(result, this.openGroup, offset);
+        }
+        if (this.closeGroup >= 0) {
+            result = Groups.closeGroup(result, this.closeGroup, offset);
+        }
+        for (final State<T> state: epsilonSuccessors()) {
+            result = state.updateGroups(result, offset);
+        }
+        return result;
     }
 
 }

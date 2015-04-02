@@ -1,5 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
+import com.fulmicoton.semantic.tokenpattern.ast.GroupAllocator;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
@@ -14,10 +15,14 @@ public class Machine<T> {
 
     final State<T> initialState;
     final Set<State<T>> acceptStates;
+    final GroupAllocator groupAllocator;
 
-    public Machine(final State<T> initialState, final State<T> endState) {
+    public Machine(final State<T> initialState,
+                   final State<T> endState,
+                   final GroupAllocator groupAllocator) {
         this.initialState = initialState;
         this.acceptStates = this.computeAcceptStates(endState);
+        this.groupAllocator = groupAllocator;
     }
 
     private Set<State<T>> computeAcceptStates(final State<T> endState) {
@@ -55,38 +60,41 @@ public class Machine<T> {
         return this.acceptStates.contains(state);
     }
 
-    private State<T> findAcceptedState(final Iterable<State<T>> finalStates) {
-        for (final State<T> finalState: finalStates) {
-            if (this.accept(finalState)) {
-                return finalState;
+    private Thread<T> findAcceptedThread(final Iterable<Thread<T>> threads) {
+        for (final Thread<T> thread: threads) {
+            if (this.accept(thread.getState())) {
+                return thread;
             }
         }
         return null;
     }
 
-    private Matcher<T> makeMatcher(final Iterable<State<T>> finalStates) {
-        final State<T> acceptedState = this.findAcceptedState(finalStates);
-        if (acceptedState != null) {
-            return new Matcher<T>(true);
+    private Matcher<T> makeMatcher(final Iterable<Thread<T>> finalThreads) {
+        final Thread<T> acceptedThread = this.findAcceptedThread(finalThreads);
+        if (acceptedThread != null) {
+            return Matcher.doesMatch(acceptedThread.groups(), this.groupAllocator.getNbGroups());
         }
         else {
-            return new Matcher<T>(false);
+            return Matcher.doesNotMatch();
         }
     }
 
-    public Matcher match(Iterator<T> tokens) {
-        OrderedSet<State<T>> threads = new OrderedSet<>();
-        threads.add(this.initialState);
+    public Matcher<T> match(final Iterator<T> tokens) {
+        List<Thread<T>> threads = new ArrayList<>();
+        threads.add(new Thread<>(this.initialState));
+        int tokenId = 0;
         while (tokens.hasNext()) {
             if (threads.isEmpty()) {
-                return new Matcher<T>(false);
+                break;
             }
-            OrderedSet<State<T>> newThreads = new OrderedSet<>();
+            final Set<State<T>> states = new HashSet<>();
+            final List<Thread<T>> newThreads = new ArrayList<>();
             final T token = tokens.next();
-            for (State<T> state: threads) {
-                newThreads.addAll(state.transition(token));
+            for (Thread<T> thread: threads) {
+                newThreads.addAll(thread.transition(token, tokenId, states));
             }
             threads = newThreads;
+            tokenId++;
         }
         return this.makeMatcher(threads);
     }

@@ -11,7 +11,7 @@ public abstract class PredicatePatternAST extends TokenPatternAST {
     public abstract Predicate<SemToken> predicate();
 
     @Override
-    public StateImpl<SemToken> buildMachine(StateImpl<SemToken> fromState) {
+    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState, final GroupAllocator groupAllocator) {
         final StateImpl<SemToken> targetState = new StateImpl<>();
         final Transition<SemToken> transition = new ConditionalTransition<>(targetState, this.predicate());
         fromState.addTransition(transition);
