@@ -20,15 +20,15 @@ public class CapturingGroupAST extends UnaryPatternAST {
     @Override
     public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState) {
         final StateImpl<SemToken> virtualStateOpen = new StateImpl<>();
-        assert virtualStateOpen.openGroup == -1;
         virtualStateOpen.openGroup = this.groupId;
         fromState.addTransition(new EpsilonTransition<>(virtualStateOpen));
         final StateImpl<SemToken> patternStart = new StateImpl<>();
         virtualStateOpen.addTransition(new EpsilonTransition<>(patternStart));
         final StateImpl<SemToken> patternEnd = this.pattern.buildMachine(patternStart);
         patternEnd.closeGroup = this.groupId;
-        assert virtualStateOpen.closeGroup == -1;
-        return patternEnd;
+        final StateImpl<SemToken> groupEnd = new StateImpl<>();
+        patternEnd.addTransition(new EpsilonTransition<>(groupEnd));
+        return groupEnd;
     }
 
     @Override

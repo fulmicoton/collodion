@@ -30,9 +30,13 @@ public class TokenPatternTest {
 
     @Test
     public void testPatternNFA() {
-        testTokenPatternMatch("((<a>|<b>)+)", "a a b", true, 0, 3, 2, 3);
-        /*
-        testTokenPatternMatch("(<a>)<b>", "a b", true);
+        testTokenPatternMatch("(<a>)", "a", true, 0, 1);
+        testTokenPatternMatch("(<a>)(<b>)", "a b", true, 0, 1, 1, 2);
+        testTokenPatternMatch("(<a>)*", "a a a", true, 2, 3);
+        testTokenPatternMatch("(<a>|<b>)*", "a b a", true, 2, 3);
+        testTokenPatternMatch("(<a>)+", "a a a", true, 2, 3);
+        testTokenPatternMatch("(<a>)<b>", "a b", true, 0, 1);
+        testTokenPatternMatch("(?:<a>)<b>", "a b", true);
         testTokenPatternMatch("<a>*", "a a a", true);
         testTokenPatternMatch("<a>+", "a a b", false);
         testTokenPatternMatch("<a>+<b>+<a>", "a a a", false);
@@ -50,12 +54,12 @@ public class TokenPatternTest {
         testTokenPatternMatch("<b><a>{2,3}", "b a a a a", false);
         testTokenPatternMatch("<b>|<a>", "a", true);
         testTokenPatternMatch("<b>|<a>", "b", true);
-        testTokenPatternMatch("(<b>|<a>)+", "a b b", true);
+        testTokenPatternMatch("(<b>|<a>)+", "a b b", true, 2, 3);
         testTokenPatternMatch("(<b>|<a>)+", "", false);
         testTokenPatternMatch(".+", "ab", true);
         testTokenPatternMatch("<a>+", "", false);
         testTokenPatternMatch(".+", "", false);
         testTokenPatternMatch(".+", "a", true);
-        */
+        testTokenPatternMatch("((?:<a>|<b>)*)", "a a b a a b", true, 0, 6, -1, -1);
     }
 }

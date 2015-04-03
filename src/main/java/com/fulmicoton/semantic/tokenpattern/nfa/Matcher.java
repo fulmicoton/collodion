@@ -1,30 +1,21 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
-import java.util.Arrays;
-
 public class Matcher<T> {
 
     final boolean matches;
     final int nbGroups;
-    final int[] groupStarts;
-    final int[] groupEnds;
+    final Groups.GroupSegment[] groupSegments;
 
     private Matcher(final boolean matches,
                    final Groups groups,
                    final int nbGroups) {
         this.nbGroups = nbGroups;
         this.matches = matches;
-        this.groupStarts = new int[nbGroups];
-        this.groupEnds = new int[nbGroups];
-        Arrays.fill(this.groupStarts, -1);
-        Arrays.fill(this.groupEnds, -1);
-        for (Groups groupCur: groups) {
-            if (groupCur.op == Groups.OP.OPEN) {
-                this.groupStarts[groupCur.groupId] = groupCur.offset;
-            }
-            else {
-                this.groupEnds[groupCur.groupId] = groupCur.offset;
-            }
+        if (groups != null) {
+            this.groupSegments = groups.groupSegments(this.nbGroups);
+        }
+        else {
+            this.groupSegments = null;
         }
     }
 
@@ -48,7 +39,13 @@ public class Matcher<T> {
     */
 
     public int start(int group) {
-        return this.groupStarts[group];
+        final Groups.GroupSegment groupSegment = this.groupSegments[group];
+        if (groupSegment == null) {
+            return -1;
+        }
+        else {
+            return groupSegment.start;
+        }
     }
 
     /*
@@ -59,7 +56,13 @@ public class Matcher<T> {
     */
 
     public int end(int group) {
-        return this.groupEnds[group];
+        final Groups.GroupSegment groupSegment = this.groupSegments[group];
+        if (groupSegment == null) {
+            return -1;
+        }
+        else {
+            return groupSegment.end;
+        }
     }
 //
 //    @Override
