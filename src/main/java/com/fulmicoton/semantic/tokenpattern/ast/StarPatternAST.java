@@ -4,12 +4,10 @@ import com.fulmicoton.semantic.tokenpattern.SemToken;
 import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
 import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
 
-public class StarPatternAST extends TokenPatternAST {
-
-    private final TokenPatternAST pattern;
+public class StarPatternAST extends UnaryPatternAST {
 
     public StarPatternAST(TokenPatternAST pattern) {
-        this.pattern = pattern;
+        super(pattern);
     }
 
     public String toDebugString() {
@@ -17,8 +15,8 @@ public class StarPatternAST extends TokenPatternAST {
     }
 
     @Override
-    public StateImpl<SemToken> buildMachine(StateImpl<SemToken> fromState, final GroupAllocator groupAllocator) {
-        final StateImpl<SemToken> dest = this.pattern.buildMachine(fromState, groupAllocator);
+    public StateImpl<SemToken> buildMachine(StateImpl<SemToken> fromState) {
+        final StateImpl<SemToken> dest = this.pattern.buildMachine(fromState);
         dest.addTransition(new EpsilonTransition<>(fromState));
         return fromState;
     }

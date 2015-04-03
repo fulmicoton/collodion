@@ -84,6 +84,7 @@ public class Machine<T> {
         threads.add(new Thread<>(this.initialState));
         int tokenId = 0;
         while (tokens.hasNext()) {
+            tokenId++;
             if (threads.isEmpty()) {
                 break;
             }
@@ -94,7 +95,6 @@ public class Machine<T> {
                 newThreads.addAll(thread.transition(token, tokenId, states));
             }
             threads = newThreads;
-            tokenId++;
         }
         return this.makeMatcher(threads);
     }

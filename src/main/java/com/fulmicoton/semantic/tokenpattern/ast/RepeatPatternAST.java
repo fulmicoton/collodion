@@ -7,14 +7,13 @@ import com.google.common.collect.Sets;
 
 import java.util.Set;
 
-public class RepeatPatternAST extends TokenPatternAST {
+public class RepeatPatternAST extends UnaryPatternAST {
 
-    private final TokenPatternAST pattern;
     private final int min;
     private final int max;
 
-    public RepeatPatternAST(TokenPatternAST pattern, int min, int max) {
-        this.pattern = pattern;
+    public RepeatPatternAST(final TokenPatternAST pattern, final int min, final int max) {
+        super(pattern);
         this.min = min;
         this.max = max;
     }
@@ -25,14 +24,14 @@ public class RepeatPatternAST extends TokenPatternAST {
     }
 
     @Override
-    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState, final GroupAllocator groupAllocator) {
+    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState) {
         StateImpl<SemToken> finalState = fromState;
         final Set<StateImpl<SemToken>> okStates = Sets.newHashSet();
         for (int i = 0; i < max; i++) {
             if (i >= min) {
                 okStates.add(finalState);
             }
-            finalState = pattern.buildMachine(finalState, groupAllocator);
+            finalState = pattern.buildMachine(finalState);
         }
         for (StateImpl<SemToken> state: okStates) {
             state.addTransition(new EpsilonTransition<>(finalState));

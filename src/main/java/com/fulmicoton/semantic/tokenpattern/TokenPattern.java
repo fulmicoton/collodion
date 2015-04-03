@@ -19,11 +19,16 @@ public class TokenPattern {
         this.machine = machine;
     }
 
+    public String toString() {
+        return "TokenPattern(" + this.patternStr + ")";
+    }
+
     public static TokenPattern compile(final String pattern) {
         final TokenPatternAST tokenPatternAST = TokenPatternAST.compile(pattern);
         final StateImpl<SemToken> initialState = new StateImpl<>();
         final GroupAllocator groupAllocator = new GroupAllocator();
-        final StateImpl<SemToken> endState = tokenPatternAST.buildMachine(initialState, groupAllocator);
+        tokenPatternAST.allocateGroups(groupAllocator);
+        final StateImpl<SemToken> endState = tokenPatternAST.buildMachine(initialState);
         final Machine<SemToken> machine = new Machine<>(initialState, endState, groupAllocator);
         return new TokenPattern(pattern, machine);
     }

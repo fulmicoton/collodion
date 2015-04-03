@@ -47,7 +47,7 @@ public class StateImpl<T> implements State<T> {
 
 
     @Override
-    public Groups updateGroups(final Groups groups, int offset) {
+    public Groups updateGroups(final Groups groups, final int offset) {
         Groups result = groups;
         if (this.openGroup >= 0) {
             result = Groups.openGroup(result, this.openGroup, offset);

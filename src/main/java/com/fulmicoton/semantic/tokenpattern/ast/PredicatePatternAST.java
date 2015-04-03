@@ -6,15 +6,26 @@ import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
 import com.fulmicoton.semantic.tokenpattern.nfa.Transition;
 import com.google.common.base.Predicate;
 
-public abstract class PredicatePatternAST extends TokenPatternAST {
+public class PredicatePatternAST extends TokenPatternAST {
 
-    public abstract Predicate<SemToken> predicate();
+    private final Predicate<SemToken> predicate;
+
+    protected PredicatePatternAST(Predicate<SemToken> predicate) {
+        this.predicate = predicate;
+    }
 
     @Override
-    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState, final GroupAllocator groupAllocator) {
+    public String toDebugString() {
+        return "[" + this.predicate.toString() + "]";
+    }
+
+    @Override
+    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState) {
         final StateImpl<SemToken> targetState = new StateImpl<>();
-        final Transition<SemToken> transition = new ConditionalTransition<>(targetState, this.predicate());
+        final Transition<SemToken> transition = new ConditionalTransition<>(targetState, this.predicate);
         fromState.addTransition(transition);
         return targetState;
     }
+
+    public void allocateGroups(final GroupAllocator groupAllocator) {}
 }

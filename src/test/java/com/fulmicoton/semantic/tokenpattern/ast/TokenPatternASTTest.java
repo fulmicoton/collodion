@@ -53,6 +53,7 @@ public class TokenPatternASTTest {
 
     @Test
     public void testASTCompile() {
+        testParser("((<a>|<b>)|.)+", "((((((<a>)|(<b>))))|(.)))(((((((<a>)|(<b>))))|(.))))*");
         testParser("(.)", ".");
         testParser(".*", "(.)*");
         testParser("..", "..");

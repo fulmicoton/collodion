@@ -18,15 +18,12 @@ public class Matcher<T> {
         this.groupEnds = new int[nbGroups];
         Arrays.fill(this.groupStarts, -1);
         Arrays.fill(this.groupEnds, -1);
-        for (Groups groupCur = groups;
-             groupCur != null;
-             groupCur = groupCur.next) {
-            if (this.groupStarts[groupCur.groupId] >= 0) {
-                assert this.groupEnds[groupCur.groupId] == -1;
-                this.groupEnds[groupCur.groupId] = groupCur.offset;
+        for (Groups groupCur: groups) {
+            if (groupCur.op == Groups.OP.OPEN) {
+                this.groupStarts[groupCur.groupId] = groupCur.offset;
             }
             else {
-                this.groupStarts[groupCur.groupId] = groupCur.offset;
+                this.groupEnds[groupCur.groupId] = groupCur.offset;
             }
         }
     }
@@ -43,25 +40,27 @@ public class Matcher<T> {
         return new Matcher<>(false, null, 0);
     }
 
-//    @Override
-//    public int start() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public int start(int group) {
-//        return 0;
-//    }
-//
-//    @Override
-//    public int end() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public int end(int group) {
-//        return 0;
-//    }
+    /*
+    @Override
+    public int start() {
+        return 0;
+    }
+    */
+
+    public int start(int group) {
+        return this.groupStarts[group];
+    }
+
+    /*
+    @Override
+    public int end() {
+        return this.groupEnds[group];
+    }
+    */
+
+    public int end(int group) {
+        return this.groupEnds[group];
+    }
 //
 //    @Override
 //    public String group() {
@@ -73,9 +72,8 @@ public class Matcher<T> {
 //        return null;
 //    }
 //
-//    @Override
-//    public int groupCount() {
-//        return 0;
-//    }
+    public int groupCount() {
+        return this.nbGroups;
+    }
 //
 }

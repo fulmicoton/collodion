@@ -13,4 +13,8 @@ public class SemToken {
     public boolean hasAnnotation(Annotation annotation) {
         return this.annotation == annotation;
     }
+
+    public String toString() {
+        return "" + this.annotation;
+    }
 }

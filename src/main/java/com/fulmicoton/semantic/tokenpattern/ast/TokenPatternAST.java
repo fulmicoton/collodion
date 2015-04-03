@@ -9,6 +9,8 @@ import com.fulmicoton.semantic.tokenpattern.parsing.Emitter;
 import com.fulmicoton.semantic.tokenpattern.parsing.Grammar;
 import com.fulmicoton.semantic.tokenpattern.parsing.LRParser;
 import com.fulmicoton.semantic.tokenpattern.parsing.Rule;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 
 import java.util.List;
 
@@ -65,7 +67,7 @@ public abstract class TokenPatternAST {
             .addRule(DOT, new Emitter<RegexPatternToken, TokenPatternAST>() {
                 @Override
                 public TokenPatternAST emit(List<TokenPatternAST> childrenEmission, List<Token<RegexPatternToken>> tokens) {
-                    return new DotPatternAST();
+                    return new PredicatePatternAST(Predicates.<SemToken>alwaysTrue());
                 }
             })
             .addRule(seq(EXPR, STAR),
@@ -123,14 +125,23 @@ public abstract class TokenPatternAST {
                             final String match = tokens.get(0).str;
                             final String annotationName = match.substring(1, match.length() - 1);
                             final Annotation annotation = Annotation.of(annotationName);
-                            return new AnnotationPatternAST(annotation);
+                            final Predicate<SemToken> predicate = new Predicate<SemToken>() {
+
+                                @Override
+                                public boolean apply(SemToken semToken) {
+                                    return semToken.hasAnnotation(annotation);
+                                }
+                            };
+                            return new PredicatePatternAST(predicate);
                         }
                     });
     }
+
     final static Grammar<RegexPatternToken, TokenPatternAST> GRAMMAR = buildGrammar();
     final static LRParser<RegexPatternToken, TokenPatternAST> PARSER = new LRParser<>(LEXER, GRAMMAR);
     public static TokenPatternAST compile(final String regex) {
         return PARSER.parse(regex);
     }
-    public abstract StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState, final GroupAllocator groupAllocator);
+    public abstract StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState);
+    public abstract void allocateGroups(final GroupAllocator groupAllocator);
 }
