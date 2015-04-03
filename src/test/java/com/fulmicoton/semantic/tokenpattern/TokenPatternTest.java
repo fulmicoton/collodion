@@ -60,6 +60,6 @@ public class TokenPatternTest {
         testTokenPatternMatch("<a>+", "", false);
         testTokenPatternMatch(".+", "", false);
         testTokenPatternMatch(".+", "a", true);
-        testTokenPatternMatch("((?:<a>|<b>)*)", "a a b a a b", true, 0, 6, -1, -1);
+        testTokenPatternMatch("((?:<a>|<b>)*)", "a a b a a b", true, 0, 6);
     }
 }

@@ -104,7 +104,7 @@ public class Machine<T> {
         List<State<T>> frontier = ImmutableList.of(this.initialState);
         states.add(this.initialState);
         while (!frontier.isEmpty()) {
-            List<State<T>> newFrontier = new ArrayList<>();
+            final List<State<T>> newFrontier = new ArrayList<>(30);
             for (State<T> state: frontier) {
                 for (State<T> successor: state.successors()) {
                     if (states.add(successor)) {

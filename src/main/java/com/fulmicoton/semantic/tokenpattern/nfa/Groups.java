@@ -38,25 +38,26 @@ public class Groups  {
     public static class GroupSegment {
         int start = -1;
         int end = -1;
+
+        GroupSegment(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
     }
 
     GroupSegment[] groupSegments(int nbGroups) {
         final GroupSegment[] complete = new GroupSegment[nbGroups];
         final GroupSegment[] incomplete = new GroupSegment[nbGroups];
         for (Groups groups: this.reverseList()) {
-            if (incomplete[groups.groupId] == null) {
-                incomplete[groups.groupId] = new GroupSegment();
-            }
             final GroupSegment groupSegment = incomplete[groups.groupId];
             if (groups.op == OP.OPEN) {
-                assert groupSegment.end == -1;
-                groupSegment.start = groups.offset;
+                final GroupSegment newGroupSegment = new GroupSegment(groups.offset, -1);
+                incomplete[groups.groupId] = newGroupSegment;
             }
             else {
                 assert groupSegment.start != -1;
                 groupSegment.end = groups.offset;
                 complete[groups.groupId] = groupSegment;
-                incomplete[groups.groupId] = null;
             }
         }
         return complete;
