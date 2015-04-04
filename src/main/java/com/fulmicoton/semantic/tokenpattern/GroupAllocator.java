@@ -1,5 +1,7 @@
 package com.fulmicoton.semantic.tokenpattern;
 
+import com.google.common.base.Joiner;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +27,9 @@ public class GroupAllocator {
 
     public int getGroupIdFromName(final String groupName) {
         final Integer groupId = this.nameToGroupId.get(groupName);
-        if (groupId == null) return -1;
+        if (groupId == null) {
+            throw new IllegalArgumentException("Group named " + groupName + " is unknown. Available groupNames are " + Joiner.on(", ").join(this.nameToGroupId.keySet()) + ".");
+        }
         return groupId;
     }
 }

@@ -98,7 +98,20 @@ public class TokenPatternTest {
         Assert.assertEquals(matcher.end("patternone"), 3);
         Assert.assertEquals(matcher.start("patterntwo"), 4);
         Assert.assertEquals(matcher.end("patterntwo"), 5);
-        Assert.assertEquals(matcher.start("patternthree"), -1);
-        Assert.assertEquals(matcher.end("patternthree"), -1);
-    }
+        final String errorMsg = "Group named patternthree is unknown. Available groupNames are patterntwo, patternone.";
+        try {
+            matcher.start("patternthree");
+            Assert.fail("should have thrown");
+        }
+        catch (IllegalArgumentException e) {
+            Assert.assertEquals(e.getMessage(), errorMsg);
+        }
+        try {
+            matcher.end("patternthree");
+            Assert.fail("should have thrown");
+        }
+        catch (IllegalArgumentException e) {
+            Assert.assertEquals(e.getMessage(), errorMsg);
+        }
+}
 }
