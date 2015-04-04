@@ -23,6 +23,7 @@ public class Groups  {
         OPEN,
         CLOSE
     }
+
     final OP op;
     final int groupId;
     final int offset;
@@ -48,6 +49,7 @@ public class Groups  {
     }
 
     public static class GroupSegment {
+
         int start = -1;
         int end = -1;
 
@@ -76,7 +78,7 @@ public class Groups  {
     }
 
     private List<Groups> reverseList() {
-        List<Groups> groups = new ArrayList<>();
+        final List<Groups> groups = new ArrayList<>();
         for (Groups groupCur=this; groupCur!=null; groupCur=groupCur.next) {
             groups.add(groupCur);
         }

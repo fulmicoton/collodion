@@ -1,39 +1,41 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
+import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
+
 public class Matcher<T> {
 
     final boolean matches;
-    final int nbGroups;
+    final GroupAllocator groupAllocator;
     final Groups.GroupSegment[] groupSegments;
 
     private Matcher(final boolean matches,
                    final Groups groups,
-                   final int nbGroups) {
-        this.nbGroups = nbGroups;
+                   final GroupAllocator groupAllocator) {
+        this.groupAllocator = groupAllocator;
         this.matches = matches;
         if (groups != null) {
-            this.groupSegments = groups.groupSegments(this.nbGroups);
+            this.groupSegments = groups.groupSegments(this.groupAllocator.getNbGroups());
         }
         else {
             this.groupSegments = null;
         }
     }
 
+
     public boolean matches() {
         return this.matches;
     }
 
-    public static <T> Matcher<T> doesMatch(final Groups groups, final int nbGroups) {
-        return new Matcher<>(true, groups, nbGroups);
+    public static <T> Matcher<T> doesMatch(final Groups groups, final GroupAllocator groupAllocator) {
+        return new Matcher<>(true, groups, groupAllocator);
     }
 
-    public static <T> Matcher<T> doesNotMatch(final int nbGroups) {
-        return new Matcher<>(false, null, nbGroups);
+    public static <T> Matcher<T> doesNotMatch(final GroupAllocator groupAllocator) {
+        return new Matcher<>(false, null, groupAllocator);
     }
-
 
     public int start(int group) {
-        if (!this.matches) return -1;
+        if (group < 0 || !this.matches) return -1;
         final Groups.GroupSegment groupSegment = this.groupSegments[group];
         if (groupSegment == null) {
             // Java's spec would be
@@ -46,7 +48,7 @@ public class Matcher<T> {
 
 
     public int end(int group) {
-        if (!this.matches) return -1;
+        if (group < 0 || !this.matches) return -1;
         final Groups.GroupSegment groupSegment = this.groupSegments[group];
         if (groupSegment == null) {
             // Java's spec would be
@@ -58,7 +60,16 @@ public class Matcher<T> {
     }
 
     public int groupCount() {
-        return Math.max(0, this.nbGroups - 1);
+        return Math.max(0, this.groupAllocator.getNbGroups() - 1);
+    }
+
+
+    public int start(final String groupName) {
+        return this.start(this.groupAllocator.getGroupIdFromName(groupName));
+    }
+
+    public int end(final String groupName) {
+        return this.end(this.groupAllocator.getGroupIdFromName(groupName));
     }
 
     /*

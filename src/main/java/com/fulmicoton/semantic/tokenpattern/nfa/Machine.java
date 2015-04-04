@@ -72,10 +72,10 @@ public class Machine<T> {
     private Matcher<T> makeMatcher(final Iterable<Thread<T>> finalThreads) {
         final Thread<T> acceptedThread = this.findAcceptedThread(finalThreads);
         if (acceptedThread != null) {
-            return Matcher.doesMatch(acceptedThread.groups(), this.groupAllocator.getNbGroups());
+            return Matcher.doesMatch(acceptedThread.groups(), this.groupAllocator);
         }
         else {
-            return Matcher.doesNotMatch(this.groupAllocator.getNbGroups());
+            return Matcher.doesNotMatch(this.groupAllocator);
         }
     }
 

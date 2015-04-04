@@ -22,4 +22,10 @@ public class GroupAllocator {
     public int getNbGroups() {
         return nbGroup;
     }
+
+    public int getGroupIdFromName(final String groupName) {
+        final Integer groupId = this.nameToGroupId.get(groupName);
+        if (groupId == null) return -1;
+        return groupId;
+    }
 }
