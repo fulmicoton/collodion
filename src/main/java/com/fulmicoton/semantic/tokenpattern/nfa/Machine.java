@@ -1,6 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
-import com.fulmicoton.semantic.tokenpattern.ast.GroupAllocator;
+import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;

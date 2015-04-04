@@ -1,12 +1,14 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
 
-public abstract class BinaryPatternAST extends TokenPatternAST {
+import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 
-    protected final TokenPatternAST left;
-    protected final TokenPatternAST right;
+public abstract class BinaryPatternAST extends AST {
 
-    public BinaryPatternAST(TokenPatternAST left, TokenPatternAST right) {
+    protected final AST left;
+    protected final AST right;
+
+    public BinaryPatternAST(AST left, AST right) {
         this.left = left;
         this.right = right;
     }

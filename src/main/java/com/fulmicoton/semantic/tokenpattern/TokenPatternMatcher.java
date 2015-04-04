@@ -2,7 +2,7 @@ package com.fulmicoton.semantic.tokenpattern;
 
 import com.fulmicoton.common.loader.Loader;
 import com.fulmicoton.semantic.ProcessorBuilder;
-import com.fulmicoton.semantic.tokenpattern.ast.TokenPatternAST;
+import com.fulmicoton.semantic.tokenpattern.ast.AST;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 
@@ -16,7 +16,7 @@ public class TokenPatternMatcher extends TokenFilter {
     public static class Builder implements ProcessorBuilder<TokenPatternMatcher> {
 
         public String path;
-        private transient List<TokenPatternAST> patterns;
+        private transient List<AST> patterns;
 
         @Override
         public void init(final Loader loader) throws IOException {

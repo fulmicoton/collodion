@@ -1,5 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
+import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 import com.fulmicoton.semantic.tokenpattern.SemToken;
 import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
 import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
@@ -7,14 +8,21 @@ import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
 public class CapturingGroupAST extends UnaryPatternAST {
 
     private int groupId = -1;
+    private final String name;
 
-    public CapturingGroupAST(TokenPatternAST pattern) {
+    public CapturingGroupAST(AST pattern, final String name) {
         super(pattern);
+        this.name = name;
     }
 
     @Override
     public String toDebugString() {
-        return "(" + this.groupId + ":" + this.pattern.toDebugString() + ")";
+        if (this.name == null) {
+            return "(" + this.groupId + ":" + this.pattern.toDebugString() + ")";
+        }
+        else {
+            return "(?<" + this.name + ":" + this.groupId + ">" + this.pattern.toDebugString() + ")";
+        }
     }
 
     @Override
@@ -34,7 +42,12 @@ public class CapturingGroupAST extends UnaryPatternAST {
     @Override
     public void allocateGroups(final GroupAllocator groupAllocator) {
         if (this.groupId < 0) {
-            this.groupId = groupAllocator.allocateGroup();
+            if (this.name == null) {
+                this.groupId = groupAllocator.allocateUnnamedGroup();
+            }
+            else {
+                this.groupId = groupAllocator.allocateNamedGroup(this.name);
+            }
         }
         this.pattern.allocateGroups(groupAllocator);
     }

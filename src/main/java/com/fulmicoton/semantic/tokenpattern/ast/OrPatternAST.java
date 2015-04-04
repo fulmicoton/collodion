@@ -6,13 +6,18 @@ import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
 
 public class OrPatternAST extends BinaryPatternAST {
 
-    public OrPatternAST(TokenPatternAST left, TokenPatternAST right) {
+    public OrPatternAST(AST left, AST right) {
         super(left, right);
     }
 
     @Override
     public String toDebugString() {
-        return "((" + this.left.toDebugString() + ")|(" + this.right.toDebugString() + "))";
+        return this.left.toDebugStringWrapped() + "|" + this.right.toDebugStringWrapped();
+    }
+
+    @Override
+    public String toDebugStringWrapped() {
+        return "(?:" + this.toDebugString() + ")";
     }
 
     @Override

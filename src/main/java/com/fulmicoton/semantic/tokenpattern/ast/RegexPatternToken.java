@@ -9,28 +9,26 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
+/**
+ * The list of tokens used to parse a token regular expression language.
+ * Yeah, that sounds a bit meta and incestuous, but one gets
+ * used to it.
+ *
+ * The actual lexing rules are in the AST class.
+ */
 public enum RegexPatternToken implements Rule<RegexPatternToken>, RuleMatcher<RegexPatternToken> {
 
     OPEN_NON_GROUPING,
-
+    OPEN_NAMED_GROUP,
     OPEN_PARENTHESIS,
-
     CLOSE_PARENTHESIS,
-
     ANNOTATION,
-
     OR,
-
     COUNT,
-
     DOT,
-
     PLUS,
-
     STAR,
-
     QUESTION_MARK;
-
 
     @Override
     public boolean evaluate(boolean[][][] table, int start, int l, final List<Token<RegexPatternToken>> tokens) {

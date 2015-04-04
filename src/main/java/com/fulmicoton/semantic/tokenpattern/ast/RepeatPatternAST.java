@@ -12,7 +12,7 @@ public class RepeatPatternAST extends UnaryPatternAST {
     private final int min;
     private final int max;
 
-    public RepeatPatternAST(final TokenPatternAST pattern, final int min, final int max) {
+    public RepeatPatternAST(final AST pattern, final int min, final int max) {
         super(pattern);
         this.min = min;
         this.max = max;
@@ -20,7 +20,7 @@ public class RepeatPatternAST extends UnaryPatternAST {
 
     @Override
     public String toDebugString() {
-        return "(" + this.pattern.toDebugString() + "){" + this.min + "," + this.max + "}";
+        return this.pattern.toDebugStringWrapped() + "{" + this.min + "," + this.max + "}";
     }
 
     @Override

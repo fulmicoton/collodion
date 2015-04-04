@@ -1,22 +1,26 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
+import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 import com.fulmicoton.semantic.tokenpattern.SemToken;
 import com.fulmicoton.semantic.tokenpattern.nfa.ConditionalTransition;
 import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
 import com.fulmicoton.semantic.tokenpattern.nfa.Transition;
 import com.google.common.base.Predicate;
 
-public class PredicatePatternAST extends TokenPatternAST {
+public class PredicatePatternAST extends AST {
 
+    private final String str;
     private final Predicate<SemToken> predicate;
 
-    protected PredicatePatternAST(Predicate<SemToken> predicate) {
+    protected PredicatePatternAST(final String str,
+                                  final Predicate<SemToken> predicate) {
+        this.str = str;
         this.predicate = predicate;
     }
 
     @Override
     public String toDebugString() {
-        return "[" + this.predicate.toString() + "]";
+        return this.str;
     }
 
     @Override

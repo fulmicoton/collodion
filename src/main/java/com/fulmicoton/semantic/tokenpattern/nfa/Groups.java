@@ -5,6 +5,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Kind of a linked list to handle group operation.
+ * In order to avoid copying things here an there,
+ * we use an immutable thread.
+ *
+ * When a thread is forked, the child can use the father
+ * group structure.
+ *
+ * It's only at the very end that we read through
+ * the chain of groups and actually compute what the group
+ * segments were.
+ */
 public class Groups  {
 
     public static enum OP {

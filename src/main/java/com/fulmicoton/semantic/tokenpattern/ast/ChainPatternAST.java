@@ -5,13 +5,17 @@ import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
 
 public class ChainPatternAST extends BinaryPatternAST {
 
-    public ChainPatternAST(TokenPatternAST left, TokenPatternAST right) {
+    public ChainPatternAST(AST left, AST right) {
         super(left, right);
     }
 
     @Override
     public String toDebugString() {
         return this.left.toDebugString() + this.right.toDebugString();
+    }
+
+    public String toDebugStringWrapped() {
+        return "(?:" + this.toDebugString() + ")";
     }
 
     @Override

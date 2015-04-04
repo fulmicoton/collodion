@@ -3,7 +3,9 @@ package com.fulmicoton.semantic.tokenpattern.nfa;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StateImpl<T> implements State<T> {
 
@@ -18,17 +20,22 @@ public class StateImpl<T> implements State<T> {
 
     @Override
     public Iterable<State<T>> transition(T token) {
-        final OrderedSet<State<T>> destStates = new OrderedSet<>();
-        for (Transition<T> transition: this.transitions) {
-            destStates.addAll(transition.transition(token));
+        final Set<State<T>> destStateSet = new HashSet<>();
+        final List<State<T>> destStateList = new ArrayList<>();
+        for (final Transition<T> transition: this.transitions) {
+            for (final State<T> dest: transition.transition(token)) {
+                if (destStateSet.add(dest)) {
+                    destStateList.add(dest);
+                }
+            }
         }
-        return destStates;
+        return destStateList;
     }
 
     @Override
     public Iterable<State<T>> successors() {
         List<State<T>> successors = Lists.newArrayList();
-        for (Transition transition: transitions) {
+        for (Transition<T> transition: transitions) {
             successors.add(transition.getDestination());
         }
         return successors;

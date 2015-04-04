@@ -6,12 +6,12 @@ import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
 
 public class StarPatternAST extends UnaryPatternAST {
 
-    public StarPatternAST(TokenPatternAST pattern) {
+    public StarPatternAST(AST pattern) {
         super(pattern);
     }
 
     public String toDebugString() {
-        return "(" + this.pattern.toDebugString() +")*";
+        return this.pattern.toDebugStringWrapped() + "*";
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
-public abstract class UnaryPatternAST extends TokenPatternAST{
+import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 
-    final TokenPatternAST pattern;
+public abstract class UnaryPatternAST extends AST {
 
-    public UnaryPatternAST(TokenPatternAST pattern) {
+    final AST pattern;
+
+    public UnaryPatternAST(AST pattern) {
         this.pattern = pattern;
     }
 
