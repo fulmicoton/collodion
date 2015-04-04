@@ -75,7 +75,7 @@ public class Machine<T> {
             return Matcher.doesMatch(acceptedThread.groups(), this.groupAllocator.getNbGroups());
         }
         else {
-            return Matcher.doesNotMatch();
+            return Matcher.doesNotMatch(this.groupAllocator.getNbGroups());
         }
     }
 

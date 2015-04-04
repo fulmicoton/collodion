@@ -10,6 +10,10 @@ public class CapturingGroupAST extends UnaryPatternAST {
     private int groupId = -1;
     private final String name;
 
+    public CapturingGroupAST(AST pattern) {
+        this(pattern, null);
+    }
+
     public CapturingGroupAST(AST pattern, final String name) {
         super(pattern);
         this.name = name;

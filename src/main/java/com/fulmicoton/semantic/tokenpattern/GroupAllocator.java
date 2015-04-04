@@ -7,7 +7,7 @@ public class GroupAllocator {
 
     int nbGroup = 0;
 
-    public Map<String, Integer> nameToGroupId = new HashMap<>();
+    public final Map<String, Integer> nameToGroupId = new HashMap<>();
 
     public int allocateUnnamedGroup() {
         return nbGroup++;
@@ -22,5 +22,4 @@ public class GroupAllocator {
     public int getNbGroups() {
         return nbGroup;
     }
-
 }

@@ -7,61 +7,78 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class TokenPatternTest {
 
-    public void testTokenPatternMatch(String ptn, String testString, boolean expected, int... groupOffset) {
-        final String[] tokens = testString.length() > 0? testString.split(" "): new String[0];
+    private static java.util.regex.Matcher translateToJavaMatch(final String ptn, final String testString) {
+        final Pattern javaPtn = Pattern.compile(ptn.replace("[", "").replace("]", ""));
+        return javaPtn.matcher(testString);
+    }
+
+    public void testTokenPatternMatch(String ptn, String testString) {
         final List<SemToken> tokenList = new ArrayList<>();
-        for (String token: tokens) {
-            tokenList.add(new SemToken(Annotation.of(token)));
+        for (char token: testString.toCharArray()) {
+            tokenList.add(new SemToken(Annotation.of(String.valueOf(token))));
         }
+        final java.util.regex.Matcher javaMatch = translateToJavaMatch(ptn, testString);
         final TokenPattern tokenPattern = TokenPattern.compile(ptn);
-        System.out.println(tokenPattern);
         final Matcher<SemToken> match = tokenPattern.match(tokenList.iterator());
-        Assert.assertEquals(match.matches(), expected);
-        Assert.assertEquals(0, groupOffset.length % 2);
-        Assert.assertEquals(match.groupCount(), groupOffset.length / 2);
+        Assert.assertEquals(match.matches(), javaMatch.matches());
+        Assert.assertEquals(javaMatch.groupCount(), match.groupCount());
         for (int groupId=0; groupId<match.groupCount(); groupId++) {
-            Assert.assertEquals(match.start(groupId), groupOffset[2*groupId]);
-            Assert.assertEquals(match.end(groupId), groupOffset[2*groupId + 1]);
+            int startJava, endJava;
+            try {
+                startJava = javaMatch.start(groupId);
+            }
+            catch (IllegalStateException e) {
+                startJava = -1;
+            }
+            try {
+                endJava = javaMatch.end(groupId);
+            }
+            catch (IllegalStateException e) {
+                endJava = -1;
+            }
+            Assert.assertEquals(startJava, match.start(groupId));
+            Assert.assertEquals(endJava, match.end(groupId));
         }
     }
 
     @Test
     public void testPatternNFA() {
-        testTokenPatternMatch("([a])", "a", true, 0, 1);
-        testTokenPatternMatch("([a])([b])", "a b", true, 0, 1, 1, 2);
-        testTokenPatternMatch("([a])*", "a a a", true, 2, 3);
-        testTokenPatternMatch("([a]|[b])*", "a b a", true, 2, 3);
-        testTokenPatternMatch("([a])+", "a a a", true, 2, 3);
-        testTokenPatternMatch("([a])[b]", "a b", true, 0, 1);
-        testTokenPatternMatch("(?:[a])[b]", "a b", true);
-        testTokenPatternMatch("[a]*", "a a a", true);
-        testTokenPatternMatch("[a]+", "a a b", false);
-        testTokenPatternMatch("[a]+[b]+[a]", "a a a", false);
-        testTokenPatternMatch("[a]+[b]*[a]", "a a a", true);
-        testTokenPatternMatch("[a]?[a][b]", "a a b", true);
-        testTokenPatternMatch("[a]?[a][b]", "a b", true);
-        testTokenPatternMatch("[a][b]", "a b", true);
-        testTokenPatternMatch("[a]{2,3}", "a a", true);
-        testTokenPatternMatch("[b][a]{2,3}", "b a a", true);
-        testTokenPatternMatch("[b][a]{2}", "b a a", true);
-        testTokenPatternMatch("[b][a]{2}", "b a a a", false);
-        testTokenPatternMatch("[b][a]", "a a a a", false);
-        testTokenPatternMatch("[b][a]{2,3}", "b a", false);
-        testTokenPatternMatch("[b][a]{2,3}", "b a a a", true);
-        testTokenPatternMatch("[b][a]{2,3}", "b a a a a", false);
-        testTokenPatternMatch("[b]|[a]", "a", true);
-        testTokenPatternMatch("[b]|[a]", "b", true);
-        testTokenPatternMatch("([b]|[a])+", "a b b", true, 2, 3);
-        testTokenPatternMatch("[b]|([a])", "b", true, -1, -1);
-        testTokenPatternMatch("[b]|([a])", "a", true, 0, 1);
-        testTokenPatternMatch("([b]|[a])+", "", false);
-        testTokenPatternMatch(".+", "ab", true);
-        testTokenPatternMatch("[a]+", "", false);
-        testTokenPatternMatch(".+", "", false);
-        testTokenPatternMatch(".+", "a", true);
-        testTokenPatternMatch("((?:[a]|[b])*)", "a a b a a b", true, 0, 6);
+        testTokenPatternMatch("([a])", "a");
+        testTokenPatternMatch("([a])([b])", "ab");
+        testTokenPatternMatch("([a])*", "aaa");
+        testTokenPatternMatch("([a]|[b])*", "aba");
+        testTokenPatternMatch("([a])+", "aaa");
+        testTokenPatternMatch("([a])[b]", "ab");
+        testTokenPatternMatch("(?:[a])[b]", "ab");
+        testTokenPatternMatch("[a]*", "aaa");
+        testTokenPatternMatch("[a]+", "aab");
+        testTokenPatternMatch("[a]+[b]+[a]", "aaa");
+        testTokenPatternMatch("[a]+[b]*[a]", "aaa");
+        testTokenPatternMatch("[a]?[a][b]", "aab");
+        testTokenPatternMatch("[a]?[a][b]", "ab");
+        testTokenPatternMatch("[a][b]", "ab");
+        testTokenPatternMatch("[a]{2,3}", "aa");
+        testTokenPatternMatch("[b][a]{2,3}", "baa");
+        testTokenPatternMatch("[b][a]{2}", "baa");
+        testTokenPatternMatch("[b][a]{2}", "baaa");
+        testTokenPatternMatch("[b][a]", "aaaa");
+        testTokenPatternMatch("[b][a]{2,3}", "ba");
+        testTokenPatternMatch("[b][a]{2,3}", "baaa");
+        testTokenPatternMatch("[b][a]{2,3}", "baaaa");
+        testTokenPatternMatch("[b]|[a]", "a");
+        testTokenPatternMatch("[b]|[a]", "b");
+        testTokenPatternMatch("([b]|[a])+", "abb");
+        testTokenPatternMatch("[b]|([a])", "b");
+        testTokenPatternMatch("[b]|([a])", "a");
+        testTokenPatternMatch("([b]|[a])+", "");
+        testTokenPatternMatch(".+", "ab");
+        testTokenPatternMatch("[a]+", "");
+        testTokenPatternMatch(".+", "");
+        testTokenPatternMatch(".+", "a");
+        testTokenPatternMatch("((?:[a]|[b])*)", "aabaab");
     }
 }

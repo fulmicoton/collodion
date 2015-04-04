@@ -27,8 +27,38 @@ public class Matcher<T> {
         return new Matcher<>(true, groups, nbGroups);
     }
 
-    public static <T> Matcher<T> doesNotMatch() {
-        return new Matcher<>(false, null, 0);
+    public static <T> Matcher<T> doesNotMatch(final int nbGroups) {
+        return new Matcher<>(false, null, nbGroups);
+    }
+
+
+    public int start(int group) {
+        if (!this.matches) return -1;
+        final Groups.GroupSegment groupSegment = this.groupSegments[group];
+        if (groupSegment == null) {
+            // Java's spec would be
+            // throw new IllegalStateException("Not match available");
+            // here, but I feel like this is dumb.
+            return -1;
+        }
+        return groupSegment.start;
+    }
+
+
+    public int end(int group) {
+        if (!this.matches) return -1;
+        final Groups.GroupSegment groupSegment = this.groupSegments[group];
+        if (groupSegment == null) {
+            // Java's spec would be
+            // throw new IllegalStateException("Not match available");
+            // here, but I feel like this is dumb.
+            return -1;
+        }
+        return groupSegment.end;
+    }
+
+    public int groupCount() {
+        return Math.max(0, this.nbGroups - 1);
     }
 
     /*
@@ -38,32 +68,12 @@ public class Matcher<T> {
     }
     */
 
-    public int start(int group) {
-        final Groups.GroupSegment groupSegment = this.groupSegments[group];
-        if (groupSegment == null) {
-            return -1;
-        }
-        else {
-            return groupSegment.start;
-        }
-    }
-
     /*
     @Override
     public int end() {
         return this.groupEnds[group];
     }
     */
-
-    public int end(int group) {
-        final Groups.GroupSegment groupSegment = this.groupSegments[group];
-        if (groupSegment == null) {
-            return -1;
-        }
-        else {
-            return groupSegment.end;
-        }
-    }
 //
 //    @Override
 //    public String group() {
@@ -75,8 +85,8 @@ public class Matcher<T> {
 //        return null;
 //    }
 //
-    public int groupCount() {
-        return this.nbGroups;
-    }
+    /*
+        0 is not taken in account hence the -1.
+     */
 //
 }
