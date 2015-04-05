@@ -2,7 +2,7 @@ package com.fulmicoton.semantic.tokenpattern.nfa;
 
 import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 
-public class Matcher<T> {
+public class Matcher {
 
     final boolean matches;
     final GroupAllocator groupAllocator;
@@ -14,24 +14,23 @@ public class Matcher<T> {
         this.groupAllocator = groupAllocator;
         this.matches = matches;
         if (groups != null) {
-            this.groupSegments = groups.groupSegments(this.groupAllocator.getNbGroups());
+            this.groupSegments = groups.groupSegments(this.groupAllocator);
         }
         else {
             this.groupSegments = null;
         }
     }
 
-
     public boolean matches() {
         return this.matches;
     }
 
-    public static <T> Matcher<T> doesMatch(final Groups groups, final GroupAllocator groupAllocator) {
-        return new Matcher<>(true, groups, groupAllocator);
+    public static Matcher doesMatch(final Groups groups, final GroupAllocator groupAllocator) {
+        return new Matcher(true, groups, groupAllocator);
     }
 
-    public static <T> Matcher<T> doesNotMatch(final GroupAllocator groupAllocator) {
-        return new Matcher<>(false, null, groupAllocator);
+    public static Matcher doesNotMatch(final GroupAllocator groupAllocator) {
+        return new Matcher(false, null, groupAllocator);
     }
 
     public int start(int group) {
@@ -62,7 +61,6 @@ public class Matcher<T> {
     public int groupCount() {
         return Math.max(0, this.groupAllocator.getNbGroups() - 1);
     }
-
 
     public int start(final String groupName) {
         return this.start(this.groupAllocator.getGroupIdFromName(groupName));

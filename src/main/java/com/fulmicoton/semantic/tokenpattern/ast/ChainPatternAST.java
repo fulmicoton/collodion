@@ -1,6 +1,5 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
-import com.fulmicoton.semantic.tokenpattern.SemToken;
 import com.fulmicoton.semantic.tokenpattern.nfa.State;
 
 public class ChainPatternAST extends BinaryPatternAST {
@@ -19,8 +18,8 @@ public class ChainPatternAST extends BinaryPatternAST {
     }
 
     @Override
-    public State<SemToken> buildMachine(final State<SemToken> fromState) {
-        final State<SemToken> afterLeft = left.buildMachine(fromState);
+    public State buildMachine(final State fromState) {
+        final State afterLeft = left.buildMachine(fromState);
         return right.buildMachine(afterLeft);
     }
 }

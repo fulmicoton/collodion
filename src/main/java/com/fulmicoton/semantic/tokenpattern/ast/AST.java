@@ -5,13 +5,12 @@ import com.fulmicoton.multiregexp.Token;
 import com.fulmicoton.semantic.Annotation;
 import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 import com.fulmicoton.semantic.tokenpattern.SemToken;
+import com.fulmicoton.semantic.tokenpattern.nfa.Predicate;
 import com.fulmicoton.semantic.tokenpattern.nfa.State;
 import com.fulmicoton.semantic.tokenpattern.parsing.Emitter;
 import com.fulmicoton.semantic.tokenpattern.parsing.Grammar;
 import com.fulmicoton.semantic.tokenpattern.parsing.LRParser;
 import com.fulmicoton.semantic.tokenpattern.parsing.Rule;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 
 import java.util.List;
 
@@ -19,6 +18,13 @@ import static com.fulmicoton.semantic.tokenpattern.ast.RegexPatternToken.*;
 import static com.fulmicoton.semantic.tokenpattern.parsing.SequenceRule.seq;
 
 public abstract class AST {
+
+    public static Predicate ALWAYS_TRUE = new Predicate() {
+        @Override
+        public boolean apply(SemToken token) {
+            return true;
+        }
+    };
 
     public final static Lexer<RegexPatternToken> LEXER = new Lexer<RegexPatternToken>()
         .addRule(OPEN_NON_GROUPING, "\\(\\?\\:")
@@ -82,7 +88,7 @@ public abstract class AST {
             .addRule(DOT, new Emitter<RegexPatternToken, AST>() {
                 @Override
                 public AST emit(List<AST> childrenEmission, List<Token<RegexPatternToken>> tokens) {
-                    return new PredicatePatternAST(".", Predicates.<SemToken>alwaysTrue());
+                    return new PredicatePatternAST(".", ALWAYS_TRUE);
                 }
             })
             .addRule(seq(EXPR, STAR),
@@ -140,7 +146,7 @@ public abstract class AST {
                             final String match = tokens.get(0).str;
                             final String annotationName = match.substring(1, match.length() - 1);
                             final Annotation annotation = Annotation.of(annotationName);
-                            final Predicate<SemToken> predicate = HasAnnotation.of(annotation);
+                            final Predicate predicate = HasAnnotation.of(annotation);
                             return new PredicatePatternAST("[" + annotationName + "]", predicate);
                         }
                     });
@@ -154,7 +160,7 @@ public abstract class AST {
         return PARSER.parse(regex);
     }
 
-    public abstract State<SemToken> buildMachine(final State<SemToken> fromState);
+    public abstract State buildMachine(final State fromState);
 
     public abstract void allocateGroups(final GroupAllocator groupAllocator);
 }

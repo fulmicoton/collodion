@@ -1,7 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
-import com.fulmicoton.semantic.tokenpattern.SemToken;
 import com.fulmicoton.semantic.tokenpattern.nfa.State;
 
 public class CapturingGroupAST extends UnaryPatternAST {
@@ -29,15 +28,15 @@ public class CapturingGroupAST extends UnaryPatternAST {
     }
 
     @Override
-    public State<SemToken> buildMachine(final State<SemToken> fromState) {
-        final State<SemToken> virtualStateOpen = new State<>();
+    public State buildMachine(final State fromState) {
+        final State virtualStateOpen = new State();
         virtualStateOpen.addOpenGroup(this.groupId);
         fromState.addEpsilon(virtualStateOpen);
-        final State<SemToken> patternStart = new State<>();
+        final State patternStart = new State();
         virtualStateOpen.addEpsilon(patternStart);
-        final State<SemToken> patternEnd = this.pattern.buildMachine(patternStart);
+        final State patternEnd = this.pattern.buildMachine(patternStart);
         patternEnd.addCloseGroup(this.groupId);
-        final State<SemToken> groupEnd = new State<>();
+        final State groupEnd = new State();
         patternEnd.addEpsilon(groupEnd);
         return groupEnd;
     }

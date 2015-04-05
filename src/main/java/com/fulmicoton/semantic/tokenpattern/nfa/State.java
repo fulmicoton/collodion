@@ -1,6 +1,5 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -10,36 +9,36 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class State<T> {
+public class State {
 
     private TreeSet<Integer> openGroups = new TreeSet<>();
     private TreeSet<Integer> closeGroups = new TreeSet<>();
-    private List<Arrow<T>> arrows = new ArrayList<>();
-    private Set<State<T>> epsilonOrigins = new HashSet<>();
+    private List<Arrow> arrows = new ArrayList<>();
+    private Set<State> epsilonOrigins = new HashSet<>();
 
-    public Iterable<State<T>> epsilonOrigins() {
+    public Iterable<State> epsilonOrigins() {
         return this.epsilonOrigins;
     }
 
-    public void addTransition(final Predicate<T> predicate, final State<T> state) {
-        this.addArrow(new Transition<>(state, predicate));
+    public void addTransition(final Predicate predicate, final State state) {
+        this.addArrow(new Transition(state, predicate));
     }
 
-    private void addArrow(Arrow<T> transition) {
+    private void addArrow(Arrow transition) {
         arrows.add(transition);
     }
 
-    public List<Transition<T>> allTransitions() {
-        final List<Transition<T>> allTransitions = new ArrayList<>();
-        for (final Arrow<T> arrow: this.arrows) {
+    public List<Transition> allTransitions() {
+        final List<Transition> allTransitions = new ArrayList<>();
+        for (final Arrow arrow: this.arrows) {
             Iterables.addAll(allTransitions, arrow.allTransitions());
         }
         return allTransitions;
     }
 
-    public Iterable<State<T>> epsilonSuccessors() {
-        List<State<T>> epsilonSuccessors = Lists.newArrayList();
-        for (Arrow<T> transition: this.arrows) {
+    public Iterable<State> epsilonSuccessors() {
+        List<State> epsilonSuccessors = Lists.newArrayList();
+        for (Arrow transition: this.arrows) {
             if (transition instanceof Epsilon) {
                 epsilonSuccessors.add(transition.getDestination());
             }
@@ -50,7 +49,7 @@ public class State<T> {
 
     public TreeSet<Integer> allOpenGroups() {
         final TreeSet<Integer> openGroups = new TreeSet<>(this.openGroups);
-        for (final State<T> state: epsilonSuccessors()) {
+        for (final State state: epsilonSuccessors()) {
             openGroups.addAll(state.allOpenGroups());
         }
         return openGroups;
@@ -58,7 +57,7 @@ public class State<T> {
 
     public TreeSet<Integer> allCloseGroups() {
         final TreeSet<Integer> closeGroups = new TreeSet<>(this.closeGroups);
-        for (final State<T> state: this.epsilonSuccessors()) {
+        for (final State state: this.epsilonSuccessors()) {
             closeGroups.addAll(state.allCloseGroups());
         }
         return closeGroups;
@@ -72,12 +71,12 @@ public class State<T> {
         this.closeGroups.add(groupId);
     }
 
-    private void addEpsilonOrigin(State<T> origin) {
+    private void addEpsilonOrigin(State origin) {
         this.epsilonOrigins.add(origin);
     }
 
-    public void addEpsilon(final State<T> dest) {
+    public void addEpsilon(final State dest) {
         dest.addEpsilonOrigin(this);
-        this.addArrow(new Epsilon<T>(dest));
+        this.addArrow(new Epsilon(dest));
     }
 }

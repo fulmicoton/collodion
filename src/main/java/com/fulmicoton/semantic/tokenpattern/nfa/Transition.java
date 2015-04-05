@@ -1,23 +1,21 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
-
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.sun.istack.internal.NotNull;
 
-public class Transition<T> extends Arrow<T> {
+public class Transition extends Arrow {
 
-    public final Predicate<T> predicate;
+    public final Predicate predicate;
 
     public Transition(
-            @NotNull final State<T> destination,
-            @NotNull final Predicate<T> predicate) {
+            @NotNull final State destination,
+            @NotNull final Predicate predicate) {
         super(destination);
         this.predicate = predicate;
     }
 
     @Override
-    public Iterable<Transition<T>> allTransitions() {
+    public Iterable<Transition> allTransitions() {
         return ImmutableList.of(this);
     }
 }

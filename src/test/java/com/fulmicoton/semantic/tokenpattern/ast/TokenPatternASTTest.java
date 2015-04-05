@@ -1,7 +1,7 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.multiregexp.Token;
-import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
+import com.fulmicoton.semantic.tokenpattern.MultiGroupAllocator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,8 +21,8 @@ public class TokenPatternASTTest {
 
     public static void testParser(String ptn, String expected) {
         final AST tokenPattern = AST.compile(ptn);
-        final GroupAllocator groupAllocator = new GroupAllocator();
-        tokenPattern.allocateGroups(groupAllocator);
+        final MultiGroupAllocator multiGroupAllocator = new MultiGroupAllocator();
+        tokenPattern.allocateGroups(multiGroupAllocator.newAllocator());
         System.out.println(tokenPattern.toString());
         Assert.assertEquals(expected, tokenPattern.toDebugString());
     }

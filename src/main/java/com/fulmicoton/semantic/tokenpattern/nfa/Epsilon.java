@@ -2,14 +2,14 @@ package com.fulmicoton.semantic.tokenpattern.nfa;
 
 
 
-public class Epsilon<T> extends Arrow<T> {
+public class Epsilon extends Arrow {
 
-    Epsilon(State<T> destination) {
+    Epsilon(final State destination) {
         super(destination);
     }
 
     @Override
-    public Iterable<Transition<T>> allTransitions() {
+    public Iterable<Transition> allTransitions() {
         return this.getDestination().allTransitions();
     }
 

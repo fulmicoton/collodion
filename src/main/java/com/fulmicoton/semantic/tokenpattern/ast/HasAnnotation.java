@@ -2,12 +2,12 @@ package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.semantic.Annotation;
 import com.fulmicoton.semantic.tokenpattern.SemToken;
-import com.google.common.base.Predicate;
+import com.fulmicoton.semantic.tokenpattern.nfa.Predicate;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class HasAnnotation implements Predicate<SemToken> {
+public class HasAnnotation implements Predicate {
 
     private static final Map<Annotation, HasAnnotation> predicateCache = new HashMap<>();
 

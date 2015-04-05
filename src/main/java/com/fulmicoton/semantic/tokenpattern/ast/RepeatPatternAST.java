@@ -1,7 +1,5 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
-import com.fulmicoton.semantic.tokenpattern.SemToken;
-import com.fulmicoton.semantic.tokenpattern.nfa.Epsilon;
 import com.fulmicoton.semantic.tokenpattern.nfa.State;
 import com.google.common.collect.Sets;
 
@@ -24,16 +22,16 @@ public class RepeatPatternAST extends UnaryPatternAST {
     }
 
     @Override
-    public State<SemToken> buildMachine(final State<SemToken> fromState) {
-        State<SemToken> finalState = fromState;
-        final Set<State<SemToken>> okStates = Sets.newHashSet();
-        for (int i = 0; i < max; i++) {
+    public State buildMachine(final State fromState) {
+        State finalState = fromState;
+        final Set<State> okStates = Sets.newHashSet();
+        for (int i=0; i<max; i++) {
             if (i >= min) {
                 okStates.add(finalState);
             }
             finalState = pattern.buildMachine(finalState);
         }
-        for (State<SemToken> state: okStates) {
+        for (final State state: okStates) {
             state.addEpsilon(finalState);
         }
         return finalState;

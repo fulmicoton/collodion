@@ -19,6 +19,5 @@ public abstract class BinaryPatternAST extends AST {
         this.right.allocateGroups(groupAllocator);
     }
 
-    protected void localAllocateGroups(GroupAllocator groupAllocator) {
-    }
+    protected void localAllocateGroups(GroupAllocator groupAllocator) {}
 }

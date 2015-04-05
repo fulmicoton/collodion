@@ -1,6 +1,8 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
 
+import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,19 +61,22 @@ public class Groups  {
         }
     }
 
-    GroupSegment[] groupSegments(int nbGroups) {
+    GroupSegment[] groupSegments(final GroupAllocator groupAllocator) {
+        final int nbGroups = groupAllocator.getNbGroups();
         final GroupSegment[] complete = new GroupSegment[nbGroups];
         final GroupSegment[] incomplete = new GroupSegment[nbGroups];
         for (Groups groups: this.reverseList()) {
-            final GroupSegment groupSegment = incomplete[groups.groupId];
-            if (groups.op == OP.OPEN) {
-                final GroupSegment newGroupSegment = new GroupSegment(groups.offset, -1);
-                incomplete[groups.groupId] = newGroupSegment;
-            }
-            else {
-                assert groupSegment.start != -1;
-                groupSegment.end = groups.offset;
-                complete[groups.groupId] = groupSegment;
+            if ((groupAllocator.offset <= groups.groupId) && (groupAllocator.offset + groupAllocator.getNbGroups() > groups.groupId)) {
+                final GroupSegment groupSegment = incomplete[groups.groupId - groupAllocator.offset];
+                if (groups.op == OP.OPEN) {
+                    final GroupSegment newGroupSegment = new GroupSegment(groups.offset, -1);
+                    incomplete[groups.groupId - groupAllocator.offset] = newGroupSegment;
+                }
+                else {
+                    assert groupSegment.start != -1;
+                    groupSegment.end = groups.offset;
+                    complete[groups.groupId - groupAllocator.offset] = groupSegment;
+                }
             }
         }
         return complete;

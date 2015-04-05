@@ -1,26 +1,37 @@
 package com.fulmicoton.semantic.tokenpattern;
 
-import com.fulmicoton.semantic.tokenpattern.ast.AST;
-import com.fulmicoton.semantic.tokenpattern.ast.CapturingGroupAST;
 import com.fulmicoton.semantic.tokenpattern.nfa.Machine;
 import com.fulmicoton.semantic.tokenpattern.nfa.MachineBuilder;
 import com.fulmicoton.semantic.tokenpattern.nfa.Matcher;
-import com.fulmicoton.semantic.tokenpattern.nfa.State;
 
 import java.util.Iterator;
 
 public class TokenPattern {
 
     private final String patternStr;
-    final AST ast;
-    private final Machine<SemToken> machine;
+    private final int patternId;
+    private final Machine machine;
 
     public TokenPattern(final String patternStr,
-                        final AST ast,
-                        final Machine<SemToken> machine) {
+                        final int patternId,
+                        final Machine machine) {
         this.patternStr = patternStr;
+        this.patternId = patternId;
         this.machine = machine;
-        this.ast = ast;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TokenPattern that = (TokenPattern) o;
+        if (!patternStr.equals(that.patternStr)) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return patternStr.hashCode();
     }
 
     public String toString() {
@@ -28,17 +39,13 @@ public class TokenPattern {
     }
 
     public static TokenPattern compile(final String pattern) {
-        final GroupAllocator groupAllocator = new GroupAllocator();
-        final AST ast = new CapturingGroupAST(AST.compile(pattern));
-        final State<SemToken> initialState = new State<>();
-        ast.allocateGroups(groupAllocator);
-        final State<SemToken> endState = ast.buildMachine(initialState);
-        final MachineBuilder<SemToken> machine = new MachineBuilder<>(initialState, endState, groupAllocator);
-        return new TokenPattern(pattern, ast, machine.build());
+        final MachineBuilder machine = new MachineBuilder();
+        int patternId = machine.add(pattern);
+        return new TokenPattern(pattern, patternId, machine.build());
     }
 
-    public Matcher<SemToken> match(final Iterator<SemToken> tokens) {
-        return machine.match(tokens);
+    public Matcher match(final Iterator<SemToken> tokens) {
+        return machine.match(tokens).get(this.patternId);
     }
 
 

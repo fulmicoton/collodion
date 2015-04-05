@@ -1,16 +1,16 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
-public abstract class Arrow<T> {
+public abstract class Arrow {
 
-    private State<T> destination;
+    private State destination;
 
-    public State<T> getDestination() {
+    public State getDestination() {
         return this.destination;
     }
 
-    protected Arrow(final State<T> destination) {
+    protected Arrow(final State destination) {
         this.destination = destination;
     }
 
-    public abstract Iterable<Transition<T>> allTransitions();
+    public abstract Iterable<Transition> allTransitions();
 }

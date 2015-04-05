@@ -16,7 +16,7 @@ public class TokenPatternTest {
         return javaPtn.matcher(testString);
     }
 
-    private static List<SemToken> makeTokenList(final String testString) {
+    public static List<SemToken> makeTokenList(final String testString) {
         final List<SemToken> tokenList = new ArrayList<>();
         for (char token: testString.toCharArray()) {
             tokenList.add(new SemToken(Annotation.of(String.valueOf(token))));
@@ -25,10 +25,10 @@ public class TokenPatternTest {
     }
 
     public void testTokenPatternMatch(String ptn, String testString) {
-        final List<SemToken> tokenList = makeTokenList(testString);
+        final List tokenList = makeTokenList(testString);
         final java.util.regex.Matcher javaMatch = translateToJavaMatch(ptn, testString);
         final TokenPattern tokenPattern = TokenPattern.compile(ptn);
-        final Matcher<SemToken> match = tokenPattern.match(tokenList.iterator());
+        final Matcher match = tokenPattern.match(tokenList.iterator());
         Assert.assertEquals(match.matches(), javaMatch.matches());
         Assert.assertEquals(javaMatch.groupCount(), match.groupCount());
         for (int groupId=0; groupId<match.groupCount(); groupId++) {
@@ -91,8 +91,8 @@ public class TokenPatternTest {
     @Test
     public void testPatternNamedGroup() {
         final TokenPattern tokenPattern = TokenPattern.compile("[a](?<patternone>[a][b])[c](?<patterntwo>[d])[e]");
-        final List<SemToken> tokenList = makeTokenList("aabcde");
-        final Matcher<SemToken> matcher = tokenPattern.match(tokenList.iterator());
+        final List tokenList = makeTokenList("aabcde");
+        final Matcher matcher = tokenPattern.match(tokenList.iterator());
         Assert.assertTrue(matcher.matches());
         Assert.assertEquals(matcher.start("patternone"), 1);
         Assert.assertEquals(matcher.end("patternone"), 3);
