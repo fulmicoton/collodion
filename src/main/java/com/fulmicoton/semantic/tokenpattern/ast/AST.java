@@ -140,13 +140,7 @@ public abstract class AST {
                             final String match = tokens.get(0).str;
                             final String annotationName = match.substring(1, match.length() - 1);
                             final Annotation annotation = Annotation.of(annotationName);
-                            final Predicate<SemToken> predicate = new Predicate<SemToken>() {
-
-                                @Override
-                                public boolean apply(SemToken semToken) {
-                                    return semToken.hasAnnotation(annotation);
-                                }
-                            };
+                            final Predicate<SemToken> predicate = HasAnnotation.of(annotation);
                             return new PredicatePatternAST("[" + annotationName + "]", predicate);
                         }
                     });

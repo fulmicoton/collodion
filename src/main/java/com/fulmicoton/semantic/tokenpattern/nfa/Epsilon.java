@@ -2,30 +2,15 @@ package com.fulmicoton.semantic.tokenpattern.nfa;
 
 
 
-public class Epsilon<T> implements Arrow<T> {
+public class Epsilon<T> extends Arrow<T> {
 
-    private State<T> epsilonDestination;
-
-    public Epsilon(State<T> epsilonDestination) {
-        this.epsilonDestination = epsilonDestination;
-    }
-
-    @Override
-    public State<T> getDestination() {
-        return this.epsilonDestination;
+    Epsilon(State<T> destination) {
+        super(destination);
     }
 
     @Override
     public Iterable<Transition<T>> allTransitions() {
-        return this.epsilonDestination.allTransitions();
+        return this.getDestination().allTransitions();
     }
-
-    @Override
-    public void replace(State<T> from, State<T> to) {
-        if (this.epsilonDestination == from) {
-            this.epsilonDestination = to;
-        }
-    }
-
 
 }

@@ -34,7 +34,7 @@ public class RepeatPatternAST extends UnaryPatternAST {
             finalState = pattern.buildMachine(finalState);
         }
         for (State<SemToken> state: okStates) {
-            state.addTransition(new Epsilon<>(finalState));
+            state.addEpsilon(finalState);
         }
         return finalState;
     }

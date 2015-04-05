@@ -13,6 +13,10 @@ public class IndexBuilder<T> {
 
     private boolean immutable;
 
+    public int size() {
+        return this.indexedElements.size();
+    }
+
     public int get(final T el) {
         final Integer index = this.indexedElements.get(el);
         if (index != null) return index;

@@ -6,14 +6,15 @@ import com.fulmicoton.semantic.tokenpattern.nfa.Transition;
 import com.fulmicoton.semantic.tokenpattern.nfa.State;
 import com.fulmicoton.semantic.tokenpattern.nfa.Arrow;
 import com.google.common.base.Predicate;
+import com.sun.istack.internal.NotNull;
 
 public class PredicatePatternAST extends AST {
 
     private final String str;
     private final Predicate<SemToken> predicate;
 
-    protected PredicatePatternAST(final String str,
-                                  final Predicate<SemToken> predicate) {
+    protected PredicatePatternAST(@NotNull final String str,
+                                  @NotNull final Predicate<SemToken> predicate) {
         this.str = str;
         this.predicate = predicate;
     }
@@ -26,8 +27,7 @@ public class PredicatePatternAST extends AST {
     @Override
     public State<SemToken> buildMachine(final State<SemToken> fromState) {
         final State<SemToken> targetState = new State<>();
-        final Arrow<SemToken> transition = new Transition<>(targetState, this.predicate);
-        fromState.addTransition(transition);
+        fromState.addTransition(this.predicate, targetState);
         return targetState;
     }
 

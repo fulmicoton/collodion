@@ -1,165 +1,87 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
 import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import com.google.common.base.Predicate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
 
 public class Machine<T> {
 
-    State<T> initialState;
-    final Set<State<T>> acceptStates;
+    final boolean[] acceptStates;
+    final int[][] transitions;
+    final Predicate<T>[][] predicates;
+    final int[][] openGroups;
+    final int[][] closeGroups;
     final GroupAllocator groupAllocator;
 
-    public Machine(final State<T> initialState,
-                   final State<T> endState,
+    public Machine(final boolean[] acceptStates,
+                   final int[][] transitions,
+                   final Predicate<T>[][] predicates,
+                   final int[][] openGroups,
+                   final int[][] closeGroups,
                    final GroupAllocator groupAllocator) {
-        this.initialState = initialState;
-        this.acceptStates = this.computeAcceptStates(endState);
+        this.acceptStates = acceptStates;
+        this.transitions = transitions;
+        this.predicates = predicates;
+        this.openGroups = openGroups;
+        this.closeGroups = closeGroups;
         this.groupAllocator = groupAllocator;
-        this.simplify();
     }
-
-    public int getNbStates() {
-        return Iterables.size(this.getStates());
-    }
-
-    private void simplify() {
-        this.removeEpsilonProxy();
-        this.removeEpsilon();
-    }
-
-    private void removeEpsilon() {
-        for (State state: this.getStates()) {
-
+    
+    private Thread createThread(int stateId, Groups groups, int offset) {
+        for (int openGroup: this.openGroups[stateId]) {
+            groups = Groups.openGroup(groups, openGroup, offset);
         }
-    }
-
-    private void removeEpsilonProxy() {
-        boolean keepOn = true;
-        while (keepOn) {
-            keepOn = false;
-            for (State<T> state: this.getStates()) {
-                final State<T> proxy = state.isProxy();
-                if (proxy != null) {
-                    this.replace(state, proxy);
-                    keepOn = true;
-                    break;
-                }
-            }
+        for (int closeGroup: this.closeGroups[stateId]) {
+            groups = Groups.closeGroup(groups, closeGroup, offset);
         }
-    }
-
-    private void replace(final State<T> from,
-                         final State<T> to) {
-        if (this.initialState == from) {
-            this.initialState = to;
-        }
-        if (this.acceptStates.contains(from)) {
-            this.acceptStates.remove(from);
-            this.acceptStates.add(to);
-        }
-        for (State<T> state: this.getStates()) {
-            state.replace(from, to);
-        }
-    }
-
-    private Set<State<T>> computeAcceptStates(final State<T> endState) {
-        final Map<State<T>, List<State<T>>> impliesMap = new HashMap<>();
-        for (State<T> state: this.getStates()) {
-            for (State<T> impliedBy: state.epsilonSuccessors()) {
-                if (!impliesMap.containsKey(impliedBy)) {
-                    impliesMap.put(impliedBy, new ArrayList<State<T>>());
-                }
-                impliesMap.get(impliedBy).add(state);
-            }
-        }
-        final Set<State<T>> acceptStates = new HashSet<>();
-        acceptStates.add(endState);
-        Set<State<T>> frontier = new HashSet<>();
-        frontier.add(endState);
-        while (!frontier.isEmpty()) {
-            Set<State<T>> newFrontier = new HashSet<>();
-            for (State<T> state: frontier) {
-                final List<State<T>> impliedStates = impliesMap.get(state);
-                if (impliedStates != null) {
-                    for (State<T> impliedState: impliedStates) {
-                        if (acceptStates.add(impliedState)) {
-                            newFrontier.add(impliedState);
-                        }
-                    }
-                }
-            }
-            frontier = newFrontier;
-        }
-        return acceptStates;
-    }
-
-    private boolean accept(final State<T> state) {
-        return this.acceptStates.contains(state);
-    }
-
-    private Thread<T> findAcceptedThread(final Iterable<Thread<T>> threads) {
-        for (final Thread<T> thread: threads) {
-            if (this.accept(thread.getState())) {
-                return thread;
-            }
-        }
-        return null;
-    }
-
-    private Matcher<T> makeMatcher(final Iterable<Thread<T>> finalThreads) {
-        final Thread<T> acceptedThread = this.findAcceptedThread(finalThreads);
-        if (acceptedThread != null) {
-            return Matcher.doesMatch(acceptedThread.groups(), this.groupAllocator);
-        }
-        else {
-            return Matcher.doesNotMatch(this.groupAllocator);
-        }
+        return new Thread(stateId, groups);
     }
 
     public Matcher<T> match(final Iterator<T> tokens) {
-        List<Thread<T>> threads = new ArrayList<>();
-        threads.add(new Thread<>(this.initialState));
-        int tokenId = 0;
+        List<Thread> threads = new ArrayList<>();
+        int offset = 0;
+        threads.add(this.createThread(0, null, offset));
         while (tokens.hasNext()) {
-            tokenId++;
+            offset++;
             if (threads.isEmpty()) {
                 break;
             }
-            final Set<State<T>> states = new HashSet<>();
-            final List<Thread<T>> newThreads = new ArrayList<>();
+            final Set<Integer> states = new HashSet<>();
+            final List<Thread> newThreads = new ArrayList<>();
             final T token = tokens.next();
-            for (Thread<T> thread: threads) {
-                newThreads.addAll(thread.transition(token, tokenId, states));
+            for (Thread thread: threads) {
+                final int[] stateTransitions = this.transitions[thread.state];
+                final Predicate<T>[] statePredicates = this.predicates[thread.state];
+                for (int i=0; i<stateTransitions.length; i++) {
+                    final Predicate<T> predicate = statePredicates[i];
+                    if (predicate.apply(token)) {
+                        final int dest = stateTransitions[i];
+                        if (states.add(dest)) {
+                            final Thread newThread = this.createThread(dest, thread.groups, offset);
+                            newThreads.add(newThread);
+                        }
+                    }
+                }
             }
             threads = newThreads;
         }
         return this.makeMatcher(threads);
     }
 
-    public Iterable<State<T>> getStates() {
-        final Set<State<T>> states = new HashSet<>();
-        List<State<T>> frontier = ImmutableList.of(this.initialState);
-        states.add(this.initialState);
-        while (!frontier.isEmpty()) {
-            final List<State<T>> newFrontier = new ArrayList<>(30);
-            for (State<T> state: frontier) {
-                for (State<T> successor: state.successors()) {
-                    if (states.add(successor)) {
-                        newFrontier.add(successor);
-                    }
-                }
+    private Matcher<T> makeMatcher(final List<Thread> threads) {
+        for (Thread thread: threads) {
+            boolean accept =  this.acceptStates[thread.state];
+            if (accept) {
+                return Matcher.doesMatch(thread.groups, groupAllocator);
             }
-            frontier = newFrontier;
         }
-        return states;
+        return Matcher.doesNotMatch(groupAllocator);
     }
+
 }

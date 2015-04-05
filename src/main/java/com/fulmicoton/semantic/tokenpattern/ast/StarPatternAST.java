@@ -17,7 +17,7 @@ public class StarPatternAST extends UnaryPatternAST {
     @Override
     public State<SemToken> buildMachine(State<SemToken> fromState) {
         final State<SemToken> dest = this.pattern.buildMachine(fromState);
-        dest.addTransition(new Epsilon<>(fromState));
+        dest.addEpsilon(fromState);
         return fromState;
     }
 }
