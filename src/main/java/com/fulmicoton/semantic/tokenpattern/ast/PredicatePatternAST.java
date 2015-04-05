@@ -23,9 +23,7 @@ public class PredicatePatternAST extends AST {
 
     @Override
     public State buildMachine(final State fromState) {
-        final State targetState = new State();
-        fromState.addTransition(this.predicate, targetState);
-        return targetState;
+        return fromState.transition(this.predicate);
     }
 
     public void allocateGroups(final GroupAllocator groupAllocator) {}

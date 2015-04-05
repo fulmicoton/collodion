@@ -4,8 +4,10 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -14,14 +16,22 @@ public class State {
     private TreeSet<Integer> openGroups = new TreeSet<>();
     private TreeSet<Integer> closeGroups = new TreeSet<>();
     private List<Arrow> arrows = new ArrayList<>();
+    private Map<Predicate, State> transitionCache = new HashMap<>();
     private Set<State> epsilonOrigins = new HashSet<>();
 
     public Iterable<State> epsilonOrigins() {
         return this.epsilonOrigins;
     }
 
-    public void addTransition(final Predicate predicate, final State state) {
-        this.addArrow(new Transition(state, predicate));
+    // TODO check how to make priority still work
+    public State transition(final Predicate predicate) {
+        State state = transitionCache.get(predicate);
+        if (state == null) {
+            state = new State();
+            this.addArrow(new Transition(state, predicate));
+            transitionCache.put(predicate, state);
+        }
+        return state;
     }
 
     private void addArrow(Arrow transition) {
