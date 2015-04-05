@@ -38,11 +38,8 @@ public class Machine {
 
 
     private Thread createThread(int stateId, Groups groups, int offset) {
-        for (int openGroup: this.openGroups[stateId]) {
-            groups = Groups.openGroup(groups, openGroup, offset);
-        }
-        for (int closeGroup: this.closeGroups[stateId]) {
-            groups = Groups.closeGroup(groups, closeGroup, offset);
+        if (this.openGroups.length + this.closeGroups.length > 0) {
+            groups = new Groups(this.openGroups[stateId], this.closeGroups[stateId], offset, groups);
         }
         return new Thread(stateId, groups);
     }

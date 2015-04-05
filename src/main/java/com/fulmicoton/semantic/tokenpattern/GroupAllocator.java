@@ -7,19 +7,14 @@ import java.util.Map;
 
 public class GroupAllocator {
 
-    final MultiGroupAllocator multiGroupAllocator;
+    private final MultiGroupAllocator multiGroupAllocator;
+    private int nbGroups = 0;
     public final int offset;
-    int nbGroups = 0;
     public final Map<String, Integer> nameToGroupId = new HashMap<>();
-
 
     GroupAllocator(final int offset, final MultiGroupAllocator multiGroupAllocator) {
         this.offset = offset;
         this.multiGroupAllocator = multiGroupAllocator;
-    }
-
-    public int getGlobalGroupId(int localGroupId) {
-        return this.offset + localGroupId;
     }
 
     public int allocateUnnamedGroup() {

@@ -21,33 +21,20 @@ import java.util.List;
  */
 public class Groups  {
 
-    public static enum OP {
-        OPEN,
-        CLOSE
-    }
 
-    final OP op;
-    final int groupId;
+    final int[] openGroupId;
+    final int[] closeGroupId;
     final int offset;
     final Groups next;
 
-    public Groups(final OP op,
-                  final int groupId,
+    public Groups(final int[] openGroupId,
+                  final int[] closeGroupId,
                   final int offset,
                   final Groups next) {
-        this.op = op;
-        this.groupId = groupId;
+        this.openGroupId = openGroupId;
+        this.closeGroupId = closeGroupId;
         this.offset = offset;
         this.next = next;
-    }
-
-    public static Groups openGroup(Groups groups, int groupId, int offset) {
-        return new Groups(OP.OPEN, groupId, offset, groups);
-    }
-
-
-    public static Groups closeGroup(Groups groups, int groupId, int offset) {
-        return new Groups(OP.CLOSE, groupId, offset, groups);
     }
 
     public static class GroupSegment {
@@ -66,16 +53,18 @@ public class Groups  {
         final GroupSegment[] complete = new GroupSegment[nbGroups];
         final GroupSegment[] incomplete = new GroupSegment[nbGroups];
         for (Groups groups: this.reverseList()) {
-            if ((groupAllocator.offset <= groups.groupId) && (groupAllocator.offset + groupAllocator.getNbGroups() > groups.groupId)) {
-                final GroupSegment groupSegment = incomplete[groups.groupId - groupAllocator.offset];
-                if (groups.op == OP.OPEN) {
+            for (int groupId: groups.openGroupId) {
+                if ((groupAllocator.offset <= groupId) && (groupAllocator.offset + groupAllocator.getNbGroups() > groupId)) {
                     final GroupSegment newGroupSegment = new GroupSegment(groups.offset, -1);
-                    incomplete[groups.groupId - groupAllocator.offset] = newGroupSegment;
+                    incomplete[groupId - groupAllocator.offset] = newGroupSegment;
                 }
-                else {
+            }
+            for (int groupId: groups.closeGroupId) {
+                if ((groupAllocator.offset <= groupId) && (groupAllocator.offset + groupAllocator.getNbGroups() > groupId)) {
+                    final GroupSegment groupSegment = incomplete[groupId - groupAllocator.offset];
                     assert groupSegment.start != -1;
                     groupSegment.end = groups.offset;
-                    complete[groups.groupId - groupAllocator.offset] = groupSegment;
+                    complete[groupId - groupAllocator.offset] = groupSegment;
                 }
             }
         }
