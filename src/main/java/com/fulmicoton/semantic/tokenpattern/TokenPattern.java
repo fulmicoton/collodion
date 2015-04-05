@@ -20,20 +20,6 @@ public class TokenPattern {
         this.machine = machine;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TokenPattern that = (TokenPattern) o;
-        if (!patternStr.equals(that.patternStr)) return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return patternStr.hashCode();
-    }
-
     public String toString() {
         return "TokenPattern(" + this.patternStr + ")";
     }
