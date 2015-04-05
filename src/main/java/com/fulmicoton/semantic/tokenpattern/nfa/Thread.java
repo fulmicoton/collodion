@@ -22,10 +22,16 @@ public class Thread<T> {
     }
 
     Thread(final State<T> state,
-           final Groups groups,
+           Groups groups,
            final int tokenId) {
         this.state = state;
-        this.groups = state.updateGroups(groups, tokenId);
+        for (int openGroup: state.allOpenGroups()) {
+            groups = Groups.openGroup(groups, openGroup, tokenId);
+        }
+        for (int closeGroup: state.allCloseGroups()) {
+            groups = Groups.closeGroup(groups, closeGroup, tokenId);
+        }
+        this.groups = groups;
     }
 
     public List<Thread<T>> transition(final T token,
@@ -35,7 +41,7 @@ public class Thread<T> {
         for (State<T> nextState: this.state.transition(token)) {
             if (!states.contains(nextState)) {
                 states.add(nextState);
-                final Thread newThread = new Thread(nextState, this.groups, tokenId);
+                final Thread<T> newThread = new Thread<>(nextState, this.groups, tokenId);
                 newThreads.add(newThread);
             }
         }

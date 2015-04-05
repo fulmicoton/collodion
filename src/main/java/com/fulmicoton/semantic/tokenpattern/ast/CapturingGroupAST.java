@@ -2,8 +2,8 @@ package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 import com.fulmicoton.semantic.tokenpattern.SemToken;
-import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
-import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
+import com.fulmicoton.semantic.tokenpattern.nfa.Epsilon;
+import com.fulmicoton.semantic.tokenpattern.nfa.State;
 
 public class CapturingGroupAST extends UnaryPatternAST {
 
@@ -30,16 +30,16 @@ public class CapturingGroupAST extends UnaryPatternAST {
     }
 
     @Override
-    public StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState) {
-        final StateImpl<SemToken> virtualStateOpen = new StateImpl<>();
-        virtualStateOpen.openGroup = this.groupId;
-        fromState.addTransition(new EpsilonTransition<>(virtualStateOpen));
-        final StateImpl<SemToken> patternStart = new StateImpl<>();
-        virtualStateOpen.addTransition(new EpsilonTransition<>(patternStart));
-        final StateImpl<SemToken> patternEnd = this.pattern.buildMachine(patternStart);
-        patternEnd.closeGroup = this.groupId;
-        final StateImpl<SemToken> groupEnd = new StateImpl<>();
-        patternEnd.addTransition(new EpsilonTransition<>(groupEnd));
+    public State<SemToken> buildMachine(final State<SemToken> fromState) {
+        final State<SemToken> virtualStateOpen = new State<>();
+        virtualStateOpen.addOpenGroup(this.groupId);
+        fromState.addTransition(new Epsilon<>(virtualStateOpen));
+        final State<SemToken> patternStart = new State<>();
+        virtualStateOpen.addTransition(new Epsilon<>(patternStart));
+        final State<SemToken> patternEnd = this.pattern.buildMachine(patternStart);
+        patternEnd.addCloseGroup(this.groupId);
+        final State<SemToken> groupEnd = new State<>();
+        patternEnd.addTransition(new Epsilon<>(groupEnd));
         return groupEnd;
     }
 

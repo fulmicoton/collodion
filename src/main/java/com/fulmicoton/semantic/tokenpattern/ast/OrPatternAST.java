@@ -1,8 +1,8 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
 import com.fulmicoton.semantic.tokenpattern.SemToken;
-import com.fulmicoton.semantic.tokenpattern.nfa.EpsilonTransition;
-import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
+import com.fulmicoton.semantic.tokenpattern.nfa.Epsilon;
+import com.fulmicoton.semantic.tokenpattern.nfa.State;
 
 public class OrPatternAST extends BinaryPatternAST {
 
@@ -21,10 +21,10 @@ public class OrPatternAST extends BinaryPatternAST {
     }
 
     @Override
-    public StateImpl<SemToken> buildMachine(StateImpl<SemToken> fromState) {
-        final StateImpl<SemToken> leftFinalState = this.left.buildMachine(fromState);
-        final StateImpl<SemToken> rightFinalState = this.right.buildMachine(fromState);
-        rightFinalState.addTransition(new EpsilonTransition<>(leftFinalState));
+    public State<SemToken> buildMachine(State<SemToken> fromState) {
+        final State<SemToken> leftFinalState = this.left.buildMachine(fromState);
+        final State<SemToken> rightFinalState = this.right.buildMachine(fromState);
+        rightFinalState.addTransition(new Epsilon<>(leftFinalState));
         return leftFinalState;
     }
 }

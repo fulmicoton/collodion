@@ -1,6 +1,7 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
 
+
 public class Epsilon<T> implements Arrow<T> {
 
     private State<T> epsilonDestination;
@@ -15,12 +16,7 @@ public class Epsilon<T> implements Arrow<T> {
     }
 
     @Override
-    public Iterable<State<T>> transition(T token) {
-        return this.epsilonDestination.transition(token);
-    }
-
-    @Override
-    public Iterable<Arrow<T>> underlyingTransitions(T token) {
+    public Iterable<Transition<T>> allTransitions() {
         return this.epsilonDestination.allTransitions();
     }
 

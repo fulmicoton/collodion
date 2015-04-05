@@ -21,7 +21,6 @@ public class Transition<T> implements Arrow<T> {
         return this.destination;
     }
 
-    @Override
     public Iterable<State<T>> transition(T token) {
         if (this.predicate.apply(token)) {
             return ImmutableList.of(destination);
@@ -36,5 +35,10 @@ public class Transition<T> implements Arrow<T> {
         if (this.destination == from) {
             this.destination = to;
         }
+    }
+
+    @Override
+    public Iterable<Transition<T>> allTransitions() {
+        return ImmutableList.of(this);
     }
 }

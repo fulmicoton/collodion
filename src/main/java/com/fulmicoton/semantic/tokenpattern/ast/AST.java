@@ -5,7 +5,7 @@ import com.fulmicoton.multiregexp.Token;
 import com.fulmicoton.semantic.Annotation;
 import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 import com.fulmicoton.semantic.tokenpattern.SemToken;
-import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
+import com.fulmicoton.semantic.tokenpattern.nfa.State;
 import com.fulmicoton.semantic.tokenpattern.parsing.Emitter;
 import com.fulmicoton.semantic.tokenpattern.parsing.Grammar;
 import com.fulmicoton.semantic.tokenpattern.parsing.LRParser;
@@ -160,7 +160,7 @@ public abstract class AST {
         return PARSER.parse(regex);
     }
 
-    public abstract StateImpl<SemToken> buildMachine(final StateImpl<SemToken> fromState);
+    public abstract State<SemToken> buildMachine(final State<SemToken> fromState);
 
     public abstract void allocateGroups(final GroupAllocator groupAllocator);
 }

@@ -5,7 +5,7 @@ import com.fulmicoton.semantic.tokenpattern.ast.AST;
 import com.fulmicoton.semantic.tokenpattern.ast.CapturingGroupAST;
 import com.fulmicoton.semantic.tokenpattern.nfa.Machine;
 import com.fulmicoton.semantic.tokenpattern.nfa.Matcher;
-import com.fulmicoton.semantic.tokenpattern.nfa.StateImpl;
+import com.fulmicoton.semantic.tokenpattern.nfa.State;
 
 import java.util.Iterator;
 
@@ -30,9 +30,9 @@ public class TokenPattern {
     public static TokenPattern compile(final String pattern) {
         final GroupAllocator groupAllocator = new GroupAllocator();
         final AST ast = new CapturingGroupAST(AST.compile(pattern));
-        final StateImpl<SemToken> initialState = new StateImpl<>();
+        final State<SemToken> initialState = new State<>();
         ast.allocateGroups(groupAllocator);
-        final StateImpl<SemToken> endState = ast.buildMachine(initialState);
+        final State<SemToken> endState = ast.buildMachine(initialState);
         final Machine<SemToken> machine = new Machine<>(initialState, endState, groupAllocator);
         return new TokenPattern(pattern, ast, machine);
     }

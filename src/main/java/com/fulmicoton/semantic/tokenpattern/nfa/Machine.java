@@ -2,6 +2,7 @@ package com.fulmicoton.semantic.tokenpattern.nfa;
 
 import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.Set;
 
 public class Machine<T> {
 
-    final State<T> initialState;
+    State<T> initialState;
     final Set<State<T>> acceptStates;
     final GroupAllocator groupAllocator;
 
@@ -23,6 +24,51 @@ public class Machine<T> {
         this.initialState = initialState;
         this.acceptStates = this.computeAcceptStates(endState);
         this.groupAllocator = groupAllocator;
+        this.simplify();
+    }
+
+    public int getNbStates() {
+        return Iterables.size(this.getStates());
+    }
+
+    private void simplify() {
+        this.removeEpsilonProxy();
+        this.removeEpsilon();
+    }
+
+    private void removeEpsilon() {
+        for (State state: this.getStates()) {
+
+        }
+    }
+
+    private void removeEpsilonProxy() {
+        boolean keepOn = true;
+        while (keepOn) {
+            keepOn = false;
+            for (State<T> state: this.getStates()) {
+                final State<T> proxy = state.isProxy();
+                if (proxy != null) {
+                    this.replace(state, proxy);
+                    keepOn = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    private void replace(final State<T> from,
+                         final State<T> to) {
+        if (this.initialState == from) {
+            this.initialState = to;
+        }
+        if (this.acceptStates.contains(from)) {
+            this.acceptStates.remove(from);
+            this.acceptStates.add(to);
+        }
+        for (State<T> state: this.getStates()) {
+            state.replace(from, to);
+        }
     }
 
     private Set<State<T>> computeAcceptStates(final State<T> endState) {
