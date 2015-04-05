@@ -4,7 +4,7 @@ package com.fulmicoton.common.loader;
 import java.io.InputStream;
 import java.util.Arrays;
 
-public class ChainLoader implements Loader {
+public class ChainLoader extends Loader {
 
     private final Iterable<Loader> loaderChain;
 

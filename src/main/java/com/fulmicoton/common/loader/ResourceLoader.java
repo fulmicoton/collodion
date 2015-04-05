@@ -2,7 +2,7 @@ package com.fulmicoton.common.loader;
 
 import java.io.InputStream;
 
-public class ResourceLoader implements Loader {
+public class ResourceLoader extends Loader {
 
     private final Class<?> klass;
 

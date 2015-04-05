@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public class DirectoryLoader implements Loader {
+public class DirectoryLoader extends Loader {
 
     private final File root;
 
@@ -16,7 +16,6 @@ public class DirectoryLoader implements Loader {
     public static DirectoryLoader forRoot(File root) {
         return new DirectoryLoader(root);
     }
-
 
     @Override
     public InputStream open(String path) {
