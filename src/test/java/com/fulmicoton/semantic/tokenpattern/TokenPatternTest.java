@@ -1,11 +1,15 @@
 package com.fulmicoton.semantic.tokenpattern;
 
 import com.fulmicoton.semantic.Annotation;
-import com.fulmicoton.semantic.tokenpattern.nfa.Matcher;
+import com.fulmicoton.semantic.tokenpattern.nfa.TokenPatternMatchResult;
+import com.fulmicoton.semantic.tokenpattern.nfa.TokenPatternMatcher;
+import com.fulmicoton.semantic.vocabularymatcher.VocabularyAttributeImpl;
+import com.google.common.primitives.Ints;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -19,16 +23,35 @@ public class TokenPatternTest {
     public static List<SemToken> makeTokenList(final String testString) {
         final List<SemToken> tokenList = new ArrayList<>();
         for (char token: testString.toCharArray()) {
-            tokenList.add(new SemToken(Annotation.of(String.valueOf(token))));
+            VocabularyAttributeImpl vocabularyAttribute = new VocabularyAttributeImpl();
+            vocabularyAttribute.add(Annotation.of(String.valueOf(token)));
+            tokenList.add(new SemToken(vocabularyAttribute));
         }
         return tokenList;
     }
 
+    public void testTokenPatternSearch(String ptn, String testString, int... expectedPositions) {
+        final List<SemToken> tokenList = makeTokenList(testString);
+        final TokenPattern tokenPattern = TokenPattern.compile(ptn);
+        TokenPatternMatcher runner = tokenPattern.matcher();
+        final Iterator<SemToken> tokenIt = tokenList.iterator();
+        final List<Integer> actualPositions = new ArrayList<>();
+        while (tokenIt.hasNext()) {
+            final TokenPatternMatchResult matchResult = runner.search(tokenIt.next());
+            if (matchResult != null) {
+                actualPositions.add(matchResult.start(0));
+                actualPositions.add(matchResult.end(0));
+            }
+        }
+        int[] actualPositionsArr = Ints.toArray(actualPositions);
+        Assert.assertArrayEquals(actualPositionsArr, expectedPositions);
+    }
+
     public void testTokenPatternMatch(String ptn, String testString) {
-        final List tokenList = makeTokenList(testString);
+        final List<SemToken> tokenList = makeTokenList(testString);
         final java.util.regex.Matcher javaMatch = translateToJavaMatch(ptn, testString);
         final TokenPattern tokenPattern = TokenPattern.compile(ptn);
-        final Matcher match = tokenPattern.match(tokenList.iterator());
+        final TokenPatternMatchResult match = tokenPattern.match(tokenList.iterator());
         Assert.assertEquals(match.matches(), javaMatch.matches());
         Assert.assertEquals(javaMatch.groupCount(), match.groupCount());
         for (int groupId=0; groupId<match.groupCount(); groupId++) {
@@ -48,6 +71,13 @@ public class TokenPatternTest {
             Assert.assertEquals(startJava, match.start(groupId));
             Assert.assertEquals(endJava, match.end(groupId));
         }
+    }
+
+    @Test
+    public void testPatternSearch() {
+        // TODO we unfortunately don't know how to do greedy search today.
+        testTokenPatternSearch("[a]+", "aa", 0, 1, 1, 2);
+        testTokenPatternSearch("[a]+", "aba", 0, 1, 2, 3);
     }
 
     @Test
@@ -92,22 +122,22 @@ public class TokenPatternTest {
     public void testPatternNamedGroup() {
         final TokenPattern tokenPattern = TokenPattern.compile("[a](?<patternone>[a][b])[c](?<patterntwo>[d])[e]");
         final List tokenList = makeTokenList("aabcde");
-        final Matcher matcher = tokenPattern.match(tokenList.iterator());
-        Assert.assertTrue(matcher.matches());
-        Assert.assertEquals(matcher.start("patternone"), 1);
-        Assert.assertEquals(matcher.end("patternone"), 3);
-        Assert.assertEquals(matcher.start("patterntwo"), 4);
-        Assert.assertEquals(matcher.end("patterntwo"), 5);
+        final TokenPatternMatchResult matchResult = tokenPattern.match(tokenList.iterator());
+        Assert.assertTrue(matchResult.matches());
+        Assert.assertEquals(matchResult.start("patternone"), 1);
+        Assert.assertEquals(matchResult.end("patternone"), 3);
+        Assert.assertEquals(matchResult.start("patterntwo"), 4);
+        Assert.assertEquals(matchResult.end("patterntwo"), 5);
         final String errorMsg = "Group named patternthree is unknown. Available groupNames are patterntwo, patternone.";
         try {
-            matcher.start("patternthree");
+            matchResult.start("patternthree");
             Assert.fail("should have thrown");
         }
         catch (IllegalArgumentException e) {
             Assert.assertEquals(e.getMessage(), errorMsg);
         }
         try {
-            matcher.end("patternthree");
+            matchResult.end("patternthree");
             Assert.fail("should have thrown");
         }
         catch (IllegalArgumentException e) {

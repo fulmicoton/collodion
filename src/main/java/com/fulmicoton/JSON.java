@@ -4,6 +4,7 @@ package com.fulmicoton;
 import com.fulmicoton.semantic.Annotation;
 import com.fulmicoton.semantic.ProcessorBuilder;
 import com.fulmicoton.semantic.SemanticAnalyzer;
+import com.fulmicoton.semantic.tokenpattern.TokenPatternFilter;
 import com.fulmicoton.semantic.vocabularymatcher.MatchingMethod;
 import com.fulmicoton.semantic.vocabularymatcher.Rule;
 import com.fulmicoton.semantic.vocabularymatcher.VocabularyFilter;
@@ -33,6 +34,7 @@ public class JSON {
     static {
         ProcessorBuilderAdapter.register("vocabulary", VocabularyFilter.Builder.class);
         ProcessorBuilderAdapter.register("stem", StemFilter.Builder.class);
+        ProcessorBuilderAdapter.register("tokenpattern", TokenPatternFilter.Builder.class);
     }
 
     public static GsonBuilder gsonBuilder() {

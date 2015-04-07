@@ -3,13 +3,13 @@ package com.fulmicoton.semantic.tokenpattern.nfa;
 
 public class MultiMatcher {
 
-    private final Matcher[] matchers;
+    private final TokenPatternMatchResult[] matchResult;
 
-    public MultiMatcher(final Matcher[] matchers) {
-        this.matchers = matchers;
+    public MultiMatcher(final TokenPatternMatchResult[] matchResult) {
+        this.matchResult = matchResult;
     }
 
-    public Matcher get(final int tokenPatternId) {
-        return this.matchers[tokenPatternId];
+    public TokenPatternMatchResult get(final int tokenPatternId) {
+        return this.matchResult[tokenPatternId];
     }
 }

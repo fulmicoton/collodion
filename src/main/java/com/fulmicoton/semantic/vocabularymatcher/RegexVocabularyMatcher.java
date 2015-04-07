@@ -16,7 +16,7 @@ public class RegexVocabularyMatcher extends VocabularyMatcher {
 
     public RegexVocabularyMatcher(final List<Rule> rules,
                                   final CharSequence charSequence) {
-        super(rules, charSequence);
+        super(charSequence);
         List<String> patterns = Lists.newArrayList();
         for (final Rule rule: rules) {
             annotations.add(rule.annotation);

@@ -19,13 +19,13 @@ import java.util.Set;
 
 public class MachineBuilder {
 
-    final State initialState;
+    final State startState;
     final MultiGroupAllocator multiGroupAllocator;
     final Map<State, Integer> stateResults;
     int nbPatterns = 0;
 
     public MachineBuilder() {
-        this.initialState = new State();
+        this.startState = new State();
         this.multiGroupAllocator = new MultiGroupAllocator();
         this.stateResults = new HashMap<>();
         this.nbPatterns = 0;
@@ -35,24 +35,34 @@ public class MachineBuilder {
         final GroupAllocator groupAllocator = this.multiGroupAllocator.newAllocator();
         final AST ast = new CapturingGroupAST(AST.compile(tokenPattern));
         ast.allocateGroups(groupAllocator);
-        final State endState = ast.buildMachine(this.initialState);
+        final State endState = ast.buildMachine(this.startState);
         this.stateResults.put(endState, nbPatterns);
         return nbPatterns++;
     }
 
-
-    private IndexBuilder<State> makeStateIndex() {
+    private static IndexBuilder<State> makeStateIndex(final State initialState) {
         final IndexBuilder<State> stateIdMap = new IndexBuilder<>();
-        stateIdMap.get(this.initialState);
-        for (final State state: this.getStates()) {
+        stateIdMap.get(initialState);
+        for (final State state: getStates(initialState)) {
             stateIdMap.get(state);
         }
         stateIdMap.setImmutable();
         return stateIdMap;
     }
 
-    public Machine build() {
-        final IndexBuilder<State> stateIndex = makeStateIndex();
+    public Machine buildForSearch() {
+        final State initialState = new State();
+        initialState.addEpsilon(this.startState);
+        initialState.transition(AST.ALWAYS_TRUE).addEpsilon(initialState);
+        return this.build(initialState);
+    }
+
+    public Machine buildForMatch() {
+        return this.build(this.startState);
+    }
+
+    private Machine build(final State initialState) {
+        final IndexBuilder<State> stateIndex = makeStateIndex(initialState);
         final State[] states = stateIndex.buildIndex(new State[0]);
         final int nbStates = stateIndex.size();
         final int[][] transitions = new int[nbStates][];
@@ -75,7 +85,7 @@ public class MachineBuilder {
                 statePredicates[transitionId] = transition.predicate;
             }
         }
-        final int[] stateResultsArr = this.computeStateResults(stateIndex);
+        final int[] stateResultsArr = computeStateResults(stateIndex);
         return new Machine(stateResultsArr,
                            this.nbPatterns,
                            transitions,
@@ -105,7 +115,7 @@ public class MachineBuilder {
     private int[] computeStateResults(final IndexBuilder<State> stateIndex) {
         final int[] stateResultsArr = new int[stateIndex.size()];
         Arrays.fill(stateResultsArr, -1);
-        for (Map.Entry<State, Integer> e: this.stateResults.entrySet()) {
+        for (Map.Entry<State, Integer> e: stateResults.entrySet()) {
             for (final State state: getImplyingStates(e.getKey())) {
                 if (stateIndex.contains(state)) {
                     final int stateId = stateIndex.get(state);
@@ -117,10 +127,10 @@ public class MachineBuilder {
         return stateResultsArr;
     }
 
-    public Iterable<State> getStates() {
+    public static Iterable<State> getStates(final State initialState) {
         final Set<State> states = new HashSet<>();
-        List<State> frontier = ImmutableList.of(this.initialState);
-        states.add(this.initialState);
+        List<State> frontier = ImmutableList.of(initialState);
+        states.add(initialState);
         while (!frontier.isEmpty()) {
             final List<State> newFrontier = new ArrayList<>();
             for (final State state: frontier) {

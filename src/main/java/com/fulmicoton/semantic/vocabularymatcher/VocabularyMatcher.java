@@ -10,12 +10,9 @@ import java.util.List;
 
 public abstract class VocabularyMatcher {
 
-    private final List<Rule> rules;
     protected final CharSequence charSequence;
 
-    VocabularyMatcher(List<Rule> rules,
-                      CharSequence charSequence) {
-        this.rules = ImmutableList.copyOf(rules);
+    VocabularyMatcher(final CharSequence charSequence) {
         this.charSequence = charSequence;
     }
 

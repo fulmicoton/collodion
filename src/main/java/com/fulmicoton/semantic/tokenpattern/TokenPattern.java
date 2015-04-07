@@ -2,7 +2,8 @@ package com.fulmicoton.semantic.tokenpattern;
 
 import com.fulmicoton.semantic.tokenpattern.nfa.Machine;
 import com.fulmicoton.semantic.tokenpattern.nfa.MachineBuilder;
-import com.fulmicoton.semantic.tokenpattern.nfa.Matcher;
+import com.fulmicoton.semantic.tokenpattern.nfa.TokenPatternMatchResult;
+import com.fulmicoton.semantic.tokenpattern.nfa.TokenPatternMatcher;
 
 import java.util.Iterator;
 
@@ -27,12 +28,14 @@ public class TokenPattern {
     public static TokenPattern compile(final String pattern) {
         final MachineBuilder machine = new MachineBuilder();
         int patternId = machine.add(pattern);
-        return new TokenPattern(pattern, patternId, machine.build());
+        return new TokenPattern(pattern, patternId, machine.buildForMatch());
     }
 
-    public Matcher match(final Iterator<SemToken> tokens) {
+    public TokenPatternMatchResult match(final Iterator<SemToken> tokens) {
         return machine.match(tokens).get(this.patternId);
     }
 
-
+    public TokenPatternMatcher matcher() {
+        return machine.matcher();
+    }
 }

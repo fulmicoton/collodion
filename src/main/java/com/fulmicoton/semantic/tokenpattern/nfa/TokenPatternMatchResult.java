@@ -2,15 +2,18 @@ package com.fulmicoton.semantic.tokenpattern.nfa;
 
 import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 
-public class Matcher {
+public class TokenPatternMatchResult {
 
+    final int patternId;
     final boolean matches;
     final GroupAllocator groupAllocator;
     final Groups.GroupSegment[] groupSegments;
 
-    private Matcher(final boolean matches,
-                   final Groups groups,
-                   final GroupAllocator groupAllocator) {
+    private TokenPatternMatchResult(final int patternId,
+                                    final boolean matches,
+                                    final Groups groups,
+                                    final GroupAllocator groupAllocator) {
+        this.patternId = patternId;
         this.groupAllocator = groupAllocator;
         this.matches = matches;
         if (groups != null) {
@@ -25,12 +28,12 @@ public class Matcher {
         return this.matches;
     }
 
-    public static Matcher doesMatch(final Groups groups, final GroupAllocator groupAllocator) {
-        return new Matcher(true, groups, groupAllocator);
+    public static TokenPatternMatchResult doesMatch(int patternId, final Groups groups, final GroupAllocator groupAllocator) {
+        return new TokenPatternMatchResult(patternId, true, groups, groupAllocator);
     }
 
-    public static Matcher doesNotMatch(final GroupAllocator groupAllocator) {
-        return new Matcher(false, null, groupAllocator);
+    public static TokenPatternMatchResult doesNotMatch(int patternId, final GroupAllocator groupAllocator) {
+        return new TokenPatternMatchResult(patternId, false, null, groupAllocator);
     }
 
     public int start(int group) {
@@ -70,32 +73,4 @@ public class Matcher {
         return this.end(this.groupAllocator.getGroupIdFromName(groupName));
     }
 
-    /*
-    @Override
-    public int start() {
-        return 0;
-    }
-    */
-
-    /*
-    @Override
-    public int end() {
-        return this.groupEnds[group];
-    }
-    */
-//
-//    @Override
-//    public String group() {
-//        return null;
-//    }
-//
-//    @Override
-//    public String group(int group) {
-//        return null;
-//    }
-//
-    /*
-        0 is not taken in account hence the -1.
-     */
-//
 }

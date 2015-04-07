@@ -23,7 +23,7 @@ public class ExactVocabularyMatcher extends VocabularyMatcher {
     private final Annotation[] annotationMapping;
 
     ExactVocabularyMatcher(List<Rule> rules, CharSequence charSequence) {
-        super(rules, charSequence);
+        super(charSequence);
         final IndexBuilder<Annotation> annotationIndexBuilder = new IndexBuilder<>();
         final PositiveIntOutputs PositiveInts = PositiveIntOutputs.getSingleton();
         final Builder<Long> fstBuilder = new Builder<>(FST.INPUT_TYPE.BYTE1, PositiveInts);
