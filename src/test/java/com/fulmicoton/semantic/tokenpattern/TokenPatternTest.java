@@ -121,7 +121,7 @@ public class TokenPatternTest {
     @Test
     public void testPatternNamedGroup() {
         final TokenPattern tokenPattern = TokenPattern.compile("[a](?<patternone>[a][b])[c](?<patterntwo>[d])[e]");
-        final List tokenList = makeTokenList("aabcde");
+        final List<SemToken> tokenList = makeTokenList("aabcde");
         final TokenPatternMatchResult matchResult = tokenPattern.match(tokenList.iterator());
         Assert.assertTrue(matchResult.matches());
         Assert.assertEquals(matchResult.start("patternone"), 1);

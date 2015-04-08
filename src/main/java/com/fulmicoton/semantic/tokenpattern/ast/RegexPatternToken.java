@@ -1,6 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.ast;
 
-import com.fulmicoton.common.IndexBuilder;
+import com.fulmicoton.common.Index;
 import com.fulmicoton.multiregexp.Token;
 import com.fulmicoton.semantic.tokenpattern.parsing.Match;
 import com.fulmicoton.semantic.tokenpattern.parsing.Rule;
@@ -39,7 +39,7 @@ public enum RegexPatternToken implements Rule<RegexPatternToken>, RuleMatcher<Re
     }
 
     @Override
-    public RuleMatcher<RegexPatternToken> matcher(IndexBuilder<Rule<RegexPatternToken>> indexBuilder) {
+    public RuleMatcher<RegexPatternToken> matcher(Index<Rule<RegexPatternToken>> indexBuilder) {
         return this;
     }
 

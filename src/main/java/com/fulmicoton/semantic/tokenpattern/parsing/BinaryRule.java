@@ -1,6 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.parsing;
 
-import com.fulmicoton.common.IndexBuilder;
+import com.fulmicoton.common.Index;
 import com.fulmicoton.multiregexp.Token;
 import com.google.common.collect.ImmutableList;
 
@@ -19,7 +19,7 @@ class BinaryRule<T> implements Rule<T> {
     }
 
     @Override
-    public RuleMatcher<T> matcher(IndexBuilder<Rule<T>> indexBuilder) {
+    public RuleMatcher<T> matcher(Index<Rule<T>> indexBuilder) {
         final BinaryRule<T> rule = this;
         final int leftRuleId = indexBuilder.get(this.left);
         final int rightRuleId = indexBuilder.get(this.right);

@@ -1,7 +1,7 @@
 package com.fulmicoton.semantic.tokenpattern.parsing;
 
 
-import com.fulmicoton.common.IndexBuilder;
+import com.fulmicoton.common.Index;
 import com.fulmicoton.multiregexp.Token;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -51,7 +51,7 @@ public class SequenceRule<T> implements Rule<T> {
 
 
     @Override
-    public RuleMatcher<T> matcher(IndexBuilder<Rule<T>> indexBuilder) {
+    public RuleMatcher<T> matcher(Index<Rule<T>> indexBuilder) {
 
         final List<RuleMatcher<T>> ruleMatchers = Lists.newArrayList();
         for (Rule<T> rule: this.rules) {

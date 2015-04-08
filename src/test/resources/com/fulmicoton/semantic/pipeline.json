@@ -4,6 +4,10 @@
     {
    		"type": "vocabulary", 
      	"path": "vocabulary.json"
+    },
+    {
+      "type": "debug",
+      "path": "vocabulary.json"
     }
   ]
 }

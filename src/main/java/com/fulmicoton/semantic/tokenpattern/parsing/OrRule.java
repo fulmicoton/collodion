@@ -1,6 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.parsing;
 
-import com.fulmicoton.common.IndexBuilder;
+import com.fulmicoton.common.Index;
 import com.fulmicoton.multiregexp.Token;
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
@@ -18,7 +18,7 @@ public class OrRule<T> implements Rule<T> {
     }
 
     @Override
-    public RuleMatcher<T> matcher(IndexBuilder<Rule<T>> indexBuilder) {
+    public RuleMatcher<T> matcher(Index<Rule<T>> indexBuilder) {
         final int[] ruleIds = new int[this.rules.size()];
         final List<Rule<T>> rules = this.rules;
 

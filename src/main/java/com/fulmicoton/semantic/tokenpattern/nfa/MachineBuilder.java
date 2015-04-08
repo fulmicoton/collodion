@@ -1,6 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.nfa;
 
-import com.fulmicoton.common.IndexBuilder;
+import com.fulmicoton.common.Index;
 import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 import com.fulmicoton.semantic.tokenpattern.MultiGroupAllocator;
 import com.fulmicoton.semantic.tokenpattern.ast.AST;
@@ -40,14 +40,13 @@ public class MachineBuilder {
         return nbPatterns++;
     }
 
-    private static IndexBuilder<State> makeStateIndex(final State initialState) {
-        final IndexBuilder<State> stateIdMap = new IndexBuilder<>();
-        stateIdMap.get(initialState);
+    private static Index<State> makeStateIndex(final State initialState) {
+        final Index.Builder<State> stateIndexBuilder = Index.builder();
+        stateIndexBuilder.get(initialState);
         for (final State state: getStates(initialState)) {
-            stateIdMap.get(state);
+            stateIndexBuilder.get(state);
         }
-        stateIdMap.setImmutable();
-        return stateIdMap;
+        return stateIndexBuilder.build(new State[0]);
     }
 
     public Machine buildForSearch() {
@@ -62,15 +61,14 @@ public class MachineBuilder {
     }
 
     private Machine build(final State initialState) {
-        final IndexBuilder<State> stateIndex = makeStateIndex(initialState);
-        final State[] states = stateIndex.buildIndex(new State[0]);
+        final Index<State> stateIndex = makeStateIndex(initialState);
         final int nbStates = stateIndex.size();
         final int[][] transitions = new int[nbStates][];
         final Predicate[][] predicates = new Predicate[nbStates][];
         final int[][] openGroups = new int[nbStates][];
         final int[][] closeGroups = new int[nbStates][];
         for (int stateId=0; stateId < nbStates; stateId++) {
-            final State state = states[stateId];
+            final State state = stateIndex.elFromId(stateId);
             openGroups[stateId] = Ints.toArray(state.allOpenGroups());
             closeGroups[stateId] = Ints.toArray(state.allCloseGroups());
             final List<Transition> transitionList = state.allTransitions();
@@ -112,7 +110,7 @@ public class MachineBuilder {
         return implyingStates;
     }
 
-    private int[] computeStateResults(final IndexBuilder<State> stateIndex) {
+    private int[] computeStateResults(final Index<State> stateIndex) {
         final int[] stateResultsArr = new int[stateIndex.size()];
         Arrays.fill(stateResultsArr, -1);
         for (Map.Entry<State, Integer> e: stateResults.entrySet()) {

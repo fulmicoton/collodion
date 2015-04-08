@@ -1,6 +1,6 @@
 package com.fulmicoton.semantic.tokenpattern.parsing;
 
-import com.fulmicoton.common.IndexBuilder;
+import com.fulmicoton.common.Index;
 import com.fulmicoton.multiregexp.Lexer;
 import com.fulmicoton.multiregexp.Token;
 import com.google.common.collect.Lists;
@@ -14,8 +14,7 @@ public class LRParser<T extends Enum, V> {
     private final Lexer<T> lexer;
     private final Grammar<T, V> grammar;
 
-    private final IndexBuilder<Rule<T>> ruleIndex;
-    private final Rule<T>[] rules;
+    private final Index<Rule<T>> ruleIndex;
     private final RuleMatcher<T>[] ruleMatchers;
 
     public LRParser(final Lexer<T> lexer,
@@ -24,11 +23,9 @@ public class LRParser<T extends Enum, V> {
         this.lexer = lexer;
         this.grammar = grammar;
         this.ruleIndex = grammar.getRuleIndex();
-        this.rules = this.ruleIndex.buildIndex((Rule<T>[])new Rule[0]);
-        this.ruleIndex.setImmutable();
-        this.ruleMatchers = (RuleMatcher<T>[])new RuleMatcher[this.rules.length];
-        for (int ruleId=0; ruleId<this.rules.length; ruleId++) {
-            final Rule<T> rule = this.rules[ruleId];
+        this.ruleMatchers = (RuleMatcher<T>[])new RuleMatcher[this.ruleIndex.size()];
+        for (int ruleId=0; ruleId<this.ruleIndex.size(); ruleId++) {
+            final Rule<T> rule = this.ruleIndex.elFromId(ruleId);
             this.ruleMatchers[ruleId] = rule.matcher(this.ruleIndex);
         }
 
@@ -75,10 +72,11 @@ public class LRParser<T extends Enum, V> {
     }
 
     private V parse(final List<Token<T>> tokens) {
-        final boolean[][][] table = makeParseTable(this.rules.length, tokens.size());
+        final int nbRules =  this.ruleIndex.size();
+        final boolean[][][] table = makeParseTable(nbRules, tokens.size());
         for (int l = 1; l <= tokens.size(); l++) {
             for (int start=0; start < tokens.size() - l + 1; start++) {
-                for (int ruleId=this.rules.length - 1; ruleId >= 0; ruleId--) {
+                for (int ruleId = nbRules - 1; ruleId >= 0; ruleId--) {
                     final RuleMatcher<T> ruleMatcher = this.ruleMatchers[ruleId];
                     table[ruleId][start][l] = ruleMatcher.evaluate(table, start, l, tokens);
                 }
