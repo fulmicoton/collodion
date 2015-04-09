@@ -1,13 +1,25 @@
 {
   "processors": [
-    {"type": "stem"},
+    {
+        "type": "stem"
+    },
     {
    		"type": "vocabulary", 
      	"path": "vocabulary.json"
     },
     {
       "type": "debug",
-      "path": "vocabulary.json"
+      "name": "debug-1"
+    },
+    {
+      "type": "tokenpattern",
+      "path": "pattern",
+      "maxLength": 2
+
+    },
+    {
+        "type": "debug",
+        "name": "debug-2"
     }
   ]
 }

@@ -75,7 +75,7 @@ public class TokenPatternMatcher {
         TokenPatternMatchResult matchResult = null;
         for (Thread thread: threads) {
             int matchingPattern = machine.statesResults[thread.state];
-            if (matchingPattern < highestPriorityMatchingPattern) {
+            if ((matchingPattern >=0) && (matchingPattern < highestPriorityMatchingPattern)) {
                 highestPriorityMatchingPattern = matchingPattern;
                 matchResult = TokenPatternMatchResult.doesMatch(highestPriorityMatchingPattern, thread.groups, machine.multiGroupAllocator.get(matchingPattern));
             }

@@ -128,6 +128,9 @@ public class JSON {
             JsonObject jsonObject = json.getAsJsonObject();
             String processorTypeName = jsonObject.get("type").getAsString();
             final Class<? extends ProcessorBuilder> processorType = nameToType.get(processorTypeName);
+            if (processorType == null) {
+                throw new IllegalArgumentException("Could not find processor of type <" + processorTypeName + ">. Have you registered it in the ProcessorBuilderAdapter?");
+            }
             return context.deserialize(json, processorType);
         }
 

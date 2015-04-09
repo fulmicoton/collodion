@@ -21,9 +21,11 @@ public class DebugFilter extends TokenFilter {
             .add(TermToBytesRefAttribute.class)
             .build();
     final List<AttrTypePair> attributes = new ArrayList<>();
+    final String name;
 
-    protected DebugFilter(final TokenStream input) {
+    protected DebugFilter(final TokenStream input, final String name) {
         super(input);
+        this.name = name;
         final Set<Class<? extends Attribute>> attrSet = new HashSet<>(IGNORE_ATTRIBUTES);
         final Iterator<Class<? extends Attribute>> attributeClassIt = input.getAttributeClassesIterator();
         while (attributeClassIt.hasNext()) {
@@ -41,6 +43,9 @@ public class DebugFilter extends TokenFilter {
         if (!input.incrementToken())
             return false;
         System.out.println("--------");
+        if (this.name != null) {
+            System.out.println("= " + this.name + " =");
+        }
         for (AttrTypePair attrType: this.attributes) {
             System.out.println("  " + attrType.toString());
         }
@@ -49,13 +54,15 @@ public class DebugFilter extends TokenFilter {
 
     public static class Builder implements ProcessorBuilder<DebugFilter> {
 
+        private String name;
+
         @Override
         public void init(final Loader loader) throws IOException {
         }
 
         @Override
         public DebugFilter createFilter(TokenStream prev) throws IOException {
-            return new DebugFilter(prev);
+            return new DebugFilter(prev, name);
         }
     }
 }

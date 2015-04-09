@@ -17,7 +17,7 @@ public class LRParser<T extends Enum, V> {
     private final Index<Rule<T>> ruleIndex;
     private final RuleMatcher<T>[] ruleMatchers;
 
-    public LRParser(final Lexer<T> lexer,
+        public LRParser(final Lexer<T> lexer,
                     final Grammar<T, V> grammar)
     {
         this.lexer = lexer;

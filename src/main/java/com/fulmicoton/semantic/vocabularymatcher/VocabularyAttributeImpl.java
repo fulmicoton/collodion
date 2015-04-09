@@ -22,9 +22,9 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
     @Override
     public void copyTo(AttributeImpl target_) {
         VocabularyAttributeImpl target = (VocabularyAttributeImpl)target_;
-        target.length = 0;
-        for (Annotation annotation: this.annotations) {
-            target.add(annotation);
+        target.reset();
+        for (int annotationId = 0; annotationId < this.length; annotationId++) {
+            target.add(this.annotations[annotationId]);
         }
     }
 
@@ -40,6 +40,13 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
         }
         return Joiner.on("; ").join(annotations);
 
+    }
+
+    @Override
+    public VocabularyAttributeImpl clone() {
+        final VocabularyAttributeImpl vocAttr = new VocabularyAttributeImpl();
+        this.copyTo(vocAttr);
+        return vocAttr;
     }
 
     @Override

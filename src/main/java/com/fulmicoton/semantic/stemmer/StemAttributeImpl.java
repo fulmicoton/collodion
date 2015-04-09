@@ -27,7 +27,8 @@ public class StemAttributeImpl extends AttributeImpl implements StemAttribute {
         if (this.termLength > targetStem.termBuffer.length) {
             targetStem.termBuffer = new char[termLength];
         }
-        System.arraycopy(termBuffer, 0, targetStem, 0, this.termLength);
+        targetStem.termLength = this.termLength;
+        System.arraycopy(termBuffer, 0, targetStem.termBuffer, 0, this.termLength);
     }
 
     private void growTermBuffer(int newSize) {
@@ -40,6 +41,13 @@ public class StemAttributeImpl extends AttributeImpl implements StemAttribute {
         growTermBuffer(length);
         System.arraycopy(buffer, offset, termBuffer, 0, length);
         termLength = length;
+    }
+
+    @Override
+    public StemAttributeImpl clone() {
+        final StemAttributeImpl clone = new StemAttributeImpl();
+        this.copyTo(clone);
+        return clone;
     }
 
     @Override
