@@ -26,6 +26,10 @@ public class HasAnnotation implements Predicate {
         return predicate;
     }
 
+    public String toString() {
+        return "Has(" + this.annotation.toString() + ")";
+    }
+
     @Override
     public boolean apply(SemToken semToken) {
         return semToken.hasAnnotation(annotation);

@@ -4,7 +4,7 @@ import com.fulmicoton.semantic.tokenpattern.GroupAllocator;
 
 public class TokenPatternMatchResult {
 
-    final int patternId;
+    public final int patternId;
     final boolean matches;
     final GroupAllocator groupAllocator;
     final Groups.GroupSegment[] groupSegments;

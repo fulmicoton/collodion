@@ -2,12 +2,16 @@ package com.fulmicoton.semantic.tokenpattern;
 
 import com.fulmicoton.common.StateQueue;
 import com.fulmicoton.common.loader.Loader;
+import com.fulmicoton.semantic.Annotation;
 import com.fulmicoton.semantic.ProcessorBuilder;
 import com.fulmicoton.semantic.tokenpattern.nfa.Machine;
 import com.fulmicoton.semantic.tokenpattern.nfa.MachineBuilder;
 import com.fulmicoton.semantic.tokenpattern.nfa.TokenPatternMatchResult;
+import com.fulmicoton.semantic.tokenpattern.nfa.TokenPatternMatcher;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
+import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,9 +55,14 @@ public class TokenPatternFilter extends TokenFilter {
 
     final StateQueue stateQueue;
     final SemToken semToken;
+
     final int maxLength;
-    private final Machine machine;
-    private final com.fulmicoton.semantic.tokenpattern.nfa.TokenPatternMatcher machineRunner;
+    private final TokenPatternMatcher machineRunner;
+    private int emitted = 0;
+    private State state;
+
+    private PositionIncrementAttribute positionIncrementAttribute;
+    private PositionLengthAttribute positionLengthAttribute;
 
     protected TokenPatternFilter(final TokenStream input,
                                  final Machine machine,
@@ -61,49 +70,130 @@ public class TokenPatternFilter extends TokenFilter {
         super(input);
         this.maxLength = maxLength;
         this.stateQueue = StateQueue.forSourceWithSize(input, maxLength);
-        this.machine = machine;
         this.machineRunner = machine.matcher();
         this.semToken = new SemToken(input);
+        this.positionIncrementAttribute = input.getAttribute(PositionIncrementAttribute.class);
+        this.positionLengthAttribute = input.getAttribute(PositionLengthAttribute.class);
     }
 
 
     @Override
     public void reset() throws IOException {
         super.reset();
+        this.emitted = 0;
+        this.state = new Start();
         this.machineRunner.reset();
     }
 
-    @Override
-    public final boolean incrementToken() throws IOException {
 
-        while (input.incrementToken()) {
 
-            final TokenPatternMatchResult match = this.machineRunner.search(this.semToken);
-            if (match != null) {
-                // TODO we output the match as an annotation
-                // TODO queue up group annotations
-            }
-            else {
-                this.stateQueue.push();
-                if (this.stateQueue.isFull()) {
-                    // the queue is full, we need to release
-                    // a token.
-                    this.stateQueue.pop();
-                    return true;
+    public interface State {
+        public State incrementToken() throws IOException;
+    }
+
+
+
+    public class Start implements State {
+
+        Start() {
+            emitted = 0;
+            machineRunner.reset();
+        }
+
+        @Override
+        public State incrementToken() throws IOException {
+            while (input.incrementToken()) {
+                stateQueue.push();
+                final TokenPatternMatchResult match = machineRunner.search(semToken);
+                if (match != null) {
+                    semToken.vocabularyAttribute.add(Annotation.of(match.toString()));
+                    // TODO we output the match as an annotation
+                    // TODO queue up group annotations
+                    int matchStart = match.start(0);
+                    if (matchStart - emitted > 0) {
+                        return new Flush(matchStart - emitted, new OutputMatch(match)).incrementToken();
+                    }
+                    else {
+                        return new OutputMatch(match);
+                    }
+                }
+                else {
+                    if (stateQueue.isFull()) {
+                        // the queue is full, we need to release
+                        // a token.
+                        emitted += 1;
+                        stateQueue.pop();
+                        return this;
+                    }
                 }
             }
+            // we just flush everything
+            return new Flush(-1, null).incrementToken();
+        }
+    }
+
+
+
+
+    public class OutputMatch implements State {
+
+        private final TokenPatternMatchResult match;
+
+        OutputMatch(final TokenPatternMatchResult match) {
+            this.match = match;
         }
 
-        // if we reach the end of the stream, we just
-        // output the saved/pending tokens.
-        if (!this.stateQueue.isEmpty()) {
-            this.stateQueue.pop();
-            return true;
+        @Override
+        public State incrementToken() throws IOException {
+            TokenPatternFilter.this.clearAttributes();
+            int matchLength = this.match.end(0) - this.match.start(0);
+            positionIncrementAttribute.setPositionIncrement(0);
+            positionLengthAttribute.setPositionLength(matchLength);
+            semToken.vocabularyAttribute.reset();
+            // TODO have pattern names + mapping
+            // TODO have a fresh token for that.
+            semToken.vocabularyAttribute.add(Annotation.of("pattern" + match.patternId));
+            // TODO annotation the other tokens with group infos.
+            return new Flush(matchLength, new Start());
         }
-        else {
+    }
+
+
+
+
+    public class Flush implements State {
+
+        int nbTokens;
+        final State next;
+
+        Flush(int nbTokens, State next) {
+            assert nbTokens != 0;
+            this.nbTokens = nbTokens;
+            this.next = next;
+        }
+
+        @Override
+        public State incrementToken() throws IOException {
+            nbTokens -= 1;
+            stateQueue.pop();
+            emitted += 1;
+            if ((nbTokens == 0) || stateQueue.isEmpty()) {
+                return this.next;
+            }
+            else {
+                return this;
+            }
+        }
+    }
+
+
+
+    @Override
+    public final boolean incrementToken() throws IOException {
+        if (this.state == null) {
             return false;
         }
-
-
+        this.state = this.state.incrementToken();
+        return true;
     }
 }

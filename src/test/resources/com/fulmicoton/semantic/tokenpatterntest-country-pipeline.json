@@ -1,0 +1,20 @@
+{
+  "processors": [
+    {
+      "type": "stem"
+    },
+    {
+      "type": "vocabulary",
+      "path": "vocabulary-country.json"
+    },
+    {
+      "type": "tokenpattern",
+      "path": "pattern",
+      "maxLength": 2
+    },
+    {
+      "type": "debug",
+      "name": "debug-tokenpattern"
+    }
+  ]
+}

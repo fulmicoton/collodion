@@ -20,6 +20,12 @@ import static com.fulmicoton.semantic.tokenpattern.parsing.SequenceRule.seq;
 public abstract class AST {
 
     public static Predicate ALWAYS_TRUE = new Predicate() {
+
+        @Override
+        public String toString() {
+            return "TRUE";
+        }
+
         @Override
         public boolean apply(SemToken token) {
             return true;

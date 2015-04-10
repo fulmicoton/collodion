@@ -8,18 +8,10 @@
      	"path": "vocabulary.json"
     },
     {
-      "type": "debug",
-      "name": "debug-1"
-    },
-    {
       "type": "tokenpattern",
       "path": "pattern",
       "maxLength": 2
 
-    },
-    {
-        "type": "debug",
-        "name": "debug-2"
     }
   ]
 }
