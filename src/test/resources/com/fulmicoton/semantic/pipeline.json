@@ -10,7 +10,7 @@
     {
       "type": "tokenpattern",
       "path": "pattern",
-      "maxLength": 2
+      "maxLength": 100
 
     }
   ]

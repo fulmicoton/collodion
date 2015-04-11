@@ -20,6 +20,12 @@ public class SemanticAnalyzerTest {
     }
 
     @Test
+    public void testSemanticAnalyzerFromYaml() throws Exception {
+        final SemanticAnalyzer semanticAnalyzer = loadPipeline("pipeline-yaml.yaml");
+
+    }
+
+    @Test
     public void testSemanticAnalyzer() throws Exception {
         final SemanticAnalyzer semanticAnalyzer = loadPipeline("pipeline.json");
         final TokenStream tokenStream = semanticAnalyzer.tokenStream("", "The baker loves bread and jambon.");

@@ -20,7 +20,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.apache.lucene.analysis.en.StemFilter;
+import org.json.JSONObject;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +50,12 @@ public class JSON {
         .setPrettyPrinting();
     }
 
+    public static <T> T fromYAML(final Reader yamlReader, Class<T> objType) {
+        final Yaml yaml = new Yaml();
+        final Map map = (Map) yaml.load(yamlReader);
+        final JSONObject json = new JSONObject(map);
+        return GSON.fromJson(json.toString(), objType);
+    }
 
     public static class RuleAdapter implements JsonDeserializer<Rule>, JsonSerializer<Rule> {
 

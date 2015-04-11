@@ -106,7 +106,6 @@ public class TokenPatternFilter extends TokenFilter {
                 stateQueue.push();
                 final TokenPatternMatchResult match = machineRunner.search(semToken);
                 if (match != null) {
-                    semToken.vocabularyAttribute.add(Annotation.of(match.toString()));
                     // TODO we output the match as an annotation
                     // TODO queue up group annotations
                     int matchStart = match.start(0);

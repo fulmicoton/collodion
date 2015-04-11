@@ -73,13 +73,20 @@ public class SemanticAnalyzer extends Analyzer {
         return fromStream(new FileInputStream(inputFile));
     }
 
+
     public static SemanticAnalyzer fromJSON(final String json) {
         return JSON.GSON.fromJson(json, SemanticAnalyzer.class);
     }
 
     public static SemanticAnalyzer fromPath(final Loader loader, final String path) {
-        final InputStream inputStream = loader.open(path);
-        final SemanticAnalyzer semanticAnalyzer = JSON.GSON.fromJson(new InputStreamReader(inputStream, UTF8), SemanticAnalyzer.class);
+        final Reader content = loader.read(path);
+        SemanticAnalyzer semanticAnalyzer;
+        if (path.endsWith(".yaml")) {
+            semanticAnalyzer = JSON.fromYAML(content, SemanticAnalyzer.class);
+        }
+        else {
+            semanticAnalyzer = JSON.GSON.fromJson(content, SemanticAnalyzer.class);
+        }
         semanticAnalyzer.prependLoader(loader);
         return semanticAnalyzer;
     }
