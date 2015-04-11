@@ -1,14 +1,20 @@
 package com.fulmicoton.semantic.vocabularymatcher;
 
 
+import com.fulmicoton.common.Jsonable;
 import com.fulmicoton.semantic.Annotation;
 import com.google.common.base.Joiner;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.lucene.util.AttributeImpl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class VocabularyAttributeImpl extends AttributeImpl implements VocabularyAttribute {
+public class VocabularyAttributeImpl extends AttributeImpl implements VocabularyAttribute, Jsonable, Iterable<Annotation> {
 
     private static final int MAX_NB_ANNOTATIONS = 20;
     private final Annotation[] annotations = new Annotation[MAX_NB_ANNOTATIONS];
@@ -65,5 +71,33 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
             this.annotations[this.length] = annotation;
             this.length += 1;
         }
+    }
+
+    @Override
+    public void updateJson(JsonObject jsonObject) {
+        JsonArray jsonArr = new JsonArray();
+        for (final Annotation annotation: this) {
+            jsonArr.add(new JsonPrimitive(annotation.name()));
+        }
+        jsonObject.add("vocabulary", jsonArr);
+    }
+
+    @Override
+    public Iterator<Annotation> iterator() {
+        final int length = this.length;
+        final Annotation[] annotations = this.annotations;
+        return new Iterator<Annotation>() {
+            int i = 0;
+
+            @Override
+            public boolean hasNext() {
+                return i < length;
+            }
+
+            @Override
+            public Annotation next() {
+                return annotations[i++];
+            }
+        };
     }
 }

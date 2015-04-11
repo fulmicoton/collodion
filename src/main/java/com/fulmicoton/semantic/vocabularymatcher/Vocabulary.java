@@ -1,6 +1,6 @@
 package com.fulmicoton.semantic.vocabularymatcher;
 
-import com.fulmicoton.JSON;
+import com.fulmicoton.common.JSON;
 import com.fulmicoton.semantic.SemanticAnalyzer;
 
 import java.io.BufferedReader;

@@ -1,6 +1,7 @@
 package com.fulmicoton.semantic;
 
 import com.google.common.collect.Maps;
+import com.google.gson.JsonElement;
 
 import java.util.Map;
 
@@ -30,13 +31,17 @@ public class Annotation {
         return (this.annotation == that.annotation);
     }
 
+    public String name() {
+        return this.annotation;
+    }
+
     @Override
     public int hashCode() {
         return annotation.hashCode();
     }
 
     public String toString() {
-        return this.annotation;
+        return this.name();
     }
 
 }

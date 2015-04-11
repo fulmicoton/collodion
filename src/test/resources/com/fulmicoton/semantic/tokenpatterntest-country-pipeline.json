@@ -6,19 +6,15 @@
     {
       "type": "vocabulary",
       "path": "vocabulary-country.json"
-    },/*
-    {
-      "type": "debug",
-      "name": "debug-0"
-    },*/
+    },
     {
       "type": "tokenpattern",
       "path": "pattern",
       "maxLength": 100
-    },
+    }/*,
     {
       "type": "debug",
       "name": "debug-tokenpattern"
-    }
+    }*/
   ]
 }

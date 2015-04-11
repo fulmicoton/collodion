@@ -1,5 +1,7 @@
 package com.fulmicoton.semantic;
 
+import com.fulmicoton.common.JSON;
+import com.fulmicoton.common.Utils;
 import com.fulmicoton.common.loader.Loader;
 import com.fulmicoton.common.loader.ResourceLoader;
 import com.fulmicoton.semantic.stemmer.StemAttribute;
@@ -82,9 +84,8 @@ public class SemanticAnalyzerTest {
         CharTermAttribute charTerm = tokenStream.getAttribute(CharTermAttribute.class);
         VocabularyAttribute vocabularyAnnotation = tokenStream.getAttribute(VocabularyAttribute.class);
         StemAttribute stem = tokenStream.getAttribute(StemAttribute.class);
-        while (tokenStream.incrementToken()) {
 
-        }
+        System.out.println(JSON.GSON.toJson(Utils.toJson(tokenStream)));
         /*
         {
             Assert.assertTrue(tokenStream.incrementToken());

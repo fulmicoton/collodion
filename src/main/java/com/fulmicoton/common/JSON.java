@@ -1,4 +1,4 @@
-package com.fulmicoton;
+package com.fulmicoton.common;
 
 
 import com.fulmicoton.semantic.Annotation;
@@ -43,11 +43,18 @@ public class JSON {
     }
 
     public static GsonBuilder gsonBuilder() {
-        return new GsonBuilder()
+        final GsonBuilder gsonBuilder = new GsonBuilder()
         .registerTypeAdapter(SemanticAnalyzer.class, new SemanticAnalyzerAdapter())
         .registerTypeAdapter(ProcessorBuilder.class, new ProcessorBuilderAdapter())
         .registerTypeAdapter(Rule.class, new RuleAdapter())
         .setPrettyPrinting();
+        registerAttributesAdapter(gsonBuilder);
+        return gsonBuilder;
+    }
+
+    private static void registerAttributesAdapter(GsonBuilder gsonBuilder) {
+        /*gsonBuilder.registerTypeAdapter(TypeAttribute.class, new JsonSerializer<TypeAttribute>() {
+        })*/
     }
 
     public static <T> T fromYAML(final Reader yamlReader, Class<T> objType) {

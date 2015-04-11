@@ -1,7 +1,7 @@
 package com.fulmicoton.semantic;
 
 
-import com.fulmicoton.JSON;
+import com.fulmicoton.common.JSON;
 import com.fulmicoton.common.loader.ChainLoader;
 import com.fulmicoton.common.loader.DirectoryLoader;
 import com.fulmicoton.common.loader.Loader;
@@ -73,20 +73,8 @@ public class SemanticAnalyzer extends Analyzer {
         return fromStream(new FileInputStream(inputFile));
     }
 
-
-    public static SemanticAnalyzer fromJSON(final String json) {
-        return JSON.GSON.fromJson(json, SemanticAnalyzer.class);
-    }
-
     public static SemanticAnalyzer fromPath(final Loader loader, final String path) {
-        final Reader content = loader.read(path);
-        SemanticAnalyzer semanticAnalyzer;
-        if (path.endsWith(".yaml")) {
-            semanticAnalyzer = JSON.fromYAML(content, SemanticAnalyzer.class);
-        }
-        else {
-            semanticAnalyzer = JSON.GSON.fromJson(content, SemanticAnalyzer.class);
-        }
+        final SemanticAnalyzer semanticAnalyzer = loader.readObject(path, SemanticAnalyzer.class);
         semanticAnalyzer.prependLoader(loader);
         return semanticAnalyzer;
     }

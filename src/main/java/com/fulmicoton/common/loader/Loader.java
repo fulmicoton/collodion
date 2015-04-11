@@ -1,5 +1,7 @@
 package com.fulmicoton.common.loader;
 
+import com.fulmicoton.common.JSON;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,6 +27,17 @@ public abstract class Loader {
         }
         final Reader reader = new InputStreamReader(input);
         return new BufferedReader(reader);
+    }
+
+
+    public <T> T readObject(final String path, final Class<T> klass) {
+        final Reader content = this.read(path);
+        if (path.endsWith(".yaml")) {
+            return JSON.fromYAML(content, klass);
+        }
+        else {
+            return JSON.GSON.fromJson(content, klass);
+        }
     }
 
 }
