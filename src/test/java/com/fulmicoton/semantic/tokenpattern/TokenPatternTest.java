@@ -37,7 +37,8 @@ public class TokenPatternTest {
         final Iterator<SemToken> tokenIt = tokenList.iterator();
         final List<Integer> actualPositions = new ArrayList<>();
         while (tokenIt.hasNext()) {
-            final TokenPatternMatchResult matchResult = runner.search(tokenIt.next());
+            final SemToken semToken = tokenIt.next();
+            final TokenPatternMatchResult matchResult = runner.search(semToken);
             if (matchResult != null) {
                 actualPositions.add(matchResult.start(0));
                 actualPositions.add(matchResult.end(0));

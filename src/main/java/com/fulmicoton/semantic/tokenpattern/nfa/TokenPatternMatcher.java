@@ -80,7 +80,7 @@ public class TokenPatternMatcher {
                 matchResult = TokenPatternMatchResult.doesMatch(highestPriorityMatchingPattern, thread.groups, machine.multiGroupAllocator.get(matchingPattern));
             }
         }
-        // this.reset();
+        this.reset();
         return matchResult;
     }
 }

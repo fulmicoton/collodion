@@ -6,12 +6,11 @@
     {
    		"type": "vocabulary", 
      	"path": "vocabulary.json"
-    },
+    }/*,
     {
       "type": "tokenpattern",
       "path": "pattern",
       "maxLength": 100
-
-    }
+    }*/
   ]
 }
