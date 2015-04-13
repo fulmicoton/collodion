@@ -5,11 +5,13 @@ import com.fulmicoton.common.loader.Loader;
 import com.fulmicoton.multiregexp.MultiPattern;
 import com.fulmicoton.multiregexp.MultiPatternAutomaton;
 import com.fulmicoton.processors.ProcessorBuilder;
+import com.google.common.collect.Lists;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import java.io.IOException;
+import java.util.List;
 
 public class NumberParserFilter extends TokenFilter {
 
@@ -22,22 +24,42 @@ public class NumberParserFilter extends TokenFilter {
 
         @Override
         public NumberParserFilter createFilter(TokenStream prev) throws IOException {
-            return new NumberParserFilter(prev);
+            final List<String> patterns = Lists.newArrayList();
+            final List<NumberInterpreter> numberInterpreters = Lists.newArrayList();
+
+            // 12,000.12
+            patterns.add("[0-9]+(\\,?[0-9]{3})*(\\.[0-9]+)?");
+            numberInterpreters.add(NumberInterpreter.ENGLISH);
+
+            // 12.000,12
+            patterns.add("[0-9]+(\\.?[0-9]{3})*(\\,[0-9]+)?");
+            numberInterpreters.add(NumberInterpreter.FRENCH);
+
+
+            return new NumberParserFilter(prev, MultiPattern.of(patterns), numberInterpreters);
         }
     }
 
-    // ------------------------
-    final static int MAX_STATES = 3;
-    final static MultiPattern multiPattern = MultiPattern.of("[0-9]+");
-    final static MultiPatternAutomaton automaton = multiPattern.makeAutomatonWithPrefix("");
 
+    // ------------------------
+
+
+    final static int MAX_STATES = 3;
+    final MultiPatternAutomaton automaton;
     final StringBuffer buffer = new StringBuffer(300);
     final StateQueue stateQueue = StateQueue.forSourceWithSize(this, MAX_STATES);
+    final List<NumberInterpreter> numberInterpreters;
     final CharTermAttribute termAttr;
+    final NumberAttribute numberAttribute;
 
-    protected NumberParserFilter(TokenStream input) {
+    protected NumberParserFilter(final TokenStream input,
+                                 final MultiPattern multiPattern,
+                                 final List<NumberInterpreter> numberInterpreters) {
         super(input);
+        this.automaton = multiPattern.makeAutomatonWithPrefix("");
         this.termAttr = input.getAttribute(CharTermAttribute.class);
+        this.numberAttribute = input.addAttribute(NumberAttribute.class);
+        this.numberInterpreters = numberInterpreters;
     }
 
     public boolean peekAhead(int posAhead) throws IOException {
@@ -86,6 +108,7 @@ public class NumberParserFilter extends TokenFilter {
             }
         }
         if (matchedPattern == -1) {
+            this.numberAttribute.reset();
             this.stateQueue.pop();
             return true;
         }
@@ -98,6 +121,9 @@ public class NumberParserFilter extends TokenFilter {
             }
             this.termAttr.setEmpty();
             this.termAttr.append(buffer);
+            final NumberInterpreter numberInterpreter = this.numberInterpreters.get(matchedPattern);
+            double val = numberInterpreter.read(buffer.toString());
+            this.numberAttribute.setVal(val);
         }
         return true;
     }

@@ -1,5 +1,4 @@
 processors:
-  - type: "debug"
   - type: "numberparser"
   - type: "debug"
 

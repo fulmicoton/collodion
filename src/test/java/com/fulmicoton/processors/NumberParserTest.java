@@ -2,6 +2,8 @@ package com.fulmicoton.processors;
 
 import com.fulmicoton.SemanticAnalyzer;
 import com.fulmicoton.common.Utils;
+import com.fulmicoton.processors.numberparser.NumberAttribute;
+import junit.framework.Assert;
 import org.apache.lucene.analysis.TokenStream;
 import org.junit.Test;
 
@@ -16,17 +18,30 @@ public class NumberParserTest {
         this.semanticAnalyzer = SemanticAnalyzerTest.loadPipeline("pipeline-numberparser.yaml");
     }
 
-    public TokenStream testProcess(final String text) throws IOException {
+
+    public void numberParserTestHelper(final String text, double val) throws IOException {
         final TokenStream tokenStream = this.semanticAnalyzer.tokenStream("", text);
         tokenStream.reset();
-        return tokenStream;
+        final NumberAttribute numberAttribute = tokenStream.getAttribute(NumberAttribute.class);
+        {
+            Assert.assertTrue(tokenStream.incrementToken());
+            Assert.assertEquals(numberAttribute.val(), val);
+        }
+        {
+            Assert.assertTrue(tokenStream.incrementToken());
+        }
+        {
+            Assert.assertFalse(tokenStream.incrementToken());
+        }
+        tokenStream.close();
     }
-
 
     @Test
     public void testNumberParser() throws IOException {
-        final TokenStream tokenStream = testProcess("10 000 francs la R5");
-        System.out.println(Utils.toJson(tokenStream));
+        this.numberParserTestHelper("10000 francs", 10000);
+        this.numberParserTestHelper("10,000 francs", 10000);
+        this.numberParserTestHelper("10.000,00 francs", 10000);
+        this.numberParserTestHelper("10,000.00 francs", 10000);
     }
 
 
