@@ -1,14 +1,15 @@
 package com.fulmicoton.common;
 
 
-import com.fulmicoton.semantic.Annotation;
-import com.fulmicoton.semantic.ProcessorBuilder;
-import com.fulmicoton.semantic.SemanticAnalyzer;
-import com.fulmicoton.semantic.debug.DebugFilter;
-import com.fulmicoton.semantic.tokenpattern.TokenPatternFilter;
-import com.fulmicoton.semantic.vocabularymatcher.MatchingMethod;
-import com.fulmicoton.semantic.vocabularymatcher.Rule;
-import com.fulmicoton.semantic.vocabularymatcher.VocabularyFilter;
+import com.fulmicoton.processors.Annotation;
+import com.fulmicoton.processors.ProcessorBuilder;
+import com.fulmicoton.SemanticAnalyzer;
+import com.fulmicoton.processors.debug.DebugFilter;
+import com.fulmicoton.processors.numberparser.NumberParserFilter;
+import com.fulmicoton.processors.tokenpattern.TokenPatternFilter;
+import com.fulmicoton.processors.vocabularymatcher.MatchingMethod;
+import com.fulmicoton.processors.vocabularymatcher.Rule;
+import com.fulmicoton.processors.vocabularymatcher.VocabularyFilter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -40,6 +41,7 @@ public class JSON {
         ProcessorBuilderAdapter.register("debug", DebugFilter.Builder.class);
         ProcessorBuilderAdapter.register("stem", StemFilter.Builder.class);
         ProcessorBuilderAdapter.register("tokenpattern", TokenPatternFilter.Builder.class);
+        ProcessorBuilderAdapter.register("numberparser", NumberParserFilter.Builder.class);
     }
 
     public static GsonBuilder gsonBuilder() {

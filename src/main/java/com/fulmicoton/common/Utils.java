@@ -1,6 +1,6 @@
 package com.fulmicoton.common;
 
-import com.fulmicoton.semantic.debug.AttrTypePair;
+import com.fulmicoton.processors.debug.AttrTypePair;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

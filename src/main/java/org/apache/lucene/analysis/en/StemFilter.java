@@ -2,8 +2,8 @@ package org.apache.lucene.analysis.en;
 
 
 import com.fulmicoton.common.loader.Loader;
-import com.fulmicoton.semantic.ProcessorBuilder;
-import com.fulmicoton.semantic.stemmer.StemAttribute;
+import com.fulmicoton.processors.ProcessorBuilder;
+import com.fulmicoton.processors.stemmer.StemAttribute;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;

@@ -9,13 +9,14 @@ public class StateQueue {
     }
     private final SavedToken[] savedTokens;
     private final AttributeSource source;
-    private int start = 0;
-    private int end = 0;
-    private int length = 0;
+    private int start;
+    private int end;
+    private int length;
 
     private StateQueue(final AttributeSource source, SavedToken[] savedTokens) {
         this.source = source;
         this.savedTokens = savedTokens;
+        this.reset();
     }
 
     public void push() {
@@ -24,6 +25,12 @@ public class StateQueue {
         savedToken.state = this.source.captureState();
         end = (end + 1) % this.savedTokens.length;
         length += 1;
+    }
+
+    public void reset() {
+        this.start = 0;
+        this.end = 0;
+        this.length = 0;
     }
 
     public int size() {
@@ -43,6 +50,16 @@ public class StateQueue {
         this.source.restoreState(this.savedTokens[this.start].state);
         this.start = (this.start + 1) % this.savedTokens.length;
         this.length -= 1;
+    }
+
+    private int innerPos(int pos) {
+        return (this.start + pos) % this.savedTokens.length;
+    }
+
+    public void peekAhead(int posAhead) {
+        assert posAhead < this.length;
+        final int innerPos = this.innerPos(posAhead);
+        this.source.restoreState(this.savedTokens[innerPos].state);
     }
 
     public static StateQueue forSourceWithSize(final AttributeSource attrSource, int nbTokens) {
