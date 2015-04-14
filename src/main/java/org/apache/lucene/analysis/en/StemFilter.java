@@ -1,9 +1,9 @@
 package org.apache.lucene.analysis.en;
 
 
-import com.fulmicoton.common.loader.Loader;
-import com.fulmicoton.processors.ProcessorBuilder;
-import com.fulmicoton.processors.stemmer.StemAttribute;
+import com.fulmicoton.collodion.common.loader.Loader;
+import com.fulmicoton.collodion.processors.ProcessorBuilder;
+import com.fulmicoton.collodion.processors.stemmer.StemAttribute;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -36,8 +36,7 @@ public class StemFilter extends TokenFilter {
     public static class Builder implements ProcessorBuilder<StemFilter> {
 
         @Override
-        public void init(final Loader loader) throws IOException {
-        }
+        public void init(final Loader loader) throws IOException {}
 
         @Override
         public StemFilter createFilter(TokenStream prev) throws IOException {
