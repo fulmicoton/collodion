@@ -2,6 +2,7 @@ package com.fulmicoton.processors.vocabularymatcher;
 
 import com.fulmicoton.common.JSON;
 import com.fulmicoton.SemanticAnalyzer;
+import com.fulmicoton.common.loader.Loader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class Vocabulary implements Iterable<Rule> {
         final List<Rule> rules = new ArrayList<>();
         String ruleJson = bufferedReader.readLine();
         while (ruleJson != null) {
-            final Rule rule = JSON.GSON.fromJson(ruleJson, Rule.class);
+            final Rule rule = JSON.fromJson(ruleJson, Rule.class);
             rules.add(rule);
             ruleJson = bufferedReader.readLine();
         }
@@ -30,7 +31,7 @@ public class Vocabulary implements Iterable<Rule> {
 
 
     public static Vocabulary load(String path) throws IOException {
-        return fromStream(SemanticAnalyzer.DEFAULT_LOADER.open(path));
+        return fromStream(Loader.DEFAULT_LOADER.open(path));
     }
 
     public final List<Rule> rules;

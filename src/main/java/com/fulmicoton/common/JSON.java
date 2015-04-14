@@ -1,6 +1,7 @@
 package com.fulmicoton.common;
 
 
+import com.fulmicoton.corpus.DocumentAdapter;
 import com.fulmicoton.processors.Annotation;
 import com.fulmicoton.processors.ProcessorBuilder;
 import com.fulmicoton.SemanticAnalyzer;
@@ -21,9 +22,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import org.apache.lucene.analysis.en.StemFilter;
+import org.apache.lucene.document.Document;
 import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,7 +37,27 @@ import java.util.Map;
 public class JSON {
 
 
-    public static Gson GSON = gsonBuilder().create();
+    private static Gson GSON = gsonBuilder().create();
+
+    public static <T> T fromJson(final Reader input, Class<T> klass) {
+        return GSON.fromJson(input, klass);
+    }
+
+    public static <T> T fromJson(final String str, Class<T> klass) {
+        return GSON.fromJson(str, klass);
+    }
+
+    public static <T> String toJson(final T obj) {
+        return GSON.toJson(obj);
+    }
+
+    public static <T> T fromYAML(final Reader yamlReader, Class<T> objType) {
+        final Yaml yaml = new Yaml();
+        final Map map = (Map) yaml.load(yamlReader);
+        final JSONObject json = new JSONObject(map);
+        return GSON.fromJson(json.toString(), objType);
+    }
+
 
     static {
         ProcessorBuilderAdapter.register("vocabulary", VocabularyFilter.Builder.class);
@@ -46,10 +69,11 @@ public class JSON {
 
     public static GsonBuilder gsonBuilder() {
         final GsonBuilder gsonBuilder = new GsonBuilder()
-        .registerTypeAdapter(SemanticAnalyzer.class, new SemanticAnalyzerAdapter())
-        .registerTypeAdapter(ProcessorBuilder.class, new ProcessorBuilderAdapter())
-        .registerTypeAdapter(Rule.class, new RuleAdapter())
-        .setPrettyPrinting();
+            .registerTypeAdapter(SemanticAnalyzer.class, new SemanticAnalyzerAdapter())
+            .registerTypeAdapter(ProcessorBuilder.class, new ProcessorBuilderAdapter())
+            .registerTypeAdapter(Rule.class, new RuleAdapter())
+            .registerTypeAdapter(Document.class, new DocumentAdapter())
+            .setPrettyPrinting();
         registerAttributesAdapter(gsonBuilder);
         return gsonBuilder;
     }
@@ -59,12 +83,6 @@ public class JSON {
         })*/
     }
 
-    public static <T> T fromYAML(final Reader yamlReader, Class<T> objType) {
-        final Yaml yaml = new Yaml();
-        final Map map = (Map) yaml.load(yamlReader);
-        final JSONObject json = new JSONObject(map);
-        return GSON.fromJson(json.toString(), objType);
-    }
 
     public static class RuleAdapter implements JsonDeserializer<Rule>, JsonSerializer<Rule> {
 

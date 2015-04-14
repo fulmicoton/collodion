@@ -86,7 +86,7 @@ public class SemanticAnalyzerTest {
         VocabularyAttribute vocabularyAnnotation = tokenStream.getAttribute(VocabularyAttribute.class);
         StemAttribute stem = tokenStream.getAttribute(StemAttribute.class);
 
-        System.out.println(JSON.GSON.toJson(Utils.toJson(tokenStream)));
+        System.out.println(JSON.toJson(Utils.toJson(tokenStream)));
         /*
         {
             Assert.assertTrue(tokenStream.incrementToken());

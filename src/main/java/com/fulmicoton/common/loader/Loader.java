@@ -1,13 +1,22 @@
 package com.fulmicoton.common.loader;
 
+import com.fulmicoton.SemanticAnalyzer;
 import com.fulmicoton.common.JSON;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
 public abstract class Loader {
+
+
+    public static final Loader DEFAULT_LOADER = ChainLoader.of(
+            DirectoryLoader.forRoot(new File("/")),
+            DirectoryLoader.forRoot(new File(".")),
+            ResourceLoader.fromClass(SemanticAnalyzer.class)
+    );
 
     /**
      * Given an address returns an input stream
@@ -36,7 +45,7 @@ public abstract class Loader {
             return JSON.fromYAML(content, klass);
         }
         else {
-            return JSON.GSON.fromJson(content, klass);
+            return JSON.fromJson(content, klass);
         }
     }
 
