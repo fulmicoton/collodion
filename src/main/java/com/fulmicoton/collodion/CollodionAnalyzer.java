@@ -5,6 +5,7 @@ import com.fulmicoton.collodion.common.JSON;
 import com.fulmicoton.collodion.common.loader.ChainLoader;
 import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
+import com.google.common.collect.ImmutableList;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
@@ -27,6 +28,9 @@ public class CollodionAnalyzer extends Analyzer {
 
     public final List<ProcessorBuilder> processorBuilders;
 
+    public ImmutableList<ProcessorBuilder> processorBuilders() {
+        return ImmutableList.copyOf(this.processorBuilders);
+    }
 
     public CollodionAnalyzer(final List<ProcessorBuilder> processorBuilders) {
         this(processorBuilders, Loader.DEFAULT_LOADER);
@@ -66,13 +70,13 @@ public class CollodionAnalyzer extends Analyzer {
         return fromStream(new FileInputStream(inputFile));
     }
 
-    public static CollodionAnalyzer fromPath(final Loader loader, final String path) {
+    public static CollodionAnalyzer fromPath(final Loader loader, final String path) throws IOException {
         final CollodionAnalyzer collodionAnalyzer = loader.readObject(path, CollodionAnalyzer.class);
         collodionAnalyzer.prependLoader(loader);
         return collodionAnalyzer;
     }
 
-    public static CollodionAnalyzer fromPath(final String path) {
+    public static CollodionAnalyzer fromPath(final String path) throws IOException {
         return fromPath(Loader.DEFAULT_LOADER, path);
     }
 

@@ -1,0 +1,16 @@
+{
+  "processors": [
+    {
+        "type": "stem"
+    },
+    {
+   		"type": "vocabulary", 
+        "path": "vocabulary-benchmark.json"
+    },
+    {
+      "type": "tokenpattern",
+      "path": "pattern-benchmark",
+      "maxLength": 10
+    }
+  ]
+}

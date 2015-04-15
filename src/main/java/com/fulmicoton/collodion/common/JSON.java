@@ -68,7 +68,7 @@ public class JSON {
 
     public static GsonBuilder gsonBuilder() {
         final GsonBuilder gsonBuilder = new GsonBuilder()
-            .registerTypeAdapter(CollodionAnalyzer.class, new SemanticAnalyzerAdapter())
+            .registerTypeAdapter(CollodionAnalyzer.class, new CollodionAnalyzerAdapter())
             .registerTypeAdapter(ProcessorBuilder.class, new ProcessorBuilderAdapter())
             .registerTypeAdapter(Rule.class, new RuleAdapter())
             .registerTypeAdapter(Document.class, new DocumentAdapter())
@@ -107,7 +107,7 @@ public class JSON {
         }
     }
 
-    public static class SemanticAnalyzerAdapter implements JsonDeserializer<CollodionAnalyzer>, JsonSerializer<CollodionAnalyzer> {
+    public static class CollodionAnalyzerAdapter implements JsonDeserializer<CollodionAnalyzer>, JsonSerializer<CollodionAnalyzer> {
 
         @Override
         public CollodionAnalyzer deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

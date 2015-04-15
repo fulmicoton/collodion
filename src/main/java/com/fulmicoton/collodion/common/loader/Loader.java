@@ -5,6 +5,8 @@ import com.fulmicoton.collodion.common.JSON;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -39,8 +41,11 @@ public abstract class Loader {
     }
 
 
-    public <T> T readObject(final String path, final Class<T> klass) {
+    public <T> T readObject(final String path, final Class<T> klass) throws IOException {
         final Reader content = this.read(path);
+        if (content == null) {
+            throw new FileNotFoundException("Resource with path " + path + "was not found.");
+        }
         if (path.endsWith(".yaml")) {
             return JSON.fromYAML(content, klass);
         }

@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumMap;
@@ -24,7 +25,11 @@ public class VocabularyFilter extends TokenFilter {
         @Override
         public void init(final Loader loader) throws IOException {
             final InputStream inputStream = loader.open(path);
+            if (inputStream == null) {
+                throw new FileNotFoundException("Could not find vocabulary file at path : " + this.path);
+            }
             this.vocabulary = Vocabulary.fromStream(inputStream);
+
         }
 
         @Override
