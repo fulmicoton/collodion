@@ -2,7 +2,7 @@ package com.fulmicoton.collodion.utils;
 
 import com.fulmicoton.collodion.CollodionAnalyzer;
 import com.fulmicoton.collodion.corpus.Corpus;
-import com.fulmicoton.collodion.corpus.CorpusImpl;
+import com.fulmicoton.collodion.corpus.SimpleCorpus;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.google.common.collect.ImmutableList;
 import org.apache.lucene.analysis.TokenStream;
@@ -52,9 +52,8 @@ public class Benchmark {
     }
 
     public static void main(String[] args) throws Exception {
-        final Corpus corpus = CorpusImpl.fromPath("US.json");
+        final Corpus corpus = SimpleCorpus.fromPath("US.json");
         final CollodionAnalyzer collodionAnalyzer = CollodionAnalyzer.fromPath("pipeline-benchmark.json");
-        collodionAnalyzer.init();
         bench(corpus, collodionAnalyzer);
     }
 

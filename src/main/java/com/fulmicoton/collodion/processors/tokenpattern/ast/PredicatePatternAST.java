@@ -3,7 +3,8 @@ package com.fulmicoton.collodion.processors.tokenpattern.ast;
 import com.fulmicoton.collodion.processors.tokenpattern.GroupAllocator;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Predicate;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.State;
-import com.sun.istack.internal.NotNull;
+
+import javax.validation.constraints.NotNull;
 
 public class PredicatePatternAST extends AST {
 

@@ -17,9 +17,7 @@ public class CollodionAnalyzerTest {
     private static final Loader RESOURCE_LOADER = ResourceLoader.fromClass(CollodionAnalyzerTest.class);
 
     public static CollodionAnalyzer loadPipeline(final String pipelineName) throws Exception {
-        CollodionAnalyzer analyzer = CollodionAnalyzer.fromPath(RESOURCE_LOADER, pipelineName);
-        analyzer.init();
-        return analyzer;
+        return CollodionAnalyzer.fromPath(RESOURCE_LOADER, pipelineName);
     }
 
     @Test

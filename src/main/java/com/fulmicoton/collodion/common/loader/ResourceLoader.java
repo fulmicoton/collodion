@@ -18,4 +18,9 @@ public class ResourceLoader extends Loader {
     public InputStream open(String path) {
         return klass.getResourceAsStream(path);
     }
+
+    @Override
+    public String toString() {
+        return "Resource(" + this.klass.getCanonicalName() + ")";
+    }
 }

@@ -12,24 +12,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class CorpusImpl implements Corpus {
+public class SimpleCorpus implements Corpus {
 
     private final List<Document> documents;
 
-    private CorpusImpl(final List<Document> documents) {
+    private SimpleCorpus(final List<Document> documents) {
         this.documents = documents;
     }
 
-    public static CorpusImpl fromPath(final String path) throws IOException {
+    public static SimpleCorpus fromPath(final String path) throws IOException {
         return fromPath(path, ResourceLoader.DEFAULT_LOADER);
     }
 
-    public static CorpusImpl fromPath(final String path, final Loader loader) throws IOException {
+    public static SimpleCorpus fromPath(final String path, final Loader loader) throws IOException {
         return fromReader(loader.read(path));
     }
 
     private static final Pattern COMMENTS = Pattern.compile("#.*");
-    public static CorpusImpl fromReader(final BufferedReader reader) throws IOException {
+    public static SimpleCorpus fromReader(final BufferedReader reader) throws IOException {
         final List<Document> documents = Lists.newArrayList();
         for (String line=reader.readLine();
              line!=null;
@@ -39,7 +39,7 @@ public class CorpusImpl implements Corpus {
                 documents.add(JSON.fromJson(line, Document.class));
             }
         }
-        return new CorpusImpl(documents);
+        return new SimpleCorpus(documents);
     }
 
     @Override

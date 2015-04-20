@@ -1,7 +1,7 @@
 {
   "processors": [
     {
-        "type": "stem"
+      "type": "stem"
     },
     {
    		"type": "vocabulary", 
@@ -12,5 +12,5 @@
       "path": "pattern-benchmark",
       "maxLength": 10
     }
-  ]
+    ]
 }

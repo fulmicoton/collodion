@@ -11,8 +11,6 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -46,7 +44,7 @@ public class CollodionAnalyzer extends Analyzer {
         this.loader = ChainLoader.of(loader, this.loader);
     }
 
-    public void init() throws Exception {
+    private void init() throws Exception {
         for (ProcessorBuilder processorBuilder: this.processorBuilders) {
             processorBuilder.init(this.loader);
         }
@@ -66,22 +64,21 @@ public class CollodionAnalyzer extends Analyzer {
         return new TokenStreamComponents(source, lastFilter);
     }
 
-    public static CollodionAnalyzer fromFile(final File inputFile) throws IOException {
-        return fromStream(new FileInputStream(inputFile));
-    }
-
-    public static CollodionAnalyzer fromPath(final Loader loader, final String path) throws IOException {
+    public static CollodionAnalyzer fromPath(final Loader loader, final String path) throws Exception {
         final CollodionAnalyzer collodionAnalyzer = loader.readObject(path, CollodionAnalyzer.class);
         collodionAnalyzer.prependLoader(loader);
+        collodionAnalyzer.init();
         return collodionAnalyzer;
     }
 
-    public static CollodionAnalyzer fromPath(final String path) throws IOException {
+    public static CollodionAnalyzer fromPath(final String path) throws Exception {
         return fromPath(Loader.DEFAULT_LOADER, path);
     }
 
-    public static CollodionAnalyzer fromStream(final InputStream inputStream) {
-        return JSON.fromJson(new InputStreamReader(inputStream, UTF8), CollodionAnalyzer.class);
+    public static CollodionAnalyzer fromStream(final InputStream inputStream) throws Exception {
+        final CollodionAnalyzer collodionAnalyzer = JSON.fromJson(new InputStreamReader(inputStream, UTF8), CollodionAnalyzer.class);
+        collodionAnalyzer.init();
+        return collodionAnalyzer;
     }
 
     public String toJSON() {

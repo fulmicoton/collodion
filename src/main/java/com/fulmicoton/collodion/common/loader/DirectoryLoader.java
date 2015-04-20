@@ -33,4 +33,9 @@ public class DirectoryLoader extends Loader {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Directory(" + this.root.getAbsolutePath() + ")";
+    }
 }

@@ -29,12 +29,12 @@ public abstract class Loader {
      * @return null if the address does not lead anywhere
      *              else an input stream
      */
-    public abstract InputStream open(final String path);
+    public abstract InputStream open(final String path) throws IOException;
 
-    public BufferedReader read(final String path) {
+    public BufferedReader read(final String path) throws IOException {
         final InputStream input = this.open(path);
         if (input == null) {
-            return null;
+            throw new FileNotFoundException("Path " + path + ". with resource loader : " + this.toString());
         }
         final Reader reader = new InputStreamReader(input);
         return new BufferedReader(reader);

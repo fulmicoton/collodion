@@ -1,7 +1,8 @@
 package com.fulmicoton.collodion.processors.tokenpattern.nfa;
 
 import com.google.common.collect.ImmutableList;
-import com.sun.istack.internal.NotNull;
+
+import javax.validation.constraints.NotNull;
 
 public class Transition extends Arrow {
 
