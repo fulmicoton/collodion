@@ -2,10 +2,8 @@ package com.fulmicoton.collodion.server;
 
 import com.fulmicoton.collodion.common.JSON;
 import com.fulmicoton.collodion.common.Utils;
-import com.fulmicoton.collodion.server.Application;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
-import org.glassfish.jersey.jaxb.internal.XmlCollectionJaxbProvider;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -62,22 +60,6 @@ public class CorpusResource {
 
 
 
-/*
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/fragment/{fragmentId}")
-    public Fragment getFragment(@PathParam("fragmentId") Integer i) {
-        return Application.get().getFragment(i);
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/fragment/")
-    public CollectionMeta getNbFragments() {
-        return new CollectionMeta(Application.get().getNbFragments());
-    }
-
-    */
 }
 
