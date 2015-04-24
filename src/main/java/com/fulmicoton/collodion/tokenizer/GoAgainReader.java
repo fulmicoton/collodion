@@ -3,7 +3,7 @@ package com.fulmicoton.collodion.tokenizer;
 import java.io.IOException;
 import java.io.Reader;
 
-public class StayBackReader extends Reader {
+public class GoAgainReader extends Reader {
 
     /**
      * Wraps a reader in a way that makes it possible to
@@ -18,7 +18,7 @@ public class StayBackReader extends Reader {
     final Reader reader;
     boolean finished = false;
 
-    public StayBackReader(final Reader reader) {
+    public GoAgainReader(final Reader reader) {
         this.reader = reader;
     }
 

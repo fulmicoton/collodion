@@ -26,7 +26,7 @@ public class SolilessTokenizer extends Tokenizer {
      * although it is very tasty.)
      */
 
-    private StayBackReader stayBackReader;
+    private GoAgainReader stayBackReader;
     private final Tokenizer underlyingTokenizer;
 
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
@@ -58,13 +58,13 @@ public class SolilessTokenizer extends Tokenizer {
         super.reset();
 
         this.state = State.INITIAL;
-        if (!(this.input instanceof StayBackReader)) {
-            this.input = new StayBackReader(this.input);
+        if (!(this.input instanceof GoAgainReader)) {
+            this.input = new GoAgainReader(this.input);
             this.underlyingTokenizer.setReader(this.input);
 
         }
         this.underlyingTokenizer.reset();
-        this.stayBackReader = (StayBackReader)this.input;
+        this.stayBackReader = (GoAgainReader)this.input;
     }
 
     static enum State {
