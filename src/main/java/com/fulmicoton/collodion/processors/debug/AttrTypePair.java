@@ -3,6 +3,7 @@ package com.fulmicoton.collodion.processors.debug;
 import com.fulmicoton.collodion.common.Jsonable;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
@@ -47,7 +48,7 @@ public class AttrTypePair {
         @Override
         public void updateJson(JsonObject jsonObj, Attribute attribute) {
             final TypeAttribute typeAttribute = (TypeAttribute) attribute;
-            jsonObj.addProperty("type", typeAttribute.type());
+            jsonObj.addProperty("type", typeAttribute.type().replaceAll("[<>]", ""));
         }
 
     })
@@ -92,6 +93,18 @@ public class AttrTypePair {
             offsetJson.addProperty("start", offsetAttribute.startOffset());
             offsetJson.addProperty("end", offsetAttribute.endOffset());
             jsonObj.add("offset", offsetJson);
+        }
+    })
+    .put(CharTermAttribute.class, new AttributeFormatter() {
+        @Override
+        public String format(Attribute attribute) {
+            return attribute.toString();
+        }
+
+        @Override
+        public void updateJson(JsonObject jsonObj, Attribute attribute) {
+            final CharTermAttribute charTermAttr = (CharTermAttribute)attribute;
+            jsonObj.addProperty("charterm", charTermAttr.toString());
         }
     })
     .build();

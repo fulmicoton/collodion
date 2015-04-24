@@ -37,6 +37,7 @@ public class NumberParserTest {
 
     @Test
     public void testNumberParser() throws IOException {
+        this.numberParserTestHelper("10-000 francs", 10);
         this.numberParserTestHelper("10000 francs", 10000);
         this.numberParserTestHelper("10,000 francs", 10000);
         this.numberParserTestHelper("10.000,00 francs", 10000);

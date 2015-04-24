@@ -5,6 +5,13 @@ import java.io.Reader;
 
 public class StayBackReader extends Reader {
 
+    /**
+     * Wraps a reader in a way that makes it possible to
+     * read thing twice.
+     *
+     * It is used by the SolilessTokenizer.
+     */
+
     char[] staybackBuffer = new char[1000];
     int start = 0;
     int length = 0;
@@ -55,7 +62,7 @@ public class StayBackReader extends Reader {
 
     private int simpleRead(char[] cbuf, int off, int len) throws IOException {
         assert len <= cbuf.length - off;
-        assert this.staybackBuffer.length <= len;
+        assert this.staybackBuffer.length >= len;
         final int newChunkStart = cur();
         final int readLength = this.reader.read(this.staybackBuffer, newChunkStart, len);
         if (readLength < len) {

@@ -1,5 +1,6 @@
 package com.fulmicoton.collodion.processors.numberparser;
 
+import com.google.gson.JsonObject;
 import org.apache.lucene.util.AttributeImpl;
 
 public class NumberAttributeImpl extends AttributeImpl implements NumberAttribute {
@@ -44,5 +45,12 @@ public class NumberAttributeImpl extends AttributeImpl implements NumberAttribut
     @Override
     public void copyTo(AttributeImpl target) {
 
+    }
+
+    @Override
+    public void updateJson(JsonObject jsonObject) {
+        if (this.isSet()) {
+            jsonObject.addProperty("number", this.val());
+        }
     }
 }

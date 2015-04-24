@@ -2,6 +2,8 @@ package com.fulmicoton.collodion.server;
 
 import com.fulmicoton.collodion.common.JSON;
 import com.fulmicoton.collodion.common.Utils;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 
@@ -24,8 +26,7 @@ public class CorpusResource {
     @Path("/{docId}/")
     public String getDoc(@PathParam("docId") Integer i) {
         final Document doc = Application.get().getCorpus().get(i);
-        final String docJson = JSON.toJson(doc);
-        return docJson;
+        return JSON.toJson(doc);
     }
 
 
@@ -35,11 +36,14 @@ public class CorpusResource {
     public String getDocProcessed(@PathParam("docId") Integer i) throws IOException {
         final Document doc = Application.get().getCorpus().get(i);
         final String text = doc.get("text");
-        System.out.println("TEXT:" + text);
         final TokenStream tokenStream = Application.get().getAnalyzer().tokenStream("text", text);
         tokenStream.reset();
-        final String tokenStreamJson  = Utils.toJson(tokenStream).toString();
-        return tokenStreamJson;
+        final JsonObject resp = new JsonObject();
+        final JsonElement tokenStreamJson  = Utils.toJson(tokenStream);
+        resp.add("tokens", tokenStreamJson);
+        resp.addProperty("text", text);
+        tokenStream.close();
+        return resp.toString();
     }
 
     public static class CorpusMeta {

@@ -1,12 +1,14 @@
 package com.fulmicoton.collodion.processors.stemmer;
 
 
+import com.fulmicoton.collodion.common.Jsonable;
 import com.fulmicoton.collodion.common.SubCharSequence;
+import com.google.gson.JsonObject;
 import org.apache.lucene.util.ArrayUtil;
 import org.apache.lucene.util.AttributeImpl;
 import org.apache.lucene.util.RamUsageEstimator;
 
-public class StemAttributeImpl extends AttributeImpl implements StemAttribute {
+public class StemAttributeImpl extends AttributeImpl implements StemAttribute, Jsonable {
 
     private char[] termBuffer;
     private int termLength = 0;
@@ -67,6 +69,11 @@ public class StemAttributeImpl extends AttributeImpl implements StemAttribute {
 
     public String toString() {
         return String.copyValueOf(this.termBuffer, 0, this.termLength);
+    }
+
+    @Override
+    public void updateJson(JsonObject jsonObject) {
+        jsonObject.addProperty("stem", this.toString());
     }
 }
 

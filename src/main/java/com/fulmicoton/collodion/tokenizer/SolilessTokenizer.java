@@ -9,7 +9,22 @@ import org.apache.lucene.analysis.tokenattributes.TypeAttribute;
 import java.io.IOException;
 import java.io.Reader;
 
-public class WithPunctuationTokenizer extends Tokenizer {
+public class SolilessTokenizer extends Tokenizer {
+    /**
+     * Because Lucene's analyzers have for main
+     * purpose search, most lucene tokenizers tend to drop
+     * all of the whitespaces / punctuation.
+     *
+     * This class proxifies a Lucene Tokenizer into
+     * a tokenizer that justs adds in the "missing tokens"
+     * under the type "JUNK".
+     *
+     * (nb: The nonsensical naming is actually funny for
+     * French speakers. Sot-L'y-Laisse (Morons would have left
+     * it) is the name of a part of poultry, that is small and
+     * so close to the bone, that many people don't eat it
+     * although it is very tasty.)
+     */
 
     private StayBackReader stayBackReader;
     private final Tokenizer underlyingTokenizer;
@@ -28,8 +43,8 @@ public class WithPunctuationTokenizer extends Tokenizer {
 
     private State state;
 
-    public WithPunctuationTokenizer(final Tokenizer tokenizer,
-                                    final Reader reader) {
+    public SolilessTokenizer(final Tokenizer tokenizer,
+                             final Reader reader) {
         super(reader);
         this.underlyingTokenizer = tokenizer;
         this.underlyingOffsetAttr = this.underlyingTokenizer.getAttribute(OffsetAttribute.class);
@@ -37,9 +52,6 @@ public class WithPunctuationTokenizer extends Tokenizer {
         this.underlyingTermAttr = this.underlyingTokenizer.getAttribute(CharTermAttribute.class);
         this.underLyingTypeAttr = this.underlyingTokenizer.getAttribute(TypeAttribute.class);
     }
-
-
-
 
     @Override
     public void reset() throws IOException {
@@ -88,7 +100,7 @@ public class WithPunctuationTokenizer extends Tokenizer {
             final int givenOffset = this.underlyingOffsetAttr.startOffset();
             if (this.underlyingOffsetAttr.startOffset() >  expectedOffset) {
                 this.state = State.PENDING;
-                this.typeAtt.setType("JUNK");
+                this.typeAtt.setType("<JUNK>");
                 final int junkLength = givenOffset - expectedOffset;
                 if (junkLength > termAtt.buffer().length) {
                     termAtt.resizeBuffer(junkLength);

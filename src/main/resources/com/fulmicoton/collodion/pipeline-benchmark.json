@@ -11,6 +11,9 @@
       "type": "tokenpattern",
       "path": "pattern-benchmark",
       "maxLength": 10
+    },
+    {
+      "type": "numberparser"
     }
     ]
 }

@@ -5,6 +5,7 @@ import com.fulmicoton.collodion.common.JSON;
 import com.fulmicoton.collodion.common.loader.ChainLoader;
 import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
+import com.fulmicoton.collodion.tokenizer.SolilessTokenizer;
 import com.google.common.collect.ImmutableList;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -52,7 +53,7 @@ public class CollodionAnalyzer extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        final Tokenizer source = new StandardTokenizer(reader);
+        final Tokenizer source = new SolilessTokenizer(new StandardTokenizer(reader), reader);
         TokenStream lastFilter = source;
         for (ProcessorBuilder processorBuilder: this.processorBuilders) {
             try {
