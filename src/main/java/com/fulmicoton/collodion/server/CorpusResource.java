@@ -37,12 +37,17 @@ public class CorpusResource {
         final Document doc = Application.get().getCorpus().get(i);
         final String text = doc.get("text");
         final TokenStream tokenStream = Application.get().getAnalyzer().tokenStream("text", text);
-        tokenStream.reset();
         final JsonObject resp = new JsonObject();
-        final JsonElement tokenStreamJson  = Utils.toJson(tokenStream);
-        resp.add("tokens", tokenStreamJson);
-        resp.addProperty("text", text);
-        tokenStream.close();
+        try {
+            tokenStream.reset();
+            final JsonElement tokenStreamJson = Utils.toJson(tokenStream);
+            resp.add("tokens", tokenStreamJson);
+            resp.addProperty("text", text);
+        }
+        finally {
+            tokenStream.end();
+            tokenStream.close();
+        }
         return resp.toString();
     }
 

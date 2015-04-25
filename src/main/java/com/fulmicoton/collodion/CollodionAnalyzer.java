@@ -54,6 +54,7 @@ public class CollodionAnalyzer extends Analyzer {
     @Override
     protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
         final Tokenizer source = new SolilessTokenizer(new StandardTokenizer(reader), reader);
+        // final Tokenizer source = new StandardTokenizer(reader);
         TokenStream lastFilter = source;
         for (ProcessorBuilder processorBuilder: this.processorBuilders) {
             try {

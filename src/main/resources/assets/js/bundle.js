@@ -1,33 +1,89 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Application, LeftPane, React, RightPane, Staff;
+var Application, LeftPane, React, Staff;
 
 React = require('react');
 
 Staff = require('./staff.cjsx');
 
 LeftPane = React.createClass({
-  render: function() {
-    return React.createElement("div", {
-      "className": 'left-pane pane'
-    });
-  }
-});
-
-RightPane = React.createClass({
-  render: function() {
-    return React.createElement("div", {
-      "className": 'right-pane pane'
-    }, React.createElement(Staff, {
-      "url": "http://localhost:8080/api/corpus/1/processed"
-    }));
-  }
+  getInitialState: function() {
+    return {
+      nbDocs: 1
+    };
+  },
+  url: function() {
+    return "http://localhost:8080/api/corpus/";
+  },
+  componentDidMount: function() {
+    return $.getJSON(this.url(), (function(_this) {
+      return function(data) {
+        return _this.setState(data);
+      };
+    })(this));
+  },
+  render: function() {}
 });
 
 Application = React.createClass({
+  getInitialState: function() {
+    return {
+      nbDocs: 1,
+      docId: 0,
+      tokens: []
+    };
+  },
+  url: function() {
+    return "http://localhost:8080/api/corpus/";
+  },
+  docUrl: function(docId) {
+    return "http://localhost:8080/api/corpus/" + docId + "/processed";
+  },
+  tryGo: function(docId) {
+    if ((docId >= 0) && (docId < this.state.nbDocs)) {
+      return $.getJSON(this.docUrl(docId), (function(_this) {
+        return function(data) {
+          console.log("data", data);
+          return _this.setState({
+            docId: docId,
+            tokens: data.tokens
+          });
+        };
+      })(this));
+    }
+  },
+  goNext: function() {
+    return this.tryGo(this.state.docId + 1);
+  },
+  goPrevious: function() {
+    return this.tryGo(this.state.docId - 1);
+  },
+  componentDidMount: function() {
+    $.getJSON(this.url(), (function(_this) {
+      return function(data) {
+        return _this.setState(data);
+      };
+    })(this));
+    return $(document).on('keydown', (function(_this) {
+      return function(e) {
+        if (e.which === 39) {
+          _this.goNext();
+        }
+        if (e.which === 37) {
+          return _this.goPrevious();
+        }
+      };
+    })(this));
+  },
   render: function() {
     return React.createElement("div", {
       "id": "main"
-    }, React.createElement(LeftPane, null), React.createElement(RightPane, null));
+    }, React.createElement("div", {
+      "className": 'left-pane pane'
+    }, "\t\t\t\t#", this.state.docId, " \x2F #", this.state.nbDocs), React.createElement("div", {
+      "className": 'right-pane pane'
+    }, React.createElement(Staff, {
+      "tokens": this.state.tokens
+    })));
   }
 });
 
@@ -65,26 +121,16 @@ EmptyToken = React.createClass({
 });
 
 Staff = React.createClass({
-  getInitialState: function() {
-    return {
-      tokens: []
-    };
-  },
-  componentDidMount: function() {
-    return $.getJSON(this.props.url, (function(_this) {
-      return function(data) {
-        return _this.setState(data);
-      };
-    })(this));
+  url: function() {
+    return "http://localhost:8080/api/corpus/" + this.props.docId + "/processed";
   },
   render: function() {
     var curOffset, token, tokenEls, _i, _len, _ref;
     tokenEls = [];
     curOffset = 0;
-    _ref = this.state.tokens;
+    _ref = this.props.tokens;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       token = _ref[_i];
-      console.log(token);
       tokenEls.push(React.createElement(Token, {
         "data": token
       }));

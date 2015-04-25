@@ -61,7 +61,6 @@ public class SolilessTokenizer extends Tokenizer {
         if (!(this.input instanceof GoAgainReader)) {
             this.input = new GoAgainReader(this.input);
             this.underlyingTokenizer.setReader(this.input);
-
         }
         this.underlyingTokenizer.reset();
         this.stayBackReader = (GoAgainReader)this.input;
@@ -126,6 +125,7 @@ public class SolilessTokenizer extends Tokenizer {
 
     @Override
     public void close() throws IOException {
+        super.close();
         this.underlyingTokenizer.close();
     }
 }

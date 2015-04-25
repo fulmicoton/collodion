@@ -19,19 +19,13 @@ EmptyToken = React.createClass
 
 Staff = React.createClass
 
-	getInitialState: ->
-		{tokens: []}
+	url:->
+	 	"http://localhost:8080/api/corpus/#{@props.docId}/processed"
 
-	componentDidMount: ->
-		$.getJSON @props.url, (data)=>
-			@setState data
 	render: ->
 		tokenEls = []
 		curOffset = 0
-		for token in @state.tokens
-			console.log token
-			#if curOffset != token.offset.start
-			#	tokenEls.push <EmptyToken text={@state.text.substring(curOffset, token.offset.start)} />
+		for token in @props.tokens
 			tokenEls.push <Token data={token} />
 			curOffset = token.offset.end
 		<div>
