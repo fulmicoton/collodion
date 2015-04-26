@@ -1,59 +1,63 @@
 React = require 'react'
 Staff = require './staff.cjsx'
-
-LeftPane = React.createClass
-	getInitialState: ->
-		{nbDocs: 1}
-	url: ->
-		"http://localhost:8080/api/corpus/"
-	componentDidMount: ->
-		$.getJSON @url(), (data)=>
-			@setState data
-	render: ->
+store = require '../store.coffee'
+actions = require '../actions.coffee'
 
 
-Application = React.createClass
-	
-	getInitialState: ->
-		{nbDocs: 1, docId: 0, tokens: []}
-	
-	url: ->
-		"http://localhost:8080/api/corpus/"
-	
-	docUrl: (docId)->
-	 	"http://localhost:8080/api/corpus/#{docId}/processed"
-
+DocumentSelector = React.createClass
 
 	tryGo: (docId)->
 		if (docId >= 0) && (docId < @state.nbDocs)
-			$.getJSON @docUrl(docId), (data)=>
-				console.log "data", data
-				@setState
-					docId: docId
-					tokens: data.tokens
-
+			actions.selectDoc.trigger docId
+	
 	goNext: ->
 		@tryGo @state.docId + 1
 		
 	goPrevious: ->
 		@tryGo @state.docId - 1
-		
+	
 	componentDidMount: ->
-		$.getJSON @url(), (data)=>
-			@setState data
+		@unbinders = []
+		onChangeDocId = => @setState {docId: store.getDoc().docId}
+		onChangeNbDocs = =>
+			@setState {nbDocs: store.getNbDocs()}
+		@unbinders.push store.events.corpusChange.bind(onChangeNbDocs)
+		@unbinders.push store.events.docChange.bind(onChangeDocId)
 		$(document).on 'keydown', (e)=>
-		    if (e.which==39)
-		    	@goNext()
-		   	if (e.which == 37)
-		   		@goPrevious()
-		  	
+			if (e.which==39)
+				@goNext()
+			if (e.which == 37)
+				@goPrevious()
+		
+	componentWillUnmount: ->
+		for unbinder in @unbinders
+			@unbinder()
+
+	getInitialState: ->
+		{nbDocs: 1}
+	
+	render: ->
+		<div className='left-pane pane'>
+			#{@state.docId} / #{@state.nbDocs}
+		</div>
+
+
+Application = React.createClass
+	
+	url: ->
+		"http://localhost:8080/api/corpus/"
+	
+	docUrl: (docId)->
+		"http://localhost:8080/api/corpus/#{docId}/processed"
+	
 	render: ->
 		<div id="main">
-			<div className='left-pane pane'>
-				#{@state.docId} / #{@state.nbDocs}
-			</div>
+			<DocumentSelector />
 			<div className='right-pane pane'>
-				<Staff tokens={@state.tokens}/>
+				<div className='search-bar'>
+					<input type='text'></input>
+				</div>
+				<Staff/>
 			</div>
 		</div>
 

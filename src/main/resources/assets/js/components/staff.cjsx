@@ -1,5 +1,5 @@
 React = require 'react'
-
+store = require '../store.coffee'
 
 Token = React.createClass
 	
@@ -18,17 +18,26 @@ EmptyToken = React.createClass
 
 
 Staff = React.createClass
-
-	url:->
-	 	"http://localhost:8080/api/corpus/#{@props.docId}/processed"
+	
+	getInitialState: ->
+		tokens: []
+	
+	componentDidMount: ->
+		@unbinders = []
+		onChange = =>
+			@setState store.getDoc()
+		@unbinders.push store.events.docChange.bind(onChange)
+	componentWillUnmount: ->
+		for unbinder in @unbinders
+			@unbinder()
 
 	render: ->
 		tokenEls = []
 		curOffset = 0
-		for token in @props.tokens
+		for token in @state.tokens
 			tokenEls.push <Token data={token} />
 			curOffset = token.offset.end
-		<div>
+		<div className="staff">
 			{tokenEls}
 		</div>
 
