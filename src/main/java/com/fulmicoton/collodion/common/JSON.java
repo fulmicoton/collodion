@@ -7,6 +7,7 @@ import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.fulmicoton.collodion.CollodionAnalyzer;
 import com.fulmicoton.collodion.processors.debug.DebugFilter;
 import com.fulmicoton.collodion.processors.numberparser.NumberParserFilter;
+import com.fulmicoton.collodion.processors.removetype.RemoveTypeFilter;
 import com.fulmicoton.collodion.processors.tokenpattern.TokenPatternFilter;
 import com.fulmicoton.collodion.processors.vocabularymatcher.MatchingMethod;
 import com.fulmicoton.collodion.processors.vocabularymatcher.Rule;
@@ -57,13 +58,13 @@ public class JSON {
         return GSON.fromJson(json.toString(), objType);
     }
 
-
     static {
         ProcessorBuilderAdapter.register("vocabulary", VocabularyFilter.Builder.class);
         ProcessorBuilderAdapter.register("debug", DebugFilter.Builder.class);
         ProcessorBuilderAdapter.register("stem", StemFilter.Builder.class);
         ProcessorBuilderAdapter.register("tokenpattern", TokenPatternFilter.Builder.class);
         ProcessorBuilderAdapter.register("numberparser", NumberParserFilter.Builder.class);
+        ProcessorBuilderAdapter.register("remove", RemoveTypeFilter.Builder.class);
     }
 
     public static GsonBuilder gsonBuilder() {

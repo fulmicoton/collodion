@@ -27,13 +27,22 @@ public class NumberParserFilter extends TokenFilter {
             final List<String> patterns = Lists.newArrayList();
             final List<NumberInterpreter> numberInterpreters = Lists.newArrayList();
 
+            // 12,000.12K
+            patterns.add("[0-9]+(\\,?[0-9]{3})*(\\.[0-9]+)?[kK]");
+            numberInterpreters.add(GenericNumberInterpreter.ENGLISH.withMultiplier(1000));
+
+            // 12.000,12K
+            patterns.add("[0-9]+(\\.?[0-9]{3})*(\\,[0-9]+)?[kK]");
+            numberInterpreters.add(GenericNumberInterpreter.FRENCH.withMultiplier(1000));
+
+
             // 12,000.12
             patterns.add("[0-9]+(\\,?[0-9]{3})*(\\.[0-9]+)?");
-            numberInterpreters.add(NumberInterpreter.ENGLISH);
+            numberInterpreters.add(GenericNumberInterpreter.ENGLISH);
 
             // 12.000,12
             patterns.add("[0-9]+(\\.?[0-9]{3})*(\\,[0-9]+)?");
-            numberInterpreters.add(NumberInterpreter.FRENCH);
+            numberInterpreters.add(GenericNumberInterpreter.FRENCH);
 
 
             return new NumberParserFilter(prev, MultiPattern.of(patterns), numberInterpreters);
@@ -44,7 +53,7 @@ public class NumberParserFilter extends TokenFilter {
     // ------------------------
 
 
-    final static int MAX_STATES = 3;
+    final static int MAX_STATES = 10;
     final MultiPatternAutomaton automaton;
     final StringBuffer buffer = new StringBuffer(300);
     final StateQueue stateQueue = StateQueue.forSourceWithSize(this, MAX_STATES);
@@ -96,15 +105,14 @@ public class NumberParserFilter extends TokenFilter {
                 char c = this.termAttr.charAt(charId);
                 p = automaton.step(p, c);
                 if (p < 0) {
+                    // no more pattern can be matched
                     break outerloop;
                 }
-                else {
-                    int[] accepted = automaton.accept[p];
-                    if (accepted.length > 0) {
-                        matchedPattern = accepted[0];
-                        matchedNbTokens = nbToken + 1;
-                    }
-                }
+            }
+            final int[] accepted = automaton.accept[p];
+            if (accepted.length > 0) {
+                matchedPattern = accepted[0];
+                matchedNbTokens = nbToken + 1;
             }
         }
         if (matchedPattern == -1) {

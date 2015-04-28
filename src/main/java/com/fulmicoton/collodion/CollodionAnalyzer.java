@@ -41,6 +41,10 @@ public class CollodionAnalyzer extends Analyzer {
         this.loader = loader;
     }
 
+    public CollodionAnalyzer append(ProcessBuilder processBuilder) {
+        return null;
+    }
+
     public void prependLoader(Loader loader) {
         this.loader = ChainLoader.of(loader, this.loader);
     }
@@ -53,8 +57,8 @@ public class CollodionAnalyzer extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+        System.out.println("create components");
         final Tokenizer source = new SolilessTokenizer(new StandardTokenizer(reader), reader);
-        // final Tokenizer source = new StandardTokenizer(reader);
         TokenStream lastFilter = source;
         for (ProcessorBuilder processorBuilder: this.processorBuilders) {
             try {

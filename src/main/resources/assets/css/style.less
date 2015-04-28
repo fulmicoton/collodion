@@ -60,6 +60,26 @@ div.empty-token {
 
 }
 
+div.token-junk {
+	opacity: 0.3;
+}
+
+@search-bar-width: 30px;
+
+div.staff {
+	position:absolute;
+	overflow-y: scroll;
+	top: @search-bar-width;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+}
+
+div.search-bar {
+	padding: 2px;
+	height: @search-bar-width;
+}
+
 div.token {
 	// background-color: lighten(@background-color, 5%);
 	height: 40px;
@@ -69,5 +89,7 @@ div.token {
 	div.number {
 		color: #FF2222	;
 	}
+
+
 }
 

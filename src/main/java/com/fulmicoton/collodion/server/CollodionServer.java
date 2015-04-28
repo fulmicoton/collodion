@@ -13,7 +13,9 @@ import java.util.EnumSet;
 public class CollodionServer extends Application<CollodionServerConfiguration> {
 
     public static void main(String[] args) throws Exception {
-        new CollodionServer().run(args);
+        final CollodionServer server = new CollodionServer();
+
+        server.run(args);
     }
 
 

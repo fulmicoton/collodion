@@ -11,6 +11,10 @@
       "type": "tokenpattern",
       "path": "pattern",
       "maxLength": 100
-    }*/
+    }*/,
+    {
+      "type": "remove",
+      "typeToRemove": "<JUNK>"
+    }
   ]
 }

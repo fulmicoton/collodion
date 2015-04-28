@@ -22,7 +22,7 @@ public abstract class GenericNumberInterpreter implements NumberInterpreter {
     final static GenericNumberInterpreter FRENCH = new GenericNumberInterpreter() {
         @Override
         public String transform(String val) {
-            return val.replace("[.a-zA-Z]", "").replace(",", ".");
+            return val.replaceAll("[\\.a-zA-Z]", "").replace(",", ".");
         }
     };
 

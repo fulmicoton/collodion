@@ -24,10 +24,7 @@ public class Benchmark {
             final String text = doc.get("text");
             final TokenStream tokenStream = analyzer.tokenStream("text", text);
             tokenStream.reset();
-            int nbTokens = 0;
-            while (tokenStream.incrementToken()) {
-                nbTokens += 1;
-            }
+            while (tokenStream.incrementToken()) {}
             tokenStream.close();
         }
         long stop = System.currentTimeMillis();

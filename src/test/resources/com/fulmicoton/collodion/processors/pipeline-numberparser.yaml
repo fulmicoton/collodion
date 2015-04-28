@@ -1,4 +1,5 @@
 processors:
   - type: "numberparser"
+  - type: "remove"
   - type: "debug"
-
+    name: "debug-after-remove"
