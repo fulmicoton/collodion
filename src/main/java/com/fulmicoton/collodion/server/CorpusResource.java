@@ -1,12 +1,9 @@
 package com.fulmicoton.collodion.server;
 
-import com.fulmicoton.collodion.common.AnalysisExecutor;
 import com.fulmicoton.collodion.common.JSON;
-import com.fulmicoton.collodion.common.Utils;
 import com.fulmicoton.collodion.corpus.Corpus;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 
 import javax.ws.rs.GET;
@@ -15,7 +12,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 @Path("corpus")

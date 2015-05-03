@@ -5,14 +5,19 @@ import com.fulmicoton.collodion.common.AnalysisExecutor;
 import com.fulmicoton.collodion.corpus.Corpus;
 import com.fulmicoton.collodion.corpus.FilteredCorpus;
 import com.fulmicoton.collodion.corpus.SimpleCorpus;
+import com.fulmicoton.collodion.processors.ProcessorBuilder;
+import com.fulmicoton.collodion.processors.tokenpattern.TokenPatternAttribute;
+import com.fulmicoton.collodion.processors.tokenpattern.TokenPatternFilter;
 import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 
@@ -40,7 +45,7 @@ public enum Application {
             this.queryCache = CacheBuilder.newBuilder()
                 .maximumSize(10)
                 .expireAfterWrite(1, TimeUnit.HOURS)
-                .build(new QueryCorpus());
+                .build(new QueryCorpus(this));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -52,14 +57,34 @@ public enum Application {
 
     private class QueryCorpus extends CacheLoader<String, Corpus> {
 
+
         @Override
         public Corpus load(String query) throws Exception {
             return FilteredCorpus.filter(corpus, this.getMatchQueryPredicate(query));
         }
 
-        private Predicate<Document> getMatchQueryPredicate(final String query) {
-            //CollodionAnalyzer extendedAnalyzer = analyzer.append();
-            return null;
+        private Predicate<Document> getMatchQueryPredicate(
+                final String query) {
+            final TokenPatternFilter.Builder processBuilder = TokenPatternFilter.builder();
+            processBuilder.setPatterns(ImmutableList.of(query));
+            final CollodionAnalyzer extendedAnalyzer = analyzer.append(processBuilder);
+            return new Predicate<Document>() {
+                @Override
+                public boolean apply(Document input) {
+                    try {
+                        final TokenStream tokenStream = extendedAnalyzer.tokenStream("text", input.get("text"));
+                        tokenStream.reset();
+                        final TokenPatternAttribute tokenPatternAttribute = tokenStream.getAttribute(TokenPatternAttribute.class);
+                        while (tokenStream.incrementToken()) {
+                            // tokenPatternAttribute;
+                        }
+                        tokenStream.end();
+                        tokenStream.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
         }
     }
 

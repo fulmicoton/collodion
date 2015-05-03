@@ -25,11 +25,7 @@ public class CollodionAnalyzer extends Analyzer {
 
     private transient Loader loader;
 
-    public final List<ProcessorBuilder> processorBuilders;
-
-    public ImmutableList<ProcessorBuilder> processorBuilders() {
-        return ImmutableList.copyOf(this.processorBuilders);
-    }
+    public final ImmutableList<ProcessorBuilder> processorBuilders;
 
     public CollodionAnalyzer(final List<ProcessorBuilder> processorBuilders) {
         this(processorBuilders, Loader.DEFAULT_LOADER);
@@ -37,12 +33,17 @@ public class CollodionAnalyzer extends Analyzer {
 
     public CollodionAnalyzer(final List<ProcessorBuilder> processorBuilders,
                              final Loader loader) {
-        this.processorBuilders = processorBuilders;
+        this.processorBuilders = ImmutableList.copyOf(processorBuilders);
         this.loader = loader;
     }
 
-    public CollodionAnalyzer append(ProcessBuilder processBuilder) {
-        return null;
+    public CollodionAnalyzer append(final ProcessorBuilder newProcessorBuilder) {
+        final ImmutableList<ProcessorBuilder> newProcessorBuilders = ImmutableList
+                .<ProcessorBuilder>builder()
+                .addAll(this.processorBuilders)
+                .add(newProcessorBuilder)
+                .build();
+        return new CollodionAnalyzer(newProcessorBuilders, this.loader);
     }
 
     public void prependLoader(Loader loader) {
@@ -57,7 +58,6 @@ public class CollodionAnalyzer extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        System.out.println("create components");
         final Tokenizer source = new SolilessTokenizer(new StandardTokenizer(reader), reader);
         TokenStream lastFilter = source;
         for (ProcessorBuilder processorBuilder: this.processorBuilders) {
