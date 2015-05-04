@@ -2,12 +2,13 @@ package com.fulmicoton.collodion.processors.tokenpattern;
 
 import com.fulmicoton.collodion.common.StateQueue;
 import com.fulmicoton.collodion.common.loader.Loader;
-import com.fulmicoton.collodion.processors.Annotation;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Machine;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.MachineBuilder;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatchResult;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatcher;
+import com.fulmicoton.collodion.processors.vocabularymatcher.Annotation;
+import com.fulmicoton.collodion.processors.vocabularymatcher.VocabularyAttribute;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
@@ -16,7 +17,9 @@ import org.apache.lucene.analysis.tokenattributes.PositionLengthAttribute;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class TokenPatternFilter extends TokenFilter {
 
@@ -61,6 +64,7 @@ public class TokenPatternFilter extends TokenFilter {
     private int emitted = 0;
     private State state;
 
+    private VocabularyAttribute vocabularyAttribute;
     private PositionIncrementAttribute positionIncrementAttribute;
     private PositionLengthAttribute positionLengthAttribute;
 
@@ -74,6 +78,7 @@ public class TokenPatternFilter extends TokenFilter {
         this.semToken = new SemToken(input);
         this.positionIncrementAttribute = input.getAttribute(PositionIncrementAttribute.class);
         this.positionLengthAttribute = input.getAttribute(PositionLengthAttribute.class);
+        this.vocabularyAttribute = input.getAttribute(VocabularyAttribute.class);
     }
 
 
@@ -85,13 +90,23 @@ public class TokenPatternFilter extends TokenFilter {
         this.machineRunner.reset();
     }
 
-
-
     public interface State {
+        // updates the state and returns
+        // - null if there will no next token.
+        // - the next state.
         public State incrementToken() throws IOException;
     }
 
 
+    public State makeOutputState(final TokenPatternMatchResult matchResult) {
+        // Simple implementation first, we output the name of the pattern
+        // as an annotation + its groups.
+        final Queue<List<Annotation>> annotations = new LinkedList<>();
+        for (int groupId = 0; groupId < matchResult.groupCount(); groupId++) {
+            
+        }
+        return new OutputMatch(annotations);
+    }
 
     public class Start implements State {
 
@@ -106,14 +121,13 @@ public class TokenPatternFilter extends TokenFilter {
                 stateQueue.push();
                 final TokenPatternMatchResult match = machineRunner.search(semToken);
                 if (match != null) {
-                    // TODO we output the match as an annotation
-                    // TODO queue up group annotations
                     int matchStart = match.start(0);
+                    final State outputMatch = makeOutputState(match);
                     if (matchStart - emitted > 0) {
-                        return new Flush(matchStart - emitted, new OutputMatch(match)).incrementToken();
+                        return new Flush(matchStart - emitted, outputMatch).incrementToken();
                     }
                     else {
-                        return new OutputMatch(match);
+                        return outputMatch;
                     }
                 }
                 else {
@@ -126,42 +140,45 @@ public class TokenPatternFilter extends TokenFilter {
                     }
                 }
             }
+
             // we just flush everything
             return new Flush(-1, null).incrementToken();
         }
     }
 
+    class OutputMatch implements State {
 
+        private final Queue<List<Annotation>> annotationQueue;
 
-
-    public class OutputMatch implements State {
-
-        private final TokenPatternMatchResult match;
-
-        OutputMatch(final TokenPatternMatchResult match) {
-            this.match = match;
+        private OutputMatch(final Queue<List<Annotation>> annotationQueue) {
+            this.annotationQueue = annotationQueue;
         }
 
         @Override
         public State incrementToken() throws IOException {
-            TokenPatternFilter.this.clearAttributes();
-            int matchLength = this.match.end(0) - this.match.start(0);
-            positionIncrementAttribute.setPositionIncrement(0);
-            positionLengthAttribute.setPositionLength(matchLength);
-            semToken.vocabularyAttribute.reset();
-            // TODO have pattern names + mapping
-            // TODO have a fresh token for that.
-            semToken.vocabularyAttribute.add(Annotation.of("pattern" + match.patternId));
-            // TODO annotation the other tokens with group infos.
-            return new Flush(matchLength, new Start());
+            final List<Annotation> annotations = this.annotationQueue.poll();
+            stateQueue.pop();
+            emitted += 1;
+            for (final Annotation annotation: annotations) {
+                vocabularyAttribute.add(annotation.key, annotation.nbTokens);
+            }
+            if (this.annotationQueue.isEmpty()) {
+                return new Start();
+            }
+            else {
+                return this;
+            }
         }
     }
 
-
-
-
     public class Flush implements State {
-
+        /**
+         * Outputs one by one <nbTokens> elements within the queue,
+         * at each call of incrementTokens.
+         *
+         * Once nbTokens have been emitted, returns the next
+         * state as defined in next.
+         */
         int nbTokens;
         final State next;
 

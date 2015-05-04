@@ -1,6 +1,6 @@
 package com.fulmicoton.collodion.processors.tokenpattern.ast;
 
-import com.fulmicoton.collodion.processors.Annotation;
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.tokenpattern.SemToken;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Predicate;
 
@@ -9,15 +9,15 @@ import java.util.Map;
 
 public class HasAnnotation implements Predicate {
 
-    private static final Map<Annotation, HasAnnotation> predicateCache = new HashMap<>();
+    private static final Map<AnnotationKey, HasAnnotation> predicateCache = new HashMap<>();
 
-    private final Annotation annotation;
+    private final AnnotationKey annotation;
 
-    private HasAnnotation(final Annotation annotation) {
+    private HasAnnotation(final AnnotationKey annotation) {
         this.annotation = annotation;
     }
 
-    public static HasAnnotation of(final Annotation annotation) {
+    public static HasAnnotation of(final AnnotationKey annotation) {
         HasAnnotation predicate = predicateCache.get(annotation);
         if (predicate == null) {
             predicate = new HasAnnotation(annotation);

@@ -1,6 +1,6 @@
 package com.fulmicoton.collodion.processors.tokenpattern;
 
-import com.fulmicoton.collodion.processors.Annotation;
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatchResult;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatcher;
 import com.fulmicoton.collodion.processors.vocabularymatcher.VocabularyAttributeImpl;
@@ -24,7 +24,7 @@ public class TokenPatternTest {
         final List<SemToken> tokenList = new ArrayList<>();
         for (char token: testString.toCharArray()) {
             VocabularyAttributeImpl vocabularyAttribute = new VocabularyAttributeImpl();
-            vocabularyAttribute.add(Annotation.of(String.valueOf(token)));
+            vocabularyAttribute.add(AnnotationKey.of(String.valueOf(token)));
             tokenList.add(new SemToken(vocabularyAttribute));
         }
         return tokenList;

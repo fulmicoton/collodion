@@ -1,6 +1,6 @@
 package com.fulmicoton.collodion.processors.tokenpattern;
 
-import com.fulmicoton.collodion.processors.Annotation;
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.vocabularymatcher.VocabularyAttribute;
 import org.apache.lucene.analysis.TokenStream;
 
@@ -15,7 +15,7 @@ public class SemToken {
         this(tokenStream.getAttribute(VocabularyAttribute.class));
     }
 
-    public boolean hasAnnotation(Annotation annotation) {
+    public boolean hasAnnotation(AnnotationKey annotation) {
         return this.vocabularyAttribute.contains(annotation);
     }
 

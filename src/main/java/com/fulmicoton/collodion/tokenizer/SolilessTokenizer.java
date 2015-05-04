@@ -17,7 +17,7 @@ public class SolilessTokenizer extends Tokenizer {
      *
      * This class proxifies a Lucene Tokenizer into
      * a tokenizer that justs adds in the "missing tokens"
-     * under the type "JUNK".
+     * under the type "JUNK", with a position increment of 0.
      *
      * (nb: The nonsensical naming is actually funny for
      * French speakers. Sot-L'y-Laisse (Morons would have left

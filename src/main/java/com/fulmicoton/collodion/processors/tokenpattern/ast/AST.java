@@ -2,7 +2,7 @@ package com.fulmicoton.collodion.processors.tokenpattern.ast;
 
 import com.fulmicoton.multiregexp.Lexer;
 import com.fulmicoton.multiregexp.Token;
-import com.fulmicoton.collodion.processors.Annotation;
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.tokenpattern.GroupAllocator;
 import com.fulmicoton.collodion.processors.tokenpattern.SemToken;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Predicate;
@@ -151,7 +151,7 @@ public abstract class AST {
                         public AST emit(List<AST> childrenEmission, List<Token<RegexPatternToken>> tokens) {
                             final String match = tokens.get(0).str;
                             final String annotationName = match.substring(1, match.length() - 1);
-                            final Annotation annotation = Annotation.of(annotationName);
+                            final AnnotationKey annotation = AnnotationKey.of(annotationName);
                             final Predicate predicate = HasAnnotation.of(annotation);
                             return new PredicatePatternAST("[" + annotationName + "]", predicate);
                         }

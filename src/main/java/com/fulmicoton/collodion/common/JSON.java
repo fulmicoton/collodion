@@ -2,7 +2,7 @@ package com.fulmicoton.collodion.common;
 
 
 import com.fulmicoton.collodion.corpus.DocumentAdapter;
-import com.fulmicoton.collodion.processors.Annotation;
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.fulmicoton.collodion.CollodionAnalyzer;
 import com.fulmicoton.collodion.processors.debug.DebugFilter;
@@ -93,7 +93,7 @@ public class JSON {
             final MatchingMethod matchingMethod = MatchingMethod.valueOf(methodString.toUpperCase());
             final String value = jsonObj.get("value").getAsString();
             final String annotationString = jsonObj.get("annotation").getAsString();
-            final Annotation annotation = Annotation.of(annotationString);
+            final AnnotationKey annotation = AnnotationKey.of(annotationString);
             return new Rule(matchingMethod, value, annotation);
         }
 

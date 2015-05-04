@@ -1,7 +1,7 @@
 package com.fulmicoton.collodion.processors.vocabularymatcher;
 
 import com.fulmicoton.collodion.common.Index;
-import com.fulmicoton.collodion.processors.Annotation;
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import org.apache.lucene.util.BytesRef;
@@ -18,13 +18,13 @@ import java.util.List;
 
 public class ExactVocabularyMatcher extends VocabularyMatcher {
 
-    private final Iterator<Annotation> EMPTY_ITERATOR = ImmutableSet.<Annotation>of().iterator();
+    private final Iterator<AnnotationKey> EMPTY_ITERATOR = ImmutableSet.<AnnotationKey>of().iterator();
     private final FST<Long> fst;
-    private final Index<Annotation> annotationMapping;
+    private final Index<AnnotationKey> annotationMapping;
 
     ExactVocabularyMatcher(List<Rule> rules, CharSequence charSequence) {
         super(charSequence);
-        final Index.Builder<Annotation> annotationIndexBuilder = Index.builder();
+        final Index.Builder<AnnotationKey> annotationIndexBuilder = Index.builder();
         final PositiveIntOutputs PositiveInts = PositiveIntOutputs.getSingleton();
         final Builder<Long> fstBuilder = new Builder<>(FST.INPUT_TYPE.BYTE1, PositiveInts);
         final BytesRefBuilder scratchBytes = new BytesRefBuilder();
@@ -35,7 +35,7 @@ public class ExactVocabularyMatcher extends VocabularyMatcher {
                 final int annotationId = annotationIndexBuilder.get(rule.annotation);
                 fstBuilder.add(Util.toIntsRef(scratchBytes.get(), scratchInts), (long)annotationId);
             }
-            this.annotationMapping = annotationIndexBuilder.build(new Annotation[0]);
+            this.annotationMapping = annotationIndexBuilder.build(new AnnotationKey[0]);
             this.fst = fstBuilder.finish();
         }
         catch (IOException e) {
@@ -44,7 +44,7 @@ public class ExactVocabularyMatcher extends VocabularyMatcher {
     }
 
     @Override
-    public Iterator<Annotation> match() {
+    public Iterator<AnnotationKey> match() {
         try {
             Long ruleId = Util.get(fst, new BytesRef(this.charSequence));
             if (ruleId == null) {

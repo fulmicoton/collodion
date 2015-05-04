@@ -4,28 +4,28 @@ import com.google.common.collect.Maps;
 
 import java.util.Map;
 
-public class Annotation {
+public class AnnotationKey {
 
     private final String annotation;
-    private final static Map<String, Annotation> annotationMap = Maps.newHashMap();
-    public static final Annotation NONE = Annotation.of("");
+    private final static Map<String, AnnotationKey> annotationMap = Maps.newHashMap();
+    public static final AnnotationKey NONE = AnnotationKey.of("");
 
-    private Annotation(final String annotation) {
+    private AnnotationKey(final String annotation) {
         this.annotation = annotation;
     }
 
-    public static synchronized Annotation of(final String annotation) {
-        final Annotation cachedAnnotation = annotationMap.get(annotation);
+    public static synchronized AnnotationKey of(final String annotation) {
+        final AnnotationKey cachedAnnotation = annotationMap.get(annotation);
         if (cachedAnnotation != null) return cachedAnnotation;
-        final Annotation newAnnotation = new Annotation(annotation);
-        Annotation.annotationMap.put(annotation, newAnnotation);
+        final AnnotationKey newAnnotation = new AnnotationKey(annotation);
+        AnnotationKey.annotationMap.put(annotation, newAnnotation);
         return newAnnotation;
     }
 
     @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override
     public boolean equals(Object o) {
-        final Annotation that = (Annotation) o;
+        final AnnotationKey that = (AnnotationKey) o;
         //noinspection StringEquality
         return (this.annotation == that.annotation);
     }

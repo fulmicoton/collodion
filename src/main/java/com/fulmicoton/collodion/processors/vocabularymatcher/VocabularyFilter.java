@@ -1,7 +1,7 @@
 package com.fulmicoton.collodion.processors.vocabularymatcher;
 
 import com.fulmicoton.collodion.common.loader.Loader;
-import com.fulmicoton.collodion.processors.Annotation;
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.google.common.collect.Lists;
 import org.apache.lucene.analysis.TokenFilter;
@@ -60,7 +60,7 @@ public class VocabularyFilter extends TokenFilter {
         this.vocabularyAttr.reset();
         if (!res) return false;
         for (VocabularyMatcher vocabularyMatcher: this.vocabularyMatchers) {
-            final Iterator<Annotation> annotationIterator = vocabularyMatcher.match();
+            final Iterator<AnnotationKey> annotationIterator = vocabularyMatcher.match();
             while (annotationIterator.hasNext()) {
                 this.vocabularyAttr.add(annotationIterator.next());
             }

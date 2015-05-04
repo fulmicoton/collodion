@@ -2,11 +2,10 @@ package com.fulmicoton.collodion.processors.vocabularymatcher;
 
 
 import com.fulmicoton.collodion.common.Jsonable;
-import com.fulmicoton.collodion.processors.Annotation;
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.google.common.base.Joiner;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.apache.lucene.util.AttributeImpl;
 
 import java.util.ArrayList;
@@ -28,8 +27,8 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
     public void copyTo(AttributeImpl target_) {
         VocabularyAttributeImpl target = (VocabularyAttributeImpl)target_;
         target.reset();
-        for (int annotationId = 0; annotationId < this.length; annotationId++) {
-            target.add(this.annotations[annotationId]);
+        for (final Annotation annotation: this) {
+            target.add(annotation.key, annotation.nbTokens);
         }
     }
 
@@ -39,8 +38,7 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
 
     public String toString() {
         final List<String> annotations = new ArrayList<>();
-        for (int i=0; i<this.length; i++) {
-            final Annotation ann = this.annotations[i];
+        for (final Annotation ann: this) {
             annotations.add(ann.toString());
         }
         return Joiner.on("; ").join(annotations);
@@ -49,15 +47,16 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
 
     @Override
     public VocabularyAttributeImpl clone() {
+        // call super.clone();
         final VocabularyAttributeImpl vocAttr = new VocabularyAttributeImpl();
         this.copyTo(vocAttr);
         return vocAttr;
     }
 
     @Override
-    public boolean contains(final Annotation annotation) {
-        for (Annotation ann: this.annotations) {
-            if (ann == annotation) {
+    public boolean contains(final AnnotationKey annotation) {
+        for (final Annotation ann: this) {
+            if (ann.key == annotation) {
                 return true;
             }
         }
@@ -65,18 +64,26 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
     }
 
     @Override
-    public void add(final Annotation annotation) {
+    public void add(final AnnotationKey annotation) {
+        this.add(annotation, 1);
+    }
+
+    @Override
+    public void add(final AnnotationKey annotation, final int length) {
         if (this.length < MAX_NB_ANNOTATIONS) {
-            this.annotations[this.length] = annotation;
+            this.annotations[this.length].key = annotation;
             this.length += 1;
         }
     }
 
     @Override
     public void updateJson(JsonObject jsonObject) {
-        JsonArray jsonArr = new JsonArray();
+        final JsonArray jsonArr = new JsonArray();
         for (final Annotation annotation: this) {
-            jsonArr.add(new JsonPrimitive(annotation.name()));
+            final JsonObject itemJson = new JsonObject();
+            itemJson.addProperty("nbTokens", annotation.nbTokens);
+            itemJson.addProperty("annotation", annotation.key.name());
+            jsonArr.add(itemJson);
         }
         jsonObject.add("vocabulary", jsonArr);
     }

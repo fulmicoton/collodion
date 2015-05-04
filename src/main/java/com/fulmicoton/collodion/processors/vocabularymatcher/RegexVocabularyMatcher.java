@@ -2,7 +2,7 @@ package com.fulmicoton.collodion.processors.vocabularymatcher;
 
 import com.fulmicoton.multiregexp.MultiPattern;
 import com.fulmicoton.multiregexp.MultiPatternMatcher;
-import com.fulmicoton.collodion.processors.Annotation;
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.google.common.collect.Lists;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.List;
 public class RegexVocabularyMatcher extends VocabularyMatcher {
 
     private final MultiPatternMatcher matcher;
-    private final List<Annotation> annotations = Lists.newArrayList();
+    private final List<AnnotationKey> annotations = Lists.newArrayList();
 
     public RegexVocabularyMatcher(final List<Rule> rules,
                                   final CharSequence charSequence) {
@@ -26,10 +26,10 @@ public class RegexVocabularyMatcher extends VocabularyMatcher {
     }
 
     @Override
-    public Iterator<Annotation> match() throws IOException {
+    public Iterator<AnnotationKey> match() throws IOException {
         final int[] matches = this.matcher.match(this.charSequence);
-        final List<Annotation> annotations = this.annotations;
-        return new Iterator<Annotation>() {
+        final List<AnnotationKey> annotations = this.annotations;
+        return new Iterator<AnnotationKey>() {
             int i = 0;
 
             @Override
@@ -38,7 +38,7 @@ public class RegexVocabularyMatcher extends VocabularyMatcher {
             }
 
             @Override
-            public Annotation next() {
+            public AnnotationKey next() {
                 final int ruleId = matches[i];
                 i++;
                 return annotations.get(ruleId);
