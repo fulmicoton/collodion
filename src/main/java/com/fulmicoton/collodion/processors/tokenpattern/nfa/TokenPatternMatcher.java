@@ -12,13 +12,18 @@ public class TokenPatternMatcher {
 
     List<Thread> threads;
     int offset = 0;
-    final private Machine machine;
+    private final Machine machine;
 
-    private Thread createThread(int stateId, Groups groups, int offset) {
-        if (this.machine.openGroups.length + this.machine.closeGroups.length > 0) {
-            groups = new Groups(this.machine.openGroups[stateId], this.machine.closeGroups[stateId], offset, groups);
+    private Thread createThread(final int stateId,
+                                final Groups groups,
+                                final int offset) {
+        if ((this.machine.openGroups.length + this.machine.closeGroups.length) > 0) {
+            final Groups newGroups = new Groups(this.machine.openGroups[stateId], this.machine.closeGroups[stateId], offset, groups);
+            return new Thread(stateId, newGroups);
         }
-        return new Thread(stateId, groups);
+        else {
+            return new Thread(stateId, groups);
+        }
     }
 
     TokenPatternMatcher(final Machine machine) {
@@ -33,8 +38,8 @@ public class TokenPatternMatcher {
 
     public MultiMatcher matchers() {
         final TokenPatternMatchResult[] matchResults = new TokenPatternMatchResult[machine.nbPatterns];
-        for (Thread thread: threads) {
-            int matchingPattern = machine.statesResults[thread.state];
+        for (final Thread thread: threads) {
+            final int matchingPattern = machine.statesResults[thread.state];
             if (matchingPattern != -1) {
                 final TokenPatternMatchResult matchResult = TokenPatternMatchResult.doesMatch(matchingPattern, thread.groups, machine.multiGroupAllocator.get(matchingPattern));
                 matchResults[matchingPattern] = matchResult;
@@ -52,10 +57,10 @@ public class TokenPatternMatcher {
         offset++;
         final Set<Integer> states = new HashSet<>();
         final List<Thread> newThreads = new ArrayList<>();
-        for (Thread thread: threads) {
+        for (final Thread thread: threads) {
             final int[] stateTransitions = machine.transitions[thread.state];
             final Predicate[] statePredicates = machine.predicates[thread.state];
-            for (int i=0; i<stateTransitions.length; i++) {
+            for (int i=0; i < stateTransitions.length; i++) {
                 final Predicate predicate = statePredicates[i];
                 if (predicate.apply(token)) {
                     final int dest = stateTransitions[i];
@@ -73,14 +78,13 @@ public class TokenPatternMatcher {
         this.processToken(newToken);
         int highestPriorityMatchingPattern = Integer.MAX_VALUE;
         TokenPatternMatchResult matchResult = null;
-        for (Thread thread: threads) {
-            int matchingPattern = machine.statesResults[thread.state];
+        for (final Thread thread: threads) {
+            final int matchingPattern = machine.statesResults[thread.state];
             if ((matchingPattern >=0) && (matchingPattern < highestPriorityMatchingPattern)) {
                 highestPriorityMatchingPattern = matchingPattern;
                 matchResult = TokenPatternMatchResult.doesMatch(highestPriorityMatchingPattern, thread.groups, machine.multiGroupAllocator.get(matchingPattern));
             }
         }
-        this.reset();
         return matchResult;
     }
 }

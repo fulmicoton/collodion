@@ -12,7 +12,7 @@
     <properties><!--
         <jersey.version>2.14</jersey.version>-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dropwizard.version>0.7 43r2</dropwizard.version>
+        <dropwizard.version>0.7.1</dropwizard.version>
      </properties>
 
     <repositories>
@@ -24,6 +24,8 @@
     </repositories>
 
     <dependencies>
+
+
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -44,12 +46,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.15</version>
-        </dependency>
-
-        <dependency>
             <groupId>fulmicoton</groupId>
             <artifactId>multiregexp</artifactId>
             <version>0.2</version>
@@ -59,6 +55,12 @@
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-analyzers-common</artifactId>
             <version>4.10.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.15</version>
         </dependency>
 
         <dependency>

@@ -44,6 +44,11 @@ public class FilteredCorpus implements Corpus {
                 final int nextId = docIdIt.next();
                 return corpus.get(nextId);
             }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 

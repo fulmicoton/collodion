@@ -3,10 +3,11 @@ package com.fulmicoton.collodion.processors;
 import com.fulmicoton.collodion.CollodionAnalyzer;
 import com.fulmicoton.collodion.common.JSON;
 import com.fulmicoton.collodion.common.Utils;
+import com.fulmicoton.collodion.common.loader.ChainLoader;
 import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.common.loader.ResourceLoader;
 import com.fulmicoton.collodion.processors.stemmer.StemAttribute;
-import com.fulmicoton.collodion.processors.vocabularymatcher.VocabularyAttribute;
+import com.fulmicoton.collodion.common.AnnotationAttribute;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.junit.Assert;
@@ -14,7 +15,10 @@ import org.junit.Test;
 
 public class CollodionAnalyzerTest {
 
-    private static final Loader RESOURCE_LOADER = ResourceLoader.fromClass(CollodionAnalyzerTest.class);
+    private static final Loader RESOURCE_LOADER = ChainLoader.of(
+            ResourceLoader.fromClass(CollodionAnalyzerTest.class),
+            ResourceLoader.fromClass(ProcessorBuilder.class)
+    );
 
     public static CollodionAnalyzer loadPipeline(final String pipelineName) throws Exception {
         return CollodionAnalyzer.fromPath(RESOURCE_LOADER, pipelineName);
@@ -32,7 +36,7 @@ public class CollodionAnalyzerTest {
         final TokenStream tokenStream = collodionAnalyzer.tokenStream("", "The baker loves bread and jambon.");
         tokenStream.reset();
         CharTermAttribute charTerm = tokenStream.getAttribute(CharTermAttribute.class);
-        VocabularyAttribute vocabularyAnnotation = tokenStream.getAttribute(VocabularyAttribute.class);
+        AnnotationAttribute vocabularyAnnotation = tokenStream.getAttribute(AnnotationAttribute.class);
         StemAttribute stem = tokenStream.getAttribute(StemAttribute.class);
         {
             Assert.assertTrue(tokenStream.incrementToken());
@@ -81,7 +85,7 @@ public class CollodionAnalyzerTest {
         final TokenStream tokenStream = collodionAnalyzer.tokenStream("", "aaaa I live in UK for work.");
         tokenStream.reset();
         CharTermAttribute charTerm = tokenStream.getAttribute(CharTermAttribute.class);
-        VocabularyAttribute vocabularyAnnotation = tokenStream.getAttribute(VocabularyAttribute.class);
+        AnnotationAttribute vocabularyAnnotation = tokenStream.getAttribute(AnnotationAttribute.class);
         StemAttribute stem = tokenStream.getAttribute(StemAttribute.class);
 
         System.out.println(JSON.toJson(Utils.toJson(tokenStream)));

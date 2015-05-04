@@ -1,7 +1,6 @@
-package com.fulmicoton.collodion.processors.vocabularymatcher;
+package com.fulmicoton.collodion.common;
 
 
-import com.fulmicoton.collodion.common.Jsonable;
 import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.google.common.base.Joiner;
 import com.google.gson.JsonArray;
@@ -12,11 +11,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class VocabularyAttributeImpl extends AttributeImpl implements VocabularyAttribute, Jsonable, Iterable<Annotation> {
+public class AnnotationAttributeImpl extends AttributeImpl implements AnnotationAttribute, Jsonable, Iterable<Annotation> {
 
     private static final int MAX_NB_ANNOTATIONS = 20;
-    private final Annotation[] annotations = new Annotation[MAX_NB_ANNOTATIONS];
+    private final Annotation[] annotations;
     private int length = 0;
+
+
+    public AnnotationAttributeImpl() {
+        this.annotations = new Annotation[MAX_NB_ANNOTATIONS];
+        for (int annotationId = 0; annotationId < MAX_NB_ANNOTATIONS; annotationId++) {
+            this.annotations[annotationId] = new Annotation(AnnotationKey.NONE);
+        }
+    }
 
     @Override
     public void clear() {
@@ -25,7 +32,7 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
 
     @Override
     public void copyTo(AttributeImpl target_) {
-        VocabularyAttributeImpl target = (VocabularyAttributeImpl)target_;
+        AnnotationAttributeImpl target = (AnnotationAttributeImpl)target_;
         target.reset();
         for (final Annotation annotation: this) {
             target.add(annotation.key, annotation.nbTokens);
@@ -46,9 +53,8 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
     }
 
     @Override
-    public VocabularyAttributeImpl clone() {
-        // call super.clone();
-        final VocabularyAttributeImpl vocAttr = new VocabularyAttributeImpl();
+    public AnnotationAttributeImpl clone() {
+        final AnnotationAttributeImpl vocAttr = new AnnotationAttributeImpl();
         this.copyTo(vocAttr);
         return vocAttr;
     }
@@ -103,6 +109,11 @@ public class VocabularyAttributeImpl extends AttributeImpl implements Vocabulary
             @Override
             public Annotation next() {
                 return annotations[i++];
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
         };
     }

@@ -6,7 +6,6 @@ import com.fulmicoton.collodion.corpus.Corpus;
 import com.fulmicoton.collodion.corpus.FilteredCorpus;
 import com.fulmicoton.collodion.corpus.SimpleCorpus;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
-import com.fulmicoton.collodion.processors.tokenpattern.TokenPatternAttribute;
 import com.fulmicoton.collodion.processors.tokenpattern.TokenPatternFilter;
 import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
@@ -55,26 +54,32 @@ public enum Application {
         return this.executor;
     }
 
-    private class QueryCorpus extends CacheLoader<String, Corpus> {
+    private static class QueryCorpus extends CacheLoader<String, Corpus> {
 
+        private final Application application;
+
+        QueryCorpus(Application application) {
+            this.application = application;
+        }
 
         @Override
         public Corpus load(String query) throws Exception {
-            return FilteredCorpus.filter(corpus, this.getMatchQueryPredicate(query));
+            // return FilteredCorpus.filter(this.application.getCorpus(), this.getMatchQueryPredicate(query));
+            return null;
         }
 
         private Predicate<Document> getMatchQueryPredicate(
                 final String query) {
+            /*
             final TokenPatternFilter.Builder processBuilder = TokenPatternFilter.builder();
-            processBuilder.setPatterns(ImmutableList.of(query));
-            final CollodionAnalyzer extendedAnalyzer = analyzer.append(processBuilder);
+            processBuilder.addPattern(query);
+            final CollodionAnalyzer extendedAnalyzer = this.application.analyzer.append(processBuilder);
             return new Predicate<Document>() {
                 @Override
                 public boolean apply(Document input) {
                     try {
                         final TokenStream tokenStream = extendedAnalyzer.tokenStream("text", input.get("text"));
                         tokenStream.reset();
-                        final TokenPatternAttribute tokenPatternAttribute = tokenStream.getAttribute(TokenPatternAttribute.class);
                         while (tokenStream.incrementToken()) {
                             // tokenPatternAttribute;
                         }
@@ -84,7 +89,8 @@ public enum Application {
                         throw new RuntimeException(e);
                     }
                 }
-            };
+            };*/
+            return null;
         }
     }
 

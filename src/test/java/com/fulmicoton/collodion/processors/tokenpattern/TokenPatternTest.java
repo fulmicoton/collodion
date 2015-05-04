@@ -1,9 +1,11 @@
 package com.fulmicoton.collodion.processors.tokenpattern;
 
 import com.fulmicoton.collodion.processors.AnnotationKey;
+import com.fulmicoton.collodion.processors.tokenpattern.nfa.Machine;
+import com.fulmicoton.collodion.processors.tokenpattern.nfa.MachineBuilder;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatchResult;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatcher;
-import com.fulmicoton.collodion.processors.vocabularymatcher.VocabularyAttributeImpl;
+import com.fulmicoton.collodion.common.AnnotationAttributeImpl;
 import com.google.common.primitives.Ints;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,7 +25,7 @@ public class TokenPatternTest {
     public static List<SemToken> makeTokenList(final String testString) {
         final List<SemToken> tokenList = new ArrayList<>();
         for (char token: testString.toCharArray()) {
-            VocabularyAttributeImpl vocabularyAttribute = new VocabularyAttributeImpl();
+            AnnotationAttributeImpl vocabularyAttribute = new AnnotationAttributeImpl();
             vocabularyAttribute.add(AnnotationKey.of(String.valueOf(token)));
             tokenList.add(new SemToken(vocabularyAttribute));
         }
@@ -32,8 +34,12 @@ public class TokenPatternTest {
 
     public void testTokenPatternSearch(String ptn, String testString, int... expectedPositions) {
         final List<SemToken> tokenList = makeTokenList(testString);
-        final TokenPattern tokenPattern = TokenPattern.compile(ptn);
-        TokenPatternMatcher runner = tokenPattern.matcher();
+
+        final MachineBuilder machineBuilder = new MachineBuilder();
+        machineBuilder.add(ptn);
+        final Machine machine = machineBuilder.buildForSearch();
+
+        TokenPatternMatcher runner = machine.matcher();
         final Iterator<SemToken> tokenIt = tokenList.iterator();
         final List<Integer> actualPositions = new ArrayList<>();
         while (tokenIt.hasNext()) {
@@ -42,9 +48,10 @@ public class TokenPatternTest {
             if (matchResult != null) {
                 actualPositions.add(matchResult.start(0));
                 actualPositions.add(matchResult.end(0));
+                runner.reset();
             }
         }
-        int[] actualPositionsArr = Ints.toArray(actualPositions);
+        final int[] actualPositionsArr = Ints.toArray(actualPositions);
         Assert.assertArrayEquals(actualPositionsArr, expectedPositions);
     }
 

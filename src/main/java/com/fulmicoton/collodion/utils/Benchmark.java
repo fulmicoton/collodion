@@ -35,7 +35,7 @@ public class Benchmark {
             final Corpus corpus,
             final CollodionAnalyzer analyzer) throws IOException {
 
-        ImmutableList<ProcessorBuilder> processorBuilders = analyzer.processorBuilders();
+        ImmutableList<ProcessorBuilder> processorBuilders = analyzer.processorBuilders;
         List<Double> stepTimes = new ArrayList<>();
         for (int i = 0; i <= processorBuilders.size(); i++) {
             final List<ProcessorBuilder> subListProcessorBuilders = processorBuilders.subList(0, i);

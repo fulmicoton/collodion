@@ -1,6 +1,9 @@
 {
   "processors": [
     {
+      "type": "remove"
+    },
+    {
       "type": "stem"
     },
     {
@@ -11,10 +14,10 @@
       "type": "tokenpattern",
       "path": "pattern",
       "maxLength": 100
-    }/*,
+    },
     {
       "type": "debug",
       "name": "debug-tokenpattern"
-    }*/
+    }
   ]
 }

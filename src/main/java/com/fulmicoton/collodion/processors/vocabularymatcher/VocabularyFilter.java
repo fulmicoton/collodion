@@ -1,5 +1,6 @@
 package com.fulmicoton.collodion.processors.vocabularymatcher;
 
+import com.fulmicoton.collodion.common.AnnotationAttribute;
 import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
@@ -39,13 +40,13 @@ public class VocabularyFilter extends TokenFilter {
     }
 
     private final List<VocabularyMatcher> vocabularyMatchers;
-    private final VocabularyAttribute vocabularyAttr;
+    private final AnnotationAttribute vocabularyAttr;
 
     protected VocabularyFilter(TokenStream input, Vocabulary vocabulary) {
         super(input);
         final EnumMap<MatchingMethod, List<Rule>> groupedRules = vocabulary.grouped();
         this.vocabularyMatchers = Lists.newArrayList();
-        this.vocabularyAttr = input.addAttribute(VocabularyAttribute.class);
+        this.vocabularyAttr = input.addAttribute(AnnotationAttribute.class);
         for (Map.Entry<MatchingMethod, List<Rule>> e: groupedRules.entrySet()) {
             final MatchingMethod matchingMethod = e.getKey();
             final List<Rule> rules = e.getValue();
