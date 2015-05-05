@@ -7,8 +7,8 @@ import org.apache.lucene.analysis.TokenStream;
 public class SemToken {
 
     final AnnotationAttribute annotationAttribute;
-    public SemToken(AnnotationAttribute vocabularyAttrbute) {
-        this.annotationAttribute = vocabularyAttrbute;
+    public SemToken(AnnotationAttribute annotationAttribute) {
+        this.annotationAttribute = annotationAttribute;
     }
 
     public SemToken(final TokenStream tokenStream) {
