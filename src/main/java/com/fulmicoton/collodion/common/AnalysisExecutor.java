@@ -1,7 +1,9 @@
 package com.fulmicoton.collodion.common;
 
+import com.fulmicoton.collodion.server.tasks.AnalysisTask;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.document.Document;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -18,11 +20,6 @@ public class AnalysisExecutor {
         this.executorService = Executors.newFixedThreadPool(nbThreads);
         this.analyzer = analyzer;
     }
-
-    public static interface AnalysisTask<T> {
-        public T process(final TokenStream tokenStream) throws Exception;
-    }
-
 
     public static class AnalysisCallable<T> implements Callable<T> {
 
@@ -50,12 +47,16 @@ public class AnalysisExecutor {
         }
     }
 
-    public <T> T call( final String fieldName, final String str, final AnalysisTask<T> task) throws Exception {
+    public <T> T call(final String fieldName, final String str, final AnalysisTask<T> task) throws Exception {
         return call(fieldName, new StringReader(str), task);
     }
 
-    public <T> T call( final String fieldName, final Reader reader, final AnalysisTask<T> task) throws Exception {
-        final AnalysisCallable<T> callable = new AnalysisCallable<>(reader, fieldName, this.analyzer, task);
+    public <T> T call(final String fieldName, final Document doc, final AnalysisTask<T> task) throws Exception {
+        return call(fieldName, doc.get(fieldName), task);
+    }
+
+    public <T> T call(final String fieldName, final Reader reader, final AnalysisTask<T> task) throws Exception {
+        final AnalysisCallable<T> callable = new AnalysisCallable<>(reader, fieldName, task.getAnalyzer(), task);
         return this.executorService.submit(callable).get();
     }
 

@@ -52,7 +52,8 @@ public class FilteredCorpus implements Corpus {
         };
     }
 
-    public static Corpus filter(final Corpus corpus, final Predicate<Document> predicate) {
+    public static Corpus filter(final Corpus corpus,
+                                final Predicate<Document> predicate) {
         final List<Integer> keptDocIds = Lists.newArrayList();
         int docId = 0;
         final Iterator<Document> docIt = corpus.iterator();

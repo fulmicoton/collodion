@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class AnnotationAttributeImpl extends AttributeImpl implements AnnotationAttribute, Jsonable, Iterable<Annotation> {
+public class AnnotationAttributeImpl extends AttributeImpl implements AnnotationAttribute, Jsonable {
 
     private static final int MAX_NB_ANNOTATIONS = 20;
     private final Annotation[] annotations;

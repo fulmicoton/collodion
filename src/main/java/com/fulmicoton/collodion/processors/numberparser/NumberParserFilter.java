@@ -1,10 +1,12 @@
 package com.fulmicoton.collodion.processors.numberparser;
 
+import com.fulmicoton.collodion.common.AnnotationAttribute;
 import com.fulmicoton.collodion.common.StateQueue;
 import com.fulmicoton.collodion.common.loader.Loader;
+import com.fulmicoton.collodion.processors.AnnotationKey;
+import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.fulmicoton.multiregexp.MultiPattern;
 import com.fulmicoton.multiregexp.MultiPatternAutomaton;
-import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.google.common.collect.Lists;
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -13,6 +15,10 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Requires the Soliless processor.
+ * You can then remove the unnecessary tokens with the remove filter processor.
+ */
 public class NumberParserFilter extends TokenFilter {
 
 
@@ -60,6 +66,7 @@ public class NumberParserFilter extends TokenFilter {
     final List<NumberInterpreter> numberInterpreters;
     final CharTermAttribute termAttr;
     final NumberAttribute numberAttribute;
+    final AnnotationAttribute annotationAttr;
 
     protected NumberParserFilter(final TokenStream input,
                                  final MultiPattern multiPattern,
@@ -67,6 +74,7 @@ public class NumberParserFilter extends TokenFilter {
         super(input);
         this.automaton = multiPattern.makeAutomatonWithPrefix("");
         this.termAttr = input.getAttribute(CharTermAttribute.class);
+        this.annotationAttr = input.getAttribute(AnnotationAttribute.class);
         this.numberAttribute = input.addAttribute(NumberAttribute.class);
         this.numberInterpreters = numberInterpreters;
     }
@@ -89,7 +97,7 @@ public class NumberParserFilter extends TokenFilter {
         int p = 0;
         int matchedPattern = -1;
         int matchedNbTokens = 0;
-        outerloop:
+        OUTER_LOOP:
         for (int nbToken = 0; nbToken < MAX_STATES; nbToken++) {
             // TODO Perf get rid of the extraneous copy in the default case.
             if (!peekAhead(nbToken)) {
@@ -98,7 +106,7 @@ public class NumberParserFilter extends TokenFilter {
                     return false;
                 }
                 else {
-                    break outerloop;
+                    break OUTER_LOOP;
                 }
             }
             for (int charId = 0; charId < this.termAttr.length(); charId++) {
@@ -106,7 +114,7 @@ public class NumberParserFilter extends TokenFilter {
                 p = automaton.step(p, c);
                 if (p < 0) {
                     // no more pattern can be matched
-                    break outerloop;
+                    break OUTER_LOOP;
                 }
             }
             final int[] accepted = automaton.accept[p];
@@ -132,6 +140,8 @@ public class NumberParserFilter extends TokenFilter {
             final NumberInterpreter numberInterpreter = this.numberInterpreters.get(matchedPattern);
             double val = numberInterpreter.read(buffer.toString());
             this.numberAttribute.setVal(val);
+            // reset the number annotation.
+            this.annotationAttr.add(AnnotationKey.of("NUMBER"));
         }
         return true;
     }

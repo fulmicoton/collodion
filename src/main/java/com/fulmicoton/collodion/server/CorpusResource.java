@@ -1,7 +1,8 @@
 package com.fulmicoton.collodion.server;
 
 import com.fulmicoton.collodion.common.JSON;
-import com.fulmicoton.collodion.corpus.Corpus;
+import com.fulmicoton.collodion.corpus.CorpusAndAnalyzer;
+import com.fulmicoton.collodion.server.tasks.ToJSON;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.lucene.document.Document;
@@ -26,7 +27,7 @@ public class CorpusResource {
     @Path("/{docId}/")
     public String getDoc(@PathParam("docId") Integer i,
                          @QueryParam("q") final String query) throws ExecutionException {
-        final Document doc = Application.get().getCorpus(query).get(i);
+        final Document doc = Application.get().getCorpusAndAnalyzer(query).corpus.get(i);
         return JSON.toJson(doc);
     }
 
@@ -36,12 +37,13 @@ public class CorpusResource {
     @Path("/{docId}/processed/")
     public String getDocProcessed(@PathParam("docId") Integer i,
                                   @QueryParam("q") final String query) throws Exception {
-        final Corpus corpus = Application.get().getCorpus(query);
-        final Document doc = corpus.get(i);
+        final CorpusAndAnalyzer corpusAndAnalyzer = Application.get().getCorpusAndAnalyzer(query);
+        final Document doc = corpusAndAnalyzer.corpus.get(i);
 
         final String text = doc.get("text");
         final JsonObject resp = new JsonObject();
-        final JsonElement tokenStreamJson = Application.get().executor().call("text", text, AnalysisTasks.ToJSON);
+        final ToJSON jsonTask = new ToJSON(corpusAndAnalyzer.analyzer);
+        final JsonElement tokenStreamJson = Application.get().executor().call("text", text, jsonTask);
         resp.add("tokens", tokenStreamJson);
         resp.addProperty("text", text);
         return resp.toString();
@@ -58,7 +60,7 @@ public class CorpusResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/" )
     public CorpusMeta index(@QueryParam("q") final String query) throws ExecutionException {
-        final long nbDocs = Application.get().getCorpus(query).size();
+        final long nbDocs = Application.get().getCorpusAndAnalyzer(query).corpus.size();
         return new CorpusMeta(nbDocs);
     }
 

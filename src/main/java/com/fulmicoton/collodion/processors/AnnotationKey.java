@@ -1,10 +1,11 @@
 package com.fulmicoton.collodion.processors;
 
 import com.google.common.collect.Maps;
-
 import java.util.Map;
 
 public class AnnotationKey {
+
+    // TODO add namespacing.
 
     private final String annotation;
     private final static Map<String, AnnotationKey> annotationMap = Maps.newHashMap();
