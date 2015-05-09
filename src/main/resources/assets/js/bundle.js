@@ -205,25 +205,40 @@ module.exports = Application;
 
 
 },{"../actions.coffee":1,"../store.coffee":7,"./staff.cjsx":4,"react":153}],4:[function(require,module,exports){
-var EmptyToken, React, Staff, Token, store;
+var EmptyToken, React, Staff, Token, annotationHeight, annotationRank, computeMaxNbAnnotations, computeRequiredHeight, store;
 
 React = require('react');
 
 store = require('../store.coffee');
 
+annotationRank = 0;
+
+annotationHeight = 10;
+
 Token = React.createClass({
   render: function() {
-    var className;
+    var annotation, annotationsDiv, className, _i, _len, _ref;
     className = "token token-" + this.props.data.type.toLowerCase();
+    annotationsDiv = [];
+    _ref = this.props.data.annotations;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      annotation = _ref[_i];
+      annotationsDiv.push(React.createElement("div", {
+        "className": "annotation"
+      }, annotation.key));
+    }
     return React.createElement("div", {
-      "className": className
+      "className": className,
+      "style": {
+        height: this.props.height
+      }
     }, React.createElement("div", {
       "className": "text"
     }, this.props.data.charterm), React.createElement("div", {
       "className": "stem"
     }, this.props.data.stem), React.createElement("div", {
       "className": "number"
-    }, this.props.data.number));
+    }, this.props.data.number), annotationsDiv);
   }
 });
 
@@ -234,6 +249,41 @@ EmptyToken = React.createClass({
     }, this.props.text);
   }
 });
+
+computeRequiredHeight = function(tokens) {
+  return 50 + 10 * computeMaxNbAnnotations(tokens);
+};
+
+computeMaxNbAnnotations = function(tokens) {
+  var annKey, annotation, curTokenNbAnnotation, maxNbAnnotations, newRemainingAnnotations, remaining, remainingAnnotations, token, _i, _j, _len, _len1, _ref;
+  maxNbAnnotations = 0;
+  remainingAnnotations = {};
+  annotationRank = 0;
+  for (_i = 0, _len = tokens.length; _i < _len; _i++) {
+    token = tokens[_i];
+    _ref = token.annotations;
+    for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+      annotation = _ref[_j];
+      if (remainingAnnotations[annotation.key] != null) {
+        remainingAnnotations[annotation.key] = Math.max(annotations[annotation.key], annotation.length);
+      } else {
+        remainingAnnotations[annotation.key] = remainingAnnotations.length;
+      }
+    }
+    newRemainingAnnotations = {};
+    curTokenNbAnnotation = 0;
+    for (annKey in remainingAnnotations) {
+      remaining = remainingAnnotations[annKey];
+      curTokenNbAnnotation += 1;
+      if (remaining > 1) {
+        newRemainingAnnotations[annKey] = remaining - 1;
+      }
+    }
+    remainingAnnotations = newRemainingAnnotations;
+    maxNbAnnotations = Math.max(maxNbAnnotations, curTokenNbAnnotation);
+  }
+  return maxNbAnnotations;
+};
 
 Staff = React.createClass({
   getInitialState: function() {
@@ -262,14 +312,16 @@ Staff = React.createClass({
     return _results;
   },
   render: function() {
-    var curOffset, token, tokenEls, _i, _len, _ref;
+    var curOffset, staffHeight, token, tokenEls, _i, _len, _ref;
     tokenEls = [];
     curOffset = 0;
+    staffHeight = computeRequiredHeight(this.state.tokens);
     _ref = this.state.tokens;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       token = _ref[_i];
       tokenEls.push(React.createElement(Token, {
-        "data": token
+        "data": token,
+        "height": staffHeight
       }));
       curOffset = token.offset.end;
     }

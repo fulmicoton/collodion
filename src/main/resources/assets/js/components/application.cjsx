@@ -52,7 +52,7 @@ Application = React.createClass
 	
 	render: ->
 		<div id="main">
-			<DocumentSelector />
+			<DocumentSelector 	/>
 			<div className='right-pane pane'>
 				<div className='search-bar'>
 					<input type='text'></input>
