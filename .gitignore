@@ -1,7 +1,5 @@
-src/main/resources/assets/.readymade/
-src/main/resources/assets/node_modules/
 .idea
 *.iml
 target
-US.json
-US.txt
+node_modules
+dist
