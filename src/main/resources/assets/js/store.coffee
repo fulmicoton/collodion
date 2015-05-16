@@ -3,18 +3,25 @@ fulmicoton = require './fulmicoton.coffee'
 api = require './api.coffee'
 
 
+
+
 class CollodionStore extends fulmicoton.Store
 
 	events: -> ["docChange", "corpusChange"]
 
+	bind: (action, handler)->
+		action.bind handler.bind(this)
+
 	bindActions: ->
-		actions.selectDoc.bind @onSelectDoc.bind(this)
+		@bind actions.selectDoc, @onSelectDoc
+		@bind actions.reloadAnalyzer, @onReloadAnalyzer
 
 	getNbDocs: ->
 		@corpus.nbDocs
 
 	init: ->
 		@corpus = new api.Corpus()
+		@analyzer = new api.Analyzer()
 		@corpus.get =>
 			@events.corpusChange.trigger()
 		@onSelectDoc 0
@@ -23,6 +30,10 @@ class CollodionStore extends fulmicoton.Store
 		@doc
 
 	# -------	
+
+	onReloadAnalyzer: ->
+		@analyzer.refresh =>
+			@onSelectDoc @getDoc().docId
 
 	onSelectDoc: (docId)->
 		@doc = @corpus.fetchDoc docId, (doc)=>

@@ -5,17 +5,44 @@ import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.ParserProperties;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
+import java.io.File;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 public class CollodionServer extends Application<CollodionServerConfiguration> {
 
-    public static void main(String[] args) throws Exception {
-        final CollodionServer server = new CollodionServer();
+    public static class Config {
+        @Option(name="--project", usage="Set your project directory")
+        public String projectDirectory;
+    }
 
-        server.run(args);
+    public static void main(String[] args) throws Exception {
+        final Config config = new Config();
+        final ParserProperties parserProperties = ParserProperties
+                .defaults()
+                .withUsageWidth(80);
+
+        final CmdLineParser parser = new CmdLineParser(config, parserProperties);
+        try {
+            final String[] remainingArgs = Arrays.asList(args)
+                    .subList(1, args.length)
+                    .toArray(new String[0]);
+            parser.parseArgument(remainingArgs);
+            CollodionApplication.setProjectPath(new File(config.projectDirectory));
+            new CollodionServer().run(new String[]{args[0]});
+        } catch(CmdLineException e) {
+            System.err.println(e.getMessage());
+            System.err.println("java SampleMain [options...] arguments...");
+            parser.printUsage(System.err);
+            return;
+        }
     }
 
 
@@ -33,7 +60,8 @@ public class CollodionServer extends Application<CollodionServerConfiguration> {
     @Override
     public void run(CollodionServerConfiguration configuration,
                     Environment environment) {
-        final CorpusResource resource = new CorpusResource();
+        final CorpusResource corpusResource = new CorpusResource();
+        final AnalyzerResource analyzerResource = new AnalyzerResource();
 
         // Enable CORS headers
         final FilterRegistration.Dynamic cors =
@@ -49,7 +77,8 @@ public class CollodionServer extends Application<CollodionServerConfiguration> {
 
 
         environment.jersey().setUrlPattern("/api/*");
-        environment.jersey().register(resource);
+        environment.jersey().register(corpusResource);
+        environment.jersey().register(analyzerResource);
     }
 }
 

@@ -18,20 +18,22 @@ gulp.task 'build-less', ->
         .pipe gulp.dest('./dist/css/')
 
 gulp.task 'build-app', ->
-    browserify({
+    b = browserify({
         entries: [ASSET_SRC_DIR + 'js/main.coffee'],
         transform: ["coffee-reactify"],
         extensions: ['.coffee']
-    }).bundle()
+    })
+    return b.bundle()
         .pipe source('app.js')
         .pipe gulp.dest('./dist/js')
+
+gulp.task('build-app-watch', ['build-app'], browserSync.reload)
 
 gulp.task 'build', ['copy-static', 'build-less', 'build-app'], ->
     console.log "Building"
 
 gulp.task 'serve', ['build'], ->
-    gulp.watch(ASSET_SRC_DIR + '**.cjsx', ['build-app'])
-        .on("change", browserSync.reload)
+    gulp.watch([ASSET_SRC_DIR + '**/*.cjsx', ASSET_SRC_DIR + '**/*.coffee'], ['build-app-watch'])
     gulp.watch([ASSET_SRC_DIR + 'css/style.less'], ['build-less'])
         .on("change", browserSync.reload)
     gulp.watch([ASSET_SRC_DIR + '/index.html', ASSET_SRC_DIR + 'js/ext/*.js'], ['copy-static'])

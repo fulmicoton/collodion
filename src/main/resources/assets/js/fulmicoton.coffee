@@ -20,12 +20,11 @@ class Event
 
     constructor: (@action_name)->
         @__listeners = []
-
-    trigger: (args...)->
-        @__listeners = @__listeners.slice 0
-        for callback in @__listeners
-            callback args...
-    
+        @trigger = (args...)=>
+            @__listeners = @__listeners.slice 0
+            for callback in @__listeners
+                callback args...
+        
     bind: (callback)->
         @__listeners.push callback
         (=> @unbind callback)

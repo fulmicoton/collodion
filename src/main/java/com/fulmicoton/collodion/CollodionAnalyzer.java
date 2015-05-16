@@ -71,7 +71,7 @@ public class CollodionAnalyzer extends Analyzer {
         return new TokenStreamComponents(source, lastFilter);
     }
 
-    public static CollodionAnalyzer fromPath(final Loader loader, final String path) throws Exception {
+    public static CollodionAnalyzer fromPath(final String path, final Loader loader) throws Exception {
         final CollodionAnalyzer collodionAnalyzer = loader.readObject(path, CollodionAnalyzer.class);
         collodionAnalyzer.prependLoader(loader);
         collodionAnalyzer.init();
@@ -79,11 +79,12 @@ public class CollodionAnalyzer extends Analyzer {
     }
 
     public static CollodionAnalyzer fromPath(final String path) throws Exception {
-        return fromPath(Loader.DEFAULT_LOADER, path);
+        return fromPath(path, Loader.DEFAULT_LOADER);
     }
 
     public static CollodionAnalyzer fromStream(final InputStream inputStream) throws Exception {
-        final CollodionAnalyzer collodionAnalyzer = JSON.fromJson(new InputStreamReader(inputStream, UTF8), CollodionAnalyzer.class);
+        final Reader reader = new InputStreamReader(inputStream, UTF8);
+        final CollodionAnalyzer collodionAnalyzer = JSON.fromJson(reader, CollodionAnalyzer.class);
         collodionAnalyzer.init();
         return collodionAnalyzer;
     }

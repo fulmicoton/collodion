@@ -2,6 +2,7 @@ package com.fulmicoton.collodion.tokenizer;
 
 
 import com.fulmicoton.collodion.CollodionAnalyzer;
+import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.common.loader.ResourceLoader;
 import junit.framework.Assert;
 import org.apache.lucene.analysis.TokenStream;
@@ -13,7 +14,8 @@ public class SolilessTokenizerTest {
 
     @Test
     public void testWithPunctuation() throws Exception {
-        CollodionAnalyzer collodionAnalyzer = CollodionAnalyzer.fromPath(ResourceLoader.fromClass(SolilessTokenizerTest.class), "pipeline-empty.json");
+        final Loader loader = ResourceLoader.fromClass(SolilessTokenizerTest.class);
+        CollodionAnalyzer collodionAnalyzer = CollodionAnalyzer.fromPath("pipeline-empty.json", loader);
         final TokenStream tokenStream = collodionAnalyzer.tokenStream("", "RESPONSABILITIES: Our client");
         tokenStream.reset();
         final CharTermAttribute term = tokenStream.getAttribute(CharTermAttribute.class);

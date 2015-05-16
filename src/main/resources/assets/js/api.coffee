@@ -34,6 +34,15 @@ class Corpus extends Resource
 			cb(doc)
 		doc
 
+class Analyzer extends Resource
+
+	url: ->
+		API_URL + "analyzer/"
+
+	refresh: (cb)->
+		url = @url() + "reload/"
+		$.getJSON url, cb
+
 class Document extends Resource
 	
 	constructor: (@corpus, @docId)->
@@ -44,3 +53,4 @@ class Document extends Resource
 module.exports = 
 	Corpus: Corpus
 	Document: Document
+	Analyzer: Analyzer

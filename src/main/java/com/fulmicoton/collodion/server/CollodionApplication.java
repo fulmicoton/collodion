@@ -2,6 +2,9 @@ package com.fulmicoton.collodion.server;
 
 import com.fulmicoton.collodion.CollodionAnalyzer;
 import com.fulmicoton.collodion.common.AnalysisExecutor;
+import com.fulmicoton.collodion.common.loader.ChainLoader;
+import com.fulmicoton.collodion.common.loader.DirectoryLoader;
+import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.corpus.Corpus;
 import com.fulmicoton.collodion.corpus.CorpusAndAnalyzer;
 import com.fulmicoton.collodion.corpus.SimpleCorpus;
@@ -9,35 +12,59 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
+import java.io.File;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 
-public enum Application {
+public class CollodionApplication {
 
-    INSTANCE;
+    private static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
 
-    public AnalysisExecutor executor;
+    private static CollodionApplication APPLICATION;
 
-    public static Application get() {
-        return INSTANCE;
-    }
-
+    private final Loader loader;
     private final CorpusAndAnalyzer corpusAndAnalyzer;
+    private final AnalysisExecutor executor;
+
+    public synchronized static CollodionApplication get() {
+        return APPLICATION;
+    }
 
     private final LoadingCache<QueryCorpus.Key, Corpus> queryCache;
 
-    Application() {
+    public synchronized static void setProjectPath(final File projectDirectory) {
+        final Loader loader = ChainLoader.of(
+            DirectoryLoader.forRoot(projectDirectory),
+            Loader.DEFAULT_LOADER
+        );
+        load(loader);
+    }
+
+    private static void load(final Loader loader) {
+        CollodionApplication.APPLICATION = new CollodionApplication(loader);
+    }
+
+    public static void reload() {
+        load(get().loader);
+    }
+
+    CollodionApplication(final Loader loader) {
+        this.loader = loader;
         try {
-            final Corpus corpus = SimpleCorpus.fromPath("US.json");
-            final CollodionAnalyzer analyzer = CollodionAnalyzer.fromPath("pipeline-benchmark.json");
+            final Corpus corpus = SimpleCorpus.fromPath("corpus.json", loader);
+            final CollodionAnalyzer analyzer = CollodionAnalyzer.fromPath("pipeline.json", loader);
             this.corpusAndAnalyzer = new CorpusAndAnalyzer(corpus, analyzer);
-            this.executor = new AnalysisExecutor(this.corpusAndAnalyzer.analyzer, Runtime.getRuntime().availableProcessors());
+            this.executor = new AnalysisExecutor(
+                    this.corpusAndAnalyzer.analyzer,
+                    NUM_THREADS
+            );
             final CacheLoader<QueryCorpus.Key, Corpus> cacheLoader = new QueryCorpus(this.executor);
-            this.queryCache = CacheBuilder.newBuilder()
-                .maximumSize(20)
-                .expireAfterWrite(1, TimeUnit.HOURS)
-                .build(cacheLoader);
+            this.queryCache = CacheBuilder
+                    .newBuilder()
+                    .maximumSize(20)
+                    .expireAfterWrite(1, TimeUnit.HOURS)
+                    .build(cacheLoader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
