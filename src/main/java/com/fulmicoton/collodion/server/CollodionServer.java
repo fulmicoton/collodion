@@ -45,16 +45,14 @@ public class CollodionServer extends Application<CollodionServerConfiguration> {
         }
     }
 
-
     @Override
     public String getName() {
-        return "hello-world";
+        return "collodion";
     }
 
     @Override
     public void initialize(Bootstrap<CollodionServerConfiguration> bootstrap) {
         bootstrap.addBundle(new AssetsBundle("/assets/", "/", "index.html"));
-
     }
 
     @Override

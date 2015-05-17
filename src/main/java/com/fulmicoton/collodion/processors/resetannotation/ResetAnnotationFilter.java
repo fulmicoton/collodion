@@ -32,7 +32,7 @@ public class ResetAnnotationFilter extends TokenFilter {
     }
 
     @Override
-    public boolean incrementToken() throws IOException {
+    public final boolean incrementToken() throws IOException {
         this.annotationAttribute.reset();
         return this.input.incrementToken();
     }

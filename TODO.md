@@ -1,0 +1,13 @@
+- add display for spanning annotation
+- fix increment when removing tokens
+- mapper
+- fix search
+- fix annotation of subgroup
+- add name mapping for pattern in pattern file
+- pattern file -> JSON
+- enable / disable processor
+- display processor chain
+- display benchmark
+- watch -> wget
+- when load conf fails, UI feedback
+- reflections for processors. (reactivate reflections in pom.xml)
