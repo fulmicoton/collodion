@@ -11,3 +11,6 @@
 - watch -> wget
 - when load conf fails, UI feedback
 - reflections for processors. (reactivate reflections in pom.xml)
+- handle annotation length in TokenRegexp
+- remove groups in TokenRegexp and use a list (well, array) of visited states instead.
+- do not push states if we know they cannot be part of a match in TokenRegexp.
