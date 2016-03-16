@@ -22,15 +22,7 @@ lack either speed, language support, or are commercial.
 
 # Building it
 
-Collodion relies on multiregexp, which is not yet published in mvn central
-repo. To build collodion you will need to clone multiregexp and install it
-locally via :
-
-    git clone git@github.com:fulmicoton/multiregexp.git
-    cd multiregexp
-    mvn install
-
-Building and installing collodiion is then just a matter of running
+Just run
 
     mvn install
 
