@@ -31,7 +31,7 @@ public class MachineBuilder {
         this.numPatterns = 0;
     }
 
-    public int addPatternString(final String tokenPattern) {
+    public int addPattern(final String tokenPattern) {
         final AST ast = AST.compile(tokenPattern);
         return this.addPattern(ast);
     }

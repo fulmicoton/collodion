@@ -27,7 +27,7 @@ public class TokenPattern {
 
     public static TokenPattern compile(final String pattern) {
         final MachineBuilder machine = new MachineBuilder();
-        final int patternId = machine.addPatternString(pattern);
+        final int patternId = machine.addPattern(pattern);
         return new TokenPattern(pattern, patternId, machine.buildForMatch());
     }
 

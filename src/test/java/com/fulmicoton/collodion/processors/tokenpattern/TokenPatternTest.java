@@ -24,22 +24,24 @@ public class TokenPatternTest {
 
     public static List<SemToken> makeTokenList(final String testString) {
         final List<SemToken> tokenList = new ArrayList<>();
-        for (char token: testString.toCharArray()) {
-            AnnotationAttributeImpl vocabularyAttribute = new AnnotationAttributeImpl();
+        for (final char token: testString.toCharArray()) {
+            final AnnotationAttributeImpl vocabularyAttribute = new AnnotationAttributeImpl();
             vocabularyAttribute.add(AnnotationKey.of(String.valueOf(token)));
             tokenList.add(new SemToken(vocabularyAttribute));
         }
         return tokenList;
     }
 
-    public void testTokenPatternSearch(String ptn, String testString, int... expectedPositions) {
+    public void testTokenPatternSearch(final String ptn,
+                                       final String testString,
+                                       final int... expectedPositions) {
         final List<SemToken> tokenList = makeTokenList(testString);
 
         final MachineBuilder machineBuilder = new MachineBuilder();
         machineBuilder.addPattern(ptn);
         final Machine machine = machineBuilder.buildForSearch();
 
-        TokenPatternMatcher runner = machine.matcher();
+        final TokenPatternMatcher runner = machine.matcher();
         final Iterator<SemToken> tokenIt = tokenList.iterator();
         final List<Integer> actualPositions = new ArrayList<>();
         while (tokenIt.hasNext()) {

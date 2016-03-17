@@ -50,6 +50,6 @@ public class Grammar<T, V> {
         while (!toVisit.isEmpty()) {
             toVisit.poll().matcher(fakeIndex);
         }
-        return indexBuilder.build((Rule<T>[])new Rule[0]);
+        return indexBuilder.build(new Rule[0]);
     }
 }

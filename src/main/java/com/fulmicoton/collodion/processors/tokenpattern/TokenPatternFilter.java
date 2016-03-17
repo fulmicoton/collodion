@@ -65,7 +65,7 @@ public class TokenPatternFilter extends TokenFilter {
         public TokenPatternFilter createFilter(final TokenStream prev) throws IOException {
             final MachineBuilder machineBuilder = new MachineBuilder();
             for (final String pattern: this.patterns) {
-                machineBuilder.addPatternString(pattern);
+                machineBuilder.addPattern(pattern);
             }
             final Machine machine = machineBuilder.buildForSearch();
             return new TokenPatternFilter(prev, machine, maxLength);
