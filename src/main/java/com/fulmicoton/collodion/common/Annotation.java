@@ -5,7 +5,7 @@ import com.fulmicoton.collodion.processors.AnnotationKey;
 
 public class Annotation {
     public AnnotationKey key;
-    public int nbTokens;
+    public int numTokens;
 
     public Annotation(final AnnotationKey key) {
         this(key, 1);
@@ -13,7 +13,7 @@ public class Annotation {
 
     public Annotation(final AnnotationKey key, final int nbTokens) {
         this.key = key;
-        this.nbTokens = nbTokens;
+        this.numTokens = nbTokens;
     }
 
     public String toString() {

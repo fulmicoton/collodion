@@ -198,7 +198,7 @@ public class TokenPatternFilter extends TokenFilter {
             stateQueue.pop();
             emitted += 1;
             for (final Annotation annotation: annotations) {
-                annotationAttribute.add(annotation.key, annotation.nbTokens);
+                annotationAttribute.add(annotation.key, annotation.numTokens);
             }
             if (this.annotationQueue.isEmpty()) {
                 return new Start();
@@ -211,10 +211,10 @@ public class TokenPatternFilter extends TokenFilter {
 
     public class Flush implements State {
         /**
-         * Outputs one by one <nbTokens> elements within the queue,
+         * Outputs one by one <numTokens> elements within the queue,
          * at each call of incrementTokens.
          *
-         * Once nbTokens have been emitted, returns the next
+         * Once numTokens have been emitted, returns the next
          * state as defined in next.
          */
         int nbTokens;

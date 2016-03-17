@@ -6,7 +6,6 @@ import com.fulmicoton.collodion.common.Jsonable;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
@@ -124,7 +123,7 @@ public class AttrTypePair {
             for (final Annotation ann: annotationAttribute) {
                 JsonObject annJson = new JsonObject();
                 annJson.addProperty("key", ann.key.toString());
-                annJson.addProperty("length", ann.nbTokens);
+                annJson.addProperty("length", ann.numTokens);
                 jsonArr.add(annJson);
             }
             jsonObj.add("annotations", jsonArr);

@@ -35,7 +35,7 @@ public class AnnotationAttributeImpl extends AttributeImpl implements Annotation
         AnnotationAttributeImpl target = (AnnotationAttributeImpl)target_;
         target.reset();
         for (final Annotation annotation: this) {
-            target.add(annotation.key, annotation.nbTokens);
+            target.add(annotation.key, annotation.numTokens);
         }
     }
 
@@ -75,19 +75,24 @@ public class AnnotationAttributeImpl extends AttributeImpl implements Annotation
     }
 
     @Override
-    public void add(final AnnotationKey annotation, final int length) {
+    public void add(final AnnotationKey annotationKey, final int numTokens) {
         if (this.length < MAX_NB_ANNOTATIONS) {
-            this.annotations[this.length].key = annotation;
+            final Annotation annotation = this.annotations[this.length];
+            annotation.key = annotationKey;
+            annotation.numTokens = length;
             this.length += 1;
+        }
+        else {
+            throw new IllegalStateException("Exceeded maximum number of annotations");
         }
     }
 
     @Override
-    public void updateJson(JsonObject jsonObject) {
+    public void updateJson(final JsonObject jsonObject) {
         final JsonArray jsonArr = new JsonArray();
         for (final Annotation annotation: this) {
             final JsonObject itemJson = new JsonObject();
-            itemJson.addProperty("nbTokens", annotation.nbTokens);
+            itemJson.addProperty("numTokens", annotation.numTokens);
             itemJson.addProperty("annotation", annotation.key.name());
             jsonArr.add(itemJson);
         }
