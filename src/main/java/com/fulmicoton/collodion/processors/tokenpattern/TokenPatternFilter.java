@@ -34,7 +34,7 @@ public class TokenPatternFilter extends TokenFilter {
 
         @Override
         public void init(final Loader loader) throws IOException {
-            if (patterns != null) {
+            if (this.patterns != null) {
                 if (this.path != null) {
                     throw new IllegalArgumentException("Filepath defined even though patterns have been already defined dynamically.");
                 }
@@ -58,12 +58,13 @@ public class TokenPatternFilter extends TokenFilter {
 
         private void readLine(final String line) {
             final String noCommentLine = line.replaceFirst("#.*", "").trim();
-            if (noCommentLine.isEmpty()) return;
-            this.patterns.add(noCommentLine);
+            if (!noCommentLine.isEmpty()) {
+                this.patterns.add(noCommentLine);
+            }
         }
 
         @Override
-        public TokenPatternFilter createFilter(TokenStream prev) throws IOException {
+        public TokenPatternFilter createFilter(final TokenStream prev) throws IOException {
             final MachineBuilder machineBuilder = new MachineBuilder();
             for (final String pattern: this.patterns) {
                 machineBuilder.add(pattern);
@@ -81,7 +82,7 @@ public class TokenPatternFilter extends TokenFilter {
     private int emitted = 0;
     private State state;
 
-    private AnnotationAttribute annotationAttribute;
+    private final AnnotationAttribute annotationAttribute;
 
     protected TokenPatternFilter(final TokenStream input,
                                  final Machine machine,
@@ -114,7 +115,7 @@ public class TokenPatternFilter extends TokenFilter {
         public State incrementToken() throws IOException;
     }
 
-    private static AnnotationKey makeAnnotationKey(String patternName, int groupId) {
+    private static AnnotationKey makeAnnotationKey(final String patternName, final int groupId) {
         return AnnotationKey.of(patternName + "." + groupId);
     }
 
@@ -160,7 +161,7 @@ public class TokenPatternFilter extends TokenFilter {
                     machineRunner.reset();
                     final int matchStart = match.start(0);
                     final State outputMatch = makeOutputState(match);
-                    if (matchStart - emitted > 0) {
+                    if ((matchStart - emitted) > 0) {
                         return new Flush(matchStart - emitted, outputMatch).incrementToken();
                     }
                     else {
@@ -219,7 +220,7 @@ public class TokenPatternFilter extends TokenFilter {
         int nbTokens;
         final State next;
 
-        Flush(int nbTokens, State next) {
+        Flush(final int nbTokens, final State next) {
             assert nbTokens != 0;
             this.nbTokens = nbTokens;
             this.next = next;

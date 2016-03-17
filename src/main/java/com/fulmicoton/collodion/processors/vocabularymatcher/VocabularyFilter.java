@@ -15,6 +15,7 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class VocabularyFilter extends TokenFilter {
 
@@ -34,7 +35,7 @@ public class VocabularyFilter extends TokenFilter {
         }
 
         @Override
-        public VocabularyFilter createFilter(TokenStream prev) throws IOException {
+        public VocabularyFilter createFilter(final TokenStream prev) throws IOException {
             return new VocabularyFilter(prev, vocabulary);
         }
     }
@@ -42,12 +43,12 @@ public class VocabularyFilter extends TokenFilter {
     private final List<VocabularyMatcher> vocabularyMatchers;
     private final AnnotationAttribute vocabularyAttr;
 
-    protected VocabularyFilter(TokenStream input, Vocabulary vocabulary) {
+    protected VocabularyFilter(final TokenStream input, final Vocabulary vocabulary) {
         super(input);
         final EnumMap<MatchingMethod, List<Rule>> groupedRules = vocabulary.grouped();
         this.vocabularyMatchers = Lists.newArrayList();
         this.vocabularyAttr = input.addAttribute(AnnotationAttribute.class);
-        for (Map.Entry<MatchingMethod, List<Rule>> e: groupedRules.entrySet()) {
+        for (final Map.Entry<MatchingMethod, List<Rule>> e: groupedRules.entrySet()) {
             final MatchingMethod matchingMethod = e.getKey();
             final List<Rule> rules = e.getValue();
             final VocabularyMatcher vocabularyMatcher = matchingMethod.createMatcher(input, rules);
@@ -57,10 +58,12 @@ public class VocabularyFilter extends TokenFilter {
 
     @Override
     public final boolean incrementToken() throws IOException {
-        boolean res = input.incrementToken();
+        final boolean res = input.incrementToken();
         this.vocabularyAttr.reset();
-        if (!res) return false;
-        for (VocabularyMatcher vocabularyMatcher: this.vocabularyMatchers) {
+        if (!res) {
+            return false;
+        }
+        for (final VocabularyMatcher vocabularyMatcher: this.vocabularyMatchers) {
             final Iterator<AnnotationKey> annotationIterator = vocabularyMatcher.match();
             while (annotationIterator.hasNext()) {
                 this.vocabularyAttr.add(annotationIterator.next());
@@ -68,5 +71,4 @@ public class VocabularyFilter extends TokenFilter {
         }
         return true;
     }
-
 }

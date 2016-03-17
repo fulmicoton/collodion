@@ -31,7 +31,7 @@ public class AttrTypePair {
         this.formatter = getFormatter(type);
     }
 
-    private static String simplifyName(final String attrName) {
+    public static String simplifyName(final String attrName) {
         if (attrName.endsWith("Attribute")) {
             return attrName.substring(0, attrName.length() - "Attribute".length());
         }

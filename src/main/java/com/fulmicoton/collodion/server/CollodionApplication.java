@@ -27,13 +27,13 @@ public class CollodionApplication {
     private final CorpusAndAnalyzer corpusAndAnalyzer;
     private final AnalysisExecutor executor;
 
-    public synchronized static CollodionApplication get() {
+    public static synchronized CollodionApplication get() {
         return APPLICATION;
     }
 
     private final LoadingCache<QueryCorpus.Key, Corpus> queryCache;
 
-    public synchronized static void setProjectPath(final File projectDirectory) {
+    public static synchronized void setProjectPath(final File projectDirectory) {
         final Loader loader = ChainLoader.of(
             DirectoryLoader.forRoot(projectDirectory),
             Loader.DEFAULT_LOADER

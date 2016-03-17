@@ -14,6 +14,7 @@ import java.util.List;
 
 public class Utils {
 
+
     public static JsonElement toJson(final TokenStream input) throws IOException {
         final Iterator<Class<? extends Attribute>> attributeClassIt = input.getAttributeClassesIterator();
         final List<AttrTypePair> attributes = new ArrayList<>();

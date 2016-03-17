@@ -18,12 +18,14 @@ import java.util.Map;
 public class DocumentAdapter implements JsonDeserializer<Document>, JsonSerializer<Document> {
 
     @Override
-    public Document deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public Document deserialize(final JsonElement jsonElement,
+                                final Type type,
+                                final JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         final Document doc = new Document();
         final JsonObject jsonObj = jsonElement.getAsJsonObject();
         final FieldType fieldType = new FieldType();
         fieldType.setStored(true);
-        for (Map.Entry<String, JsonElement> e: jsonObj.entrySet()) {
+        for (final Map.Entry<String, JsonElement> e: jsonObj.entrySet()) {
             final String key = e.getKey();
             final String val = e.getValue().getAsString();
             final Field field = new Field(key, val, fieldType);
@@ -33,9 +35,11 @@ public class DocumentAdapter implements JsonDeserializer<Document>, JsonSerializ
     }
 
     @Override
-    public JsonElement serialize(Document doc, Type type, JsonSerializationContext jsonSerializationContext) {
-        JsonObject jsonObject = new JsonObject();
-        for (IndexableField field: doc) {
+    public JsonElement serialize(final Document doc,
+                                 final Type type,
+                                 final JsonSerializationContext jsonSerializationContext) {
+        final JsonObject jsonObject = new JsonObject();
+        for (final IndexableField field: doc) {
             final String key = field.name();
             final String val = field.stringValue();
             jsonObject.addProperty(key, val);

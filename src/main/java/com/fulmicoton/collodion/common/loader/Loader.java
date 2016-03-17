@@ -17,7 +17,8 @@ public abstract class Loader {
     public static final Loader DEFAULT_LOADER = ChainLoader.of(
             DirectoryLoader.forRoot(new File("/")),
             DirectoryLoader.forRoot(new File(".")),
-            ResourceLoader.fromClass(CollodionAnalyzer.class)
+            ResourceLoader.fromClass(CollodionAnalyzer.class),
+            ResourceLoader.SYSTEM_CLASSLOADER
     );
 
     /**

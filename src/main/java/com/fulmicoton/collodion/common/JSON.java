@@ -114,7 +114,10 @@ public class JSON {
         public CollodionAnalyzer deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObj = json.getAsJsonObject();
             List<ProcessorBuilder> processors = new ArrayList<>();
-            JsonArray processorsJson = jsonObj.get("processors").getAsJsonArray();
+            if (!jsonObj.has("processors")) {
+                throw new JsonParseException("The pipeline configuration file must contain a processors field.");
+            }
+            final JsonArray processorsJson = jsonObj.get("processors").getAsJsonArray();
             for (JsonElement processorJson: processorsJson) {
                 if (!processorJson.isJsonNull()) {
                     ProcessorBuilder processorBuilder = context.deserialize(processorJson, ProcessorBuilder.class);

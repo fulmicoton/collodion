@@ -22,11 +22,11 @@ public class ExactVocabularyMatcher extends VocabularyMatcher {
     private final FST<Long> fst;
     private final Index<AnnotationKey> annotationMapping;
 
-    ExactVocabularyMatcher(List<Rule> rules, CharSequence charSequence) {
+    ExactVocabularyMatcher(final List<Rule> rules, final CharSequence charSequence) {
         super(charSequence);
         final Index.Builder<AnnotationKey> annotationIndexBuilder = Index.builder();
-        final PositiveIntOutputs PositiveInts = PositiveIntOutputs.getSingleton();
-        final Builder<Long> fstBuilder = new Builder<>(FST.INPUT_TYPE.BYTE1, PositiveInts);
+        final PositiveIntOutputs positiveInts = PositiveIntOutputs.getSingleton();
+        final Builder<Long> fstBuilder = new Builder<>(FST.INPUT_TYPE.BYTE1, positiveInts);
         final BytesRefBuilder scratchBytes = new BytesRefBuilder();
         final IntsRefBuilder scratchInts = new IntsRefBuilder();
         try {
@@ -38,7 +38,7 @@ public class ExactVocabularyMatcher extends VocabularyMatcher {
             this.annotationMapping = annotationIndexBuilder.build(new AnnotationKey[0]);
             this.fst = fstBuilder.finish();
         }
-        catch (IOException e) {
+        catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -46,7 +46,7 @@ public class ExactVocabularyMatcher extends VocabularyMatcher {
     @Override
     public Iterator<AnnotationKey> match() {
         try {
-            Long ruleId = Util.get(fst, new BytesRef(this.charSequence));
+            final Long ruleId = Util.get(fst, new BytesRef(this.charSequence));
             if (ruleId == null) {
                 return EMPTY_ITERATOR;
             }
@@ -54,7 +54,7 @@ public class ExactVocabularyMatcher extends VocabularyMatcher {
                 return Iterators.singletonIterator(annotationMapping.elFromId((int)(long)ruleId));
             }
         }
-        catch(IOException e) {
+        catch(final IOException e) {
             throw new RuntimeException(e);
         }
     }

@@ -38,7 +38,7 @@ public enum MatchingMethod {
         this.attributeClass = attributeClass;
     }
 
-    public CharSequence extractForm(final TokenStream tokenStream) {
+    protected CharSequence extractForm(final TokenStream tokenStream) {
         return (CharSequence)tokenStream.getAttribute(this.attributeClass);
     }
 
