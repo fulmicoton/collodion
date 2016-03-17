@@ -16,9 +16,9 @@ public class MultiPatternTest {
     @Test
     public void testMultiPattern() {
         MachineBuilder machineBuilder = new MachineBuilder();
-        Assert.assertEquals(machineBuilder.add("[a]([b][c])[d]"), 0);
-        Assert.assertEquals(machineBuilder.add("[a][b]([c][d])"), 1);
-        Assert.assertEquals(machineBuilder.add("([a][b])([c][d])[e]"), 2);
+        Assert.assertEquals(machineBuilder.addPattern("[a]([b][c])[d]"), 0);
+        Assert.assertEquals(machineBuilder.addPattern("[a][b]([c][d])"), 1);
+        Assert.assertEquals(machineBuilder.addPattern("([a][b])([c][d])[e]"), 2);
         final Machine machine = machineBuilder.buildForMatch();
         List<SemToken> semToken = makeTokenList("abcd");
         final MultiMatcher multiMatcher = machine.match(semToken.iterator());

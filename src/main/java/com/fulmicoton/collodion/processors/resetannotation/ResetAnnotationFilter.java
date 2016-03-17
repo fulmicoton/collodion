@@ -12,14 +12,11 @@ public class ResetAnnotationFilter extends TokenFilter {
 
     public static class Builder implements ProcessorBuilder<ResetAnnotationFilter> {
 
-        public Builder() {
-        }
+        @Override
+        public void init(final Loader loader) throws IOException {}
 
         @Override
-        public void init(Loader loader) throws IOException {}
-
-        @Override
-        public ResetAnnotationFilter createFilter(TokenStream prev) throws IOException {
+        public ResetAnnotationFilter createFilter(final TokenStream prev) throws IOException {
             return new ResetAnnotationFilter(prev);
         }
     }

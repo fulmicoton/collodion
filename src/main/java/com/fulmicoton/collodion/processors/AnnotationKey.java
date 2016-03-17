@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class AnnotationKey {
 
-    // TODO add namespacing.
+    // TODO addPattern namespacing.
     private final String annotation;
     private static final Map<String, AnnotationKey> ANNOTATION_MAP = Maps.newHashMap();
     public static final AnnotationKey NONE = AnnotationKey.of("");

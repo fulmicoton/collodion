@@ -36,7 +36,7 @@ public class TokenPatternTest {
         final List<SemToken> tokenList = makeTokenList(testString);
 
         final MachineBuilder machineBuilder = new MachineBuilder();
-        machineBuilder.add(ptn);
+        machineBuilder.addPattern(ptn);
         final Machine machine = machineBuilder.buildForSearch();
 
         TokenPatternMatcher runner = machine.matcher();
@@ -55,7 +55,7 @@ public class TokenPatternTest {
         Assert.assertArrayEquals(actualPositionsArr, expectedPositions);
     }
 
-    public void testTokenPatternMatch(String ptn, String testString) {
+    public void testTokenPatternMatch(final String ptn, final String testString) {
         final List<SemToken> tokenList = makeTokenList(testString);
         final java.util.regex.Matcher javaMatch = translateToJavaMatch(ptn, testString);
         final TokenPattern tokenPattern = TokenPattern.compile(ptn);
@@ -67,13 +67,13 @@ public class TokenPatternTest {
             try {
                 startJava = javaMatch.start(groupId);
             }
-            catch (IllegalStateException e) {
+            catch (final IllegalStateException e) {
                 startJava = -1;
             }
             try {
                 endJava = javaMatch.end(groupId);
             }
-            catch (IllegalStateException e) {
+            catch (final IllegalStateException e) {
                 endJava = -1;
             }
             Assert.assertEquals(startJava, match.start(groupId));

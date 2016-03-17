@@ -17,17 +17,17 @@ public class MultiGroupAllocator {
      * call their own GroupAllocator.
      */
     private final List<GroupAllocator> allocators = new ArrayList<>();
-    private int nbGroups; //< overall number of groups.
+    private int numGroups; //< overall number of groups.
 
     int allocate() {
-        return nbGroups++;
+        return numGroups++;
     }
 
     /**
      * @return A new GroupAllocator for a new pattern.
      */
     public GroupAllocator newAllocator() {
-        final GroupAllocator groupAllocator = new GroupAllocator(this.nbGroups, this);
+        final GroupAllocator groupAllocator = new GroupAllocator(this.numGroups, this);
         this.allocators.add(groupAllocator);
         return groupAllocator;
     }
@@ -37,7 +37,7 @@ public class MultiGroupAllocator {
      * i.e. the allocator that has been returned after the patternIdth call to
      * newAllocator()
      */
-    public GroupAllocator get(int patternId) {
+    public GroupAllocator get(final int patternId) {
         return this.allocators.get(patternId);
     }
 }

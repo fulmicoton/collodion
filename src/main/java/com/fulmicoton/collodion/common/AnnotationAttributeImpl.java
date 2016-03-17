@@ -31,8 +31,8 @@ public class AnnotationAttributeImpl extends AttributeImpl implements Annotation
     }
 
     @Override
-    public void copyTo(AttributeImpl target_) {
-        AnnotationAttributeImpl target = (AnnotationAttributeImpl)target_;
+    public void copyTo(final AttributeImpl target_) {
+        final AnnotationAttributeImpl target = (AnnotationAttributeImpl)target_;
         target.reset();
         for (final Annotation annotation: this) {
             target.add(annotation.key, annotation.numTokens);

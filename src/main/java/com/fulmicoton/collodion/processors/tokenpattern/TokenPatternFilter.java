@@ -34,10 +34,8 @@ public class TokenPatternFilter extends TokenFilter {
 
         @Override
         public void init(final Loader loader) throws IOException {
-            if (this.patterns != null) {
-                if (this.path != null) {
-                    throw new IllegalArgumentException("Filepath defined even though patterns have been already defined dynamically.");
-                }
+            if ((this.patterns != null) && (this.path != null)) {
+                throw new IllegalArgumentException("Filepath defined even though patterns have been already defined dynamically.");
             }
             this.patterns = new ArrayList<>();
             final BufferedReader reader = loader.read(path);
@@ -67,7 +65,7 @@ public class TokenPatternFilter extends TokenFilter {
         public TokenPatternFilter createFilter(final TokenStream prev) throws IOException {
             final MachineBuilder machineBuilder = new MachineBuilder();
             for (final String pattern: this.patterns) {
-                machineBuilder.add(pattern);
+                machineBuilder.addPatternString(pattern);
             }
             final Machine machine = machineBuilder.buildForSearch();
             return new TokenPatternFilter(prev, machine, maxLength);

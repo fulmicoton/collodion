@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ExactVocabularyMatcher extends VocabularyMatcher {
 
-    private final Iterator<AnnotationKey> EMPTY_ITERATOR = ImmutableSet.<AnnotationKey>of().iterator();
+    private static final Iterator<AnnotationKey> EMPTY_ITERATOR = ImmutableSet.<AnnotationKey>of().iterator();
     private final FST<Long> fst;
     private final Index<AnnotationKey> annotationMapping;
 

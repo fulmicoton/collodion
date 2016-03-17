@@ -22,22 +22,27 @@ public class MachineBuilder {
     final State startState;
     final MultiGroupAllocator multiGroupAllocator;
     final Map<State, Integer> stateResults;
-    int nbPatterns = 0;
+    int numPatterns = 0;
 
     public MachineBuilder() {
         this.startState = new State();
         this.multiGroupAllocator = new MultiGroupAllocator();
         this.stateResults = new HashMap<>();
-        this.nbPatterns = 0;
+        this.numPatterns = 0;
     }
 
-    public int add(final String tokenPattern) {
+    public int addPatternString(final String tokenPattern) {
+        final AST ast = AST.compile(tokenPattern);
+        return this.addPattern(ast);
+    }
+
+    public int addPattern(final AST tokenPattern) {
+        final AST ast = new CapturingGroupAST(tokenPattern);
         final GroupAllocator groupAllocator = this.multiGroupAllocator.newAllocator();
-        final AST ast = new CapturingGroupAST(AST.compile(tokenPattern));
         ast.allocateGroups(groupAllocator);
         final State endState = ast.buildMachine(this.startState);
-        this.stateResults.put(endState, nbPatterns);
-        return nbPatterns++;
+        this.stateResults.put(endState, numPatterns);
+        return numPatterns++;
     }
 
     private static Index<State> makeStateIndex(final State initialState) {
@@ -85,7 +90,7 @@ public class MachineBuilder {
         }
         final int[] stateResultsArr = computeStateResults(stateIndex);
         return new Machine(stateResultsArr,
-                           this.nbPatterns,
+                           this.numPatterns,
                            transitions,
                            predicates,
                            openGroups,
@@ -97,9 +102,9 @@ public class MachineBuilder {
         final Set<State> implyingStates = Sets.newHashSet(endState);
         Set<State> frontier = Sets.newHashSet(endState);
         while (!frontier.isEmpty()) {
-            Set<State> newFrontier = new HashSet<>();
-            for (State state: frontier) {
-                for (State impliedState: state.epsilonOrigins()) {
+            final Set<State> newFrontier = new HashSet<>();
+            for (final State state: frontier) {
+                for (final State impliedState: state.epsilonOrigins()) {
                     if (implyingStates.add(impliedState)) {
                         newFrontier.add(impliedState);
                     }
@@ -113,7 +118,7 @@ public class MachineBuilder {
     private int[] computeStateResults(final Index<State> stateIndex) {
         final int[] stateResultsArr = new int[stateIndex.size()];
         Arrays.fill(stateResultsArr, -1);
-        for (Map.Entry<State, Integer> e: stateResults.entrySet()) {
+        for (final Map.Entry<State, Integer> e: stateResults.entrySet()) {
             for (final State state: getImplyingStates(e.getKey())) {
                 if (stateIndex.contains(state)) {
                     final int stateId = stateIndex.get(state);
