@@ -8,7 +8,7 @@ public class AnnotationKey {
     // TODO add namespacing.
 
     private final String annotation;
-    private final static Map<String, AnnotationKey> annotationMap = Maps.newHashMap();
+    private static final Map<String, AnnotationKey> ANNOTATION_MAP = Maps.newHashMap();
     public static final AnnotationKey NONE = AnnotationKey.of("");
 
     private AnnotationKey(final String annotation) {
@@ -16,16 +16,18 @@ public class AnnotationKey {
     }
 
     public static synchronized AnnotationKey of(final String annotation) {
-        final AnnotationKey cachedAnnotation = annotationMap.get(annotation);
-        if (cachedAnnotation != null) return cachedAnnotation;
+        final AnnotationKey cachedAnnotation = ANNOTATION_MAP.get(annotation);
+        if (cachedAnnotation != null) {
+            return cachedAnnotation;
+        }
         final AnnotationKey newAnnotation = new AnnotationKey(annotation);
-        AnnotationKey.annotationMap.put(annotation, newAnnotation);
+        AnnotationKey.ANNOTATION_MAP.put(annotation, newAnnotation);
         return newAnnotation;
     }
 
     @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         final AnnotationKey that = (AnnotationKey) o;
         //noinspection StringEquality
         return (this.annotation == that.annotation);

@@ -47,24 +47,26 @@ public class CollodionAnalyzer extends Analyzer {
         return new CollodionAnalyzer(newProcessorBuilders, this.loader);
     }
 
-    public void prependLoader(Loader loader) {
+    public void prependLoader(final Loader loader) {
         this.loader = ChainLoader.of(loader, this.loader);
     }
 
     private void init() throws Exception {
-        for (ProcessorBuilder processorBuilder: this.processorBuilders) {
+        for (final ProcessorBuilder processorBuilder: this.processorBuilders) {
             processorBuilder.init(this.loader);
         }
     }
 
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+    protected TokenStreamComponents createComponents(
+            final String fieldName,
+            final Reader reader) {
         final Tokenizer source = new SolilessTokenizer(new StandardTokenizer(reader), reader);
         TokenStream lastFilter = new ResetAnnotationFilter(source);
-        for (ProcessorBuilder processorBuilder: this.processorBuilders) {
+        for (final ProcessorBuilder processorBuilder: this.processorBuilders) {
             try {
                 lastFilter = processorBuilder.createFilter(lastFilter);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
         }

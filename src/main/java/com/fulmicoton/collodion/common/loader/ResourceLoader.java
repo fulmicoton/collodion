@@ -11,7 +11,7 @@ public abstract class ResourceLoader extends Loader {
         }
 
         @Override
-        public InputStream open(String path) {
+        public InputStream open(final String path) {
             return this.klass.getResourceAsStream(path);
         }
     }
@@ -23,14 +23,14 @@ public abstract class ResourceLoader extends Loader {
         }
 
         @Override
-        public InputStream open(String path) {
+        public InputStream open(final String path) {
             return this.classLoader.getResourceAsStream(path);
         }
     }
 
-    public static ResourceLoader SYSTEM_CLASSLOADER = new FromClassLoaderResourceLoader(ClassLoader.getSystemClassLoader());
+    public static final ResourceLoader SYSTEM_CLASSLOADER = new FromClassLoaderResourceLoader(ClassLoader.getSystemClassLoader());
 
-    public static ResourceLoader fromClass(Class<?> klass) {
+    public static ResourceLoader fromClass(final Class<?> klass) {
         return new FromClassResourceLoader(klass);
     }
 }
