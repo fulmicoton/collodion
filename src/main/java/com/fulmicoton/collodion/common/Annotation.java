@@ -11,12 +11,12 @@ public class Annotation {
         this(key, 1);
     }
 
-    public Annotation(final AnnotationKey key, final int nbTokens) {
+    public Annotation(final AnnotationKey key, final int numTokens) {
         this.key = key;
-        this.numTokens = nbTokens;
+        this.numTokens = numTokens;
     }
 
     public String toString() {
-        return this.key.name();
+        return this.key.name() + "(" + this.numTokens + ")";
     }
 }

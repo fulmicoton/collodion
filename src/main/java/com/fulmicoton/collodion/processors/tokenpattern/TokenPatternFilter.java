@@ -134,8 +134,6 @@ public class TokenPatternFilter extends TokenFilter {
                 continue;
             }
             final int endGroup = matchResult.end(groupId) - shift;
-
-            // TODO add groupId
             final SparseQueue.Element<List<Annotation>> lastWrittenAnnotations = annotationsQueue.lastWrittenPosition();
             final AnnotationKey annotationKey = matchResult.getAnnotationForGroupId(groupId);
             final Annotation annotation = new Annotation(annotationKey, endGroup - startGroup);

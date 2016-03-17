@@ -13,14 +13,14 @@ import java.util.List;
 
 public class AnnotationAttributeImpl extends AttributeImpl implements AnnotationAttribute, Jsonable {
 
-    private static final int MAX_NB_ANNOTATIONS = 20;
+    private static final int MAX_NUM_ANNOTATIONS = 20;
     private final Annotation[] annotations;
     private int length = 0;
 
 
     public AnnotationAttributeImpl() {
-        this.annotations = new Annotation[MAX_NB_ANNOTATIONS];
-        for (int annotationId = 0; annotationId < MAX_NB_ANNOTATIONS; annotationId++) {
+        this.annotations = new Annotation[MAX_NUM_ANNOTATIONS];
+        for (int annotationId = 0; annotationId < MAX_NUM_ANNOTATIONS; annotationId++) {
             this.annotations[annotationId] = new Annotation(AnnotationKey.NONE);
         }
     }
@@ -76,10 +76,10 @@ public class AnnotationAttributeImpl extends AttributeImpl implements Annotation
 
     @Override
     public void add(final AnnotationKey annotationKey, final int numTokens) {
-        if (this.length < MAX_NB_ANNOTATIONS) {
+        if (this.length < MAX_NUM_ANNOTATIONS) {
             final Annotation annotation = this.annotations[this.length];
             annotation.key = annotationKey;
-            annotation.numTokens = length;
+            annotation.numTokens = numTokens;
             this.length += 1;
         }
         else {
