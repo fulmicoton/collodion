@@ -17,62 +17,62 @@ public class TokenPatternFilterTest {
         final CollodionAnalyzer collodionAnalyzer = CollodionAnalyzerTest.loadPipeline("tokenpatterntest-country-pipeline.json");
         final TokenStream tokenStream = collodionAnalyzer.tokenStream("", "Robert lives in France. Lily lives in the UK");
         tokenStream.reset();
-        CharTermAttribute charTerm = tokenStream.getAttribute(CharTermAttribute.class);
-        AnnotationAttribute vocabularyAnnotation = tokenStream.getAttribute(AnnotationAttribute.class);
-        StemAttribute stem = tokenStream.getAttribute(StemAttribute.class);
+        final CharTermAttribute charTerm = tokenStream.getAttribute(CharTermAttribute.class);
+        final AnnotationAttribute annotationAttribute = tokenStream.getAttribute(AnnotationAttribute.class);
+        final StemAttribute stem = tokenStream.getAttribute(StemAttribute.class);
         {
             Assert.assertTrue(tokenStream.incrementToken());
-            Assert.assertEquals(charTerm.toString(), "Robert");
-            Assert.assertEquals(stem.toString(), "Robert");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "pattern0.0; pattern0.1");
+            Assert.assertEquals("Robert", charTerm.toString());
+            Assert.assertEquals("Robert", stem.toString());
+            Assert.assertEquals("LIVEPTN; LIVEPTN.NAME", annotationAttribute.toString());
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
-            Assert.assertEquals(charTerm.toString(), "lives");
-            Assert.assertEquals(stem.toString(), "live");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "LIVE; pattern0.2");
+            Assert.assertEquals("lives", charTerm.toString());
+            Assert.assertEquals("live", stem.toString());
+            Assert.assertEquals("LIVE", annotationAttribute.toString());
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
-            Assert.assertEquals(charTerm.toString(), "in");
-            Assert.assertEquals(stem.toString(), "in");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "");
+            Assert.assertEquals("in", charTerm.toString());
+            Assert.assertEquals("in", stem.toString());
+            Assert.assertEquals("", annotationAttribute.toString());
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
-            Assert.assertEquals(charTerm.toString(), "France");
-            Assert.assertEquals(stem.toString(), "Franc");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "COUNTRY");
+            Assert.assertEquals("France", charTerm.toString());
+            Assert.assertEquals("Franc", stem.toString());
+            Assert.assertEquals("COUNTRY", annotationAttribute.toString());
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "Lily");
             Assert.assertEquals(stem.toString(), "Lili");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "pattern0.0; pattern0.1");
+            Assert.assertEquals(annotationAttribute.toString(), "LIVEPTN; LIVEPTN.NAME");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "lives");
             Assert.assertEquals(stem.toString(), "live");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "LIVE; pattern0.2");
+            Assert.assertEquals(annotationAttribute.toString(), "LIVE");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "in");
             Assert.assertEquals(stem.toString(), "in");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "");
+            Assert.assertEquals(annotationAttribute.toString(), "");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "the");
             Assert.assertEquals(stem.toString(), "the");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "");
+            Assert.assertEquals(annotationAttribute.toString(), "");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "UK");
             Assert.assertEquals(stem.toString(), "UK");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "COUNTRY");
+            Assert.assertEquals(annotationAttribute.toString(), "COUNTRY");
         }
     }
 }

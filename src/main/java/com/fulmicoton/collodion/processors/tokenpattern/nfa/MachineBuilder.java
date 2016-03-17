@@ -21,7 +21,9 @@ public class MachineBuilder {
 
     final State startState;
     final MultiGroupAllocator multiGroupAllocator;
+
     final Map<State, Integer> stateResults;
+
     int numPatterns = 0;
 
     public MachineBuilder() {
@@ -31,13 +33,7 @@ public class MachineBuilder {
         this.numPatterns = 0;
     }
 
-    public int addPattern(final String tokenPattern) {
-        final AST ast = AST.compile(tokenPattern);
-        return this.addPattern(ast);
-    }
-
-    public int addPattern(final AST tokenPattern) {
-        final AST ast = new CapturingGroupAST(tokenPattern);
+    public int addPattern(final CapturingGroupAST ast) {
         final GroupAllocator groupAllocator = this.multiGroupAllocator.newAllocator();
         ast.allocateGroups(groupAllocator);
         final State endState = ast.buildMachine(this.startState);
@@ -67,12 +63,12 @@ public class MachineBuilder {
 
     private Machine build(final State initialState) {
         final Index<State> stateIndex = makeStateIndex(initialState);
-        final int nbStates = stateIndex.size();
-        final int[][] transitions = new int[nbStates][];
-        final Predicate[][] predicates = new Predicate[nbStates][];
-        final int[][] openGroups = new int[nbStates][];
-        final int[][] closeGroups = new int[nbStates][];
-        for (int stateId=0; stateId < nbStates; stateId++) {
+        final int numStates = stateIndex.size();
+        final int[][] transitions = new int[numStates][];
+        final Predicate[][] predicates = new Predicate[numStates][];
+        final int[][] openGroups = new int[numStates][];
+        final int[][] closeGroups = new int[numStates][];
+        for (int stateId=0; stateId < numStates; stateId++) {
             final State state = stateIndex.elFromId(stateId);
             openGroups[stateId] = Ints.toArray(state.allOpenGroups());
             closeGroups[stateId] = Ints.toArray(state.allCloseGroups());

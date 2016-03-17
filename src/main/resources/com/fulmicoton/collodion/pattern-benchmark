@@ -1,2 +1,2 @@
-.[LIVE]
+ live:=.[LIVE]
 #(.)[LIVE].{0,2}([COUNTRY])

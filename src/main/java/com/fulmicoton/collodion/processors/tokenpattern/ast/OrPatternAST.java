@@ -15,7 +15,7 @@ public class OrPatternAST extends BinaryPatternAST {
 
     @Override
     public String toDebugStringWrapped() {
-        return "(?:" + this.toDebugString() + ")";
+        return "(" + this.toDebugString() + ")";
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.fulmicoton.collodion.processors.tokenpattern.nfa.State;
 
 public class StarPatternAST extends UnaryPatternAST {
 
-    public StarPatternAST(AST pattern) {
+    public StarPatternAST(final AST pattern) {
         super(pattern);
     }
 

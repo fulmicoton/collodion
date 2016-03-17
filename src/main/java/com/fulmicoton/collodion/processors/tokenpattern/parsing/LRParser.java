@@ -36,12 +36,12 @@ public class LRParser<T extends Enum, V> {
         return this.ruleMatchers[ruleId];
     }
 
-    private static boolean[][][] makeParseTable(int nbRules, int nbTokens) {
-        final boolean[][][] ruleMatchTable = new boolean[nbRules][][];
-        for (int ruleId=0; ruleId < nbRules; ruleId++) {
-            ruleMatchTable[ruleId] = new boolean[nbTokens][];
-            for (int start=0; start < nbTokens; start++) {
-                ruleMatchTable[ruleId][start] = new boolean[nbTokens - start + 1];
+    private static boolean[][][] makeParseTable(final int numRules, final int numTokens) {
+        final boolean[][][] ruleMatchTable = new boolean[numRules][][];
+        for (int ruleId=0; ruleId < numRules; ruleId++) {
+            ruleMatchTable[ruleId] = new boolean[numTokens][];
+            for (int start=0; start < numTokens; start++) {
+                ruleMatchTable[ruleId][start] = new boolean[numTokens - start + 1];
             }
         }
         return ruleMatchTable;
@@ -53,12 +53,12 @@ public class LRParser<T extends Enum, V> {
     }
 
     private V parse(final Match<T> match,
-                    boolean[][][] table,
+                    final boolean[][][] table,
                     final List<Token<T>> tokens) {
         final RuleMatcher<T> ruleMatcher = this.matcherFromRule(match.rule);
-        List<Match<T>> matches = ruleMatcher.getMatches(table, match.start, match.length);
-        List<V> childrenEmissions = new ArrayList<>();
-        for (Match m: matches) {
+        final List<Match<T>> matches = ruleMatcher.getMatches(table, match.start, match.length);
+        final List<V> childrenEmissions = new ArrayList<>();
+        for (final Match m: matches) {
             final V childEmission = (V)this.parse(m, table, tokens);
             childrenEmissions.add(childEmission);
         }
@@ -75,14 +75,14 @@ public class LRParser<T extends Enum, V> {
         final int nbRules =  this.ruleIndex.size();
         final boolean[][][] table = makeParseTable(nbRules, tokens.size());
         for (int l = 1; l <= tokens.size(); l++) {
-            for (int start=0; start < tokens.size() - l + 1; start++) {
+            for (int start = 0; start < tokens.size() - l + 1; start++) {
                 for (int ruleId = nbRules - 1; ruleId >= 0; ruleId--) {
                     final RuleMatcher<T> ruleMatcher = this.ruleMatchers[ruleId];
                     table[ruleId][start][l] = ruleMatcher.evaluate(table, start, l, tokens);
                 }
             }
         }
-        int grammarRuleId = this.ruleIndex.get(this.grammar.expr);
+        final int grammarRuleId = this.ruleIndex.get(this.grammar.expr);
         if (!table[grammarRuleId][0][tokens.size()]) {
             throw new IllegalArgumentException("Invalid format");
         }

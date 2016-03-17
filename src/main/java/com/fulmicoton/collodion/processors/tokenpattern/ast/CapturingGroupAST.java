@@ -1,30 +1,22 @@
 package com.fulmicoton.collodion.processors.tokenpattern.ast;
 
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.tokenpattern.GroupAllocator;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.State;
 
 public class CapturingGroupAST extends UnaryPatternAST {
 
     private int groupId = -1;
-    private final String name;
+    private final AnnotationKey name;
 
-    public CapturingGroupAST(AST pattern) {
-        this(pattern, null);
-    }
-
-    public CapturingGroupAST(AST pattern, final String name) {
+    public CapturingGroupAST(final AST pattern, final AnnotationKey name) {
         super(pattern);
         this.name = name;
     }
 
     @Override
     public String toDebugString() {
-        if (this.name == null) {
-            return "(" + this.groupId + ":" + this.pattern.toDebugString() + ")";
-        }
-        else {
-            return "(?<" + this.name + ":" + this.groupId + ">" + this.pattern.toDebugString() + ")";
-        }
+        return "(?<" + this.name + ":" + this.groupId + ">" + this.pattern.toDebugString() + ")";
     }
 
     @Override
@@ -44,12 +36,7 @@ public class CapturingGroupAST extends UnaryPatternAST {
     @Override
     public void allocateGroups(final GroupAllocator groupAllocator) {
         if (this.groupId < 0) {
-            if (this.name == null) {
-                this.groupId = groupAllocator.allocateUnnamedGroup();
-            }
-            else {
-                this.groupId = groupAllocator.allocateNamedGroup(this.name);
-            }
+            this.groupId = groupAllocator.allocateNamedGroup(this.name);
         }
         this.pattern.allocateGroups(groupAllocator);
     }

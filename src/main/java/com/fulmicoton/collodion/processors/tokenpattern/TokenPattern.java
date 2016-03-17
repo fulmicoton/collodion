@@ -1,5 +1,8 @@
 package com.fulmicoton.collodion.processors.tokenpattern;
 
+import com.fulmicoton.collodion.processors.AnnotationKey;
+import com.fulmicoton.collodion.processors.tokenpattern.ast.AST;
+import com.fulmicoton.collodion.processors.tokenpattern.ast.CapturingGroupAST;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Machine;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.MachineBuilder;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatchResult;
@@ -25,9 +28,12 @@ public class TokenPattern {
         return "TokenPattern(" + this.patternStr + ")";
     }
 
-    public static TokenPattern compile(final String pattern) {
+    // only for test.
+    public static TokenPattern compile(final String pattern) throws Exception {
         final MachineBuilder machine = new MachineBuilder();
-        final int patternId = machine.addPattern(pattern);
+        final AST patternAST = AST.compile(pattern);
+        final CapturingGroupAST capturingGroupAST = new CapturingGroupAST(patternAST, AnnotationKey.of("TEST"));
+        final int patternId = machine.addPattern(capturingGroupAST);
         return new TokenPattern(pattern, patternId, machine.buildForMatch());
     }
 

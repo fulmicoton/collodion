@@ -49,18 +49,18 @@ public class Groups  {
     }
 
     GroupSegment[] groupSegments(final GroupAllocator groupAllocator) {
-        final int nbGroups = groupAllocator.getNbGroups();
+        final int nbGroups = groupAllocator.getNumGroups();
         final GroupSegment[] complete = new GroupSegment[nbGroups];
         final GroupSegment[] incomplete = new GroupSegment[nbGroups];
         for (Groups groups: this.reverseList()) {
             for (int groupId: groups.openGroupId) {
-                if ((groupAllocator.offset <= groupId) && (groupAllocator.offset + groupAllocator.getNbGroups() > groupId)) {
+                if ((groupAllocator.offset <= groupId) && (groupAllocator.offset + groupAllocator.getNumGroups() > groupId)) {
                     final GroupSegment newGroupSegment = new GroupSegment(groups.offset, -1);
                     incomplete[groupId - groupAllocator.offset] = newGroupSegment;
                 }
             }
             for (int groupId: groups.closeGroupId) {
-                if ((groupAllocator.offset <= groupId) && (groupAllocator.offset + groupAllocator.getNbGroups() > groupId)) {
+                if ((groupAllocator.offset <= groupId) && (groupAllocator.offset + groupAllocator.getNumGroups() > groupId)) {
                     final GroupSegment groupSegment = incomplete[groupId - groupAllocator.offset];
                     assert groupSegment.start != -1;
                     groupSegment.end = groups.offset;

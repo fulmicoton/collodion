@@ -5,10 +5,10 @@ import com.fulmicoton.collodion.processors.tokenpattern.GroupAllocator;
 
 public abstract class BinaryPatternAST extends AST {
 
-    protected final AST left;
-    protected final AST right;
+    final AST left;
+    final AST right;
 
-    public BinaryPatternAST(AST left, AST right) {
+    public BinaryPatternAST(final AST left, final AST right) {
         this.left = left;
         this.right = right;
     }

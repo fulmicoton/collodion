@@ -7,6 +7,8 @@ import com.fulmicoton.collodion.common.StateQueue;
 import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
+import com.fulmicoton.collodion.processors.tokenpattern.ast.AST;
+import com.fulmicoton.collodion.processors.tokenpattern.ast.CapturingGroupAST;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Machine;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.MachineBuilder;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatchResult;
@@ -30,7 +32,7 @@ public class TokenPatternFilter extends TokenFilter {
 
         public String path;
         public int maxLength = 10;
-        private transient List<String> patterns = null;
+        private transient List<TokenPatternMapping> patterns = null;
 
         @Override
         public void init(final Loader loader) throws IOException {
@@ -39,33 +41,38 @@ public class TokenPatternFilter extends TokenFilter {
             }
             this.patterns = new ArrayList<>();
             final BufferedReader reader = loader.read(path);
+            int numLine = 0;
             for (String line = reader.readLine();
                  line != null;
-                 line = reader.readLine()) {
-                this.readLine(line);
+                 line = reader.readLine(), numLine++) {
+                try {
+                    this.readLine(numLine, line);
+                }
+                catch (final InvalidPatternException e) {
+                    throw new IOException(e);
+                }
             }
         }
 
-        public Builder addPattern(final String pattern) {
-            if (this.patterns == null) {
-                this.patterns = Lists.newArrayList();
-            }
-            this.patterns.add(pattern);
-            return this;
-        }
-
-        private void readLine(final String line) {
+        private void readLine(final int lineNumber, final String line) throws InvalidPatternException {
             final String noCommentLine = line.replaceFirst("#.*", "").trim();
             if (!noCommentLine.isEmpty()) {
-                this.patterns.add(noCommentLine);
+                try {
+                    final TokenPatternMapping tokenPatternMapping = TokenPatternMapping.parse(noCommentLine);
+                    this.patterns.add(tokenPatternMapping);
+                }
+                catch (final Exception e) {
+                    throw new InvalidPatternException(lineNumber, noCommentLine, e.getMessage());
+                }
             }
         }
 
         @Override
         public TokenPatternFilter createFilter(final TokenStream prev) throws IOException {
             final MachineBuilder machineBuilder = new MachineBuilder();
-            for (final String pattern: this.patterns) {
-                machineBuilder.addPattern(pattern);
+            for (final TokenPatternMapping pattern: this.patterns) {
+                final CapturingGroupAST capturingGroupAST = new CapturingGroupAST(pattern.definition, pattern.annotationKey);
+                machineBuilder.addPattern(capturingGroupAST);
             }
             final Machine machine = machineBuilder.buildForSearch();
             return new TokenPatternFilter(prev, machine, maxLength);
@@ -113,10 +120,6 @@ public class TokenPatternFilter extends TokenFilter {
         public State incrementToken() throws IOException;
     }
 
-    private static AnnotationKey makeAnnotationKey(final String patternName, final int groupId) {
-        return AnnotationKey.of(patternName + "." + groupId);
-    }
-
     public State makeOutputState(final TokenPatternMatchResult matchResult) {
         // Simple implementation first, we output the name of the pattern
         // as an annotation + its groups.
@@ -131,8 +134,10 @@ public class TokenPatternFilter extends TokenFilter {
                 continue;
             }
             final int endGroup = matchResult.end(groupId) - shift;
-            final AnnotationKey annotationKey = makeAnnotationKey("pattern" + matchResult.patternId, groupId);
+
+            // TODO add groupId
             final SparseQueue.Element<List<Annotation>> lastWrittenAnnotations = annotationsQueue.lastWrittenPosition();
+            final AnnotationKey annotationKey = matchResult.getAnnotationForGroupId(groupId);
             final Annotation annotation = new Annotation(annotationKey, endGroup - startGroup);
             if ((lastWrittenAnnotations != null) && (lastWrittenAnnotations.position == startGroup)) {
                 lastWrittenAnnotations.val.add(annotation);

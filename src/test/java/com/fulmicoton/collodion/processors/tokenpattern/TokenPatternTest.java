@@ -1,6 +1,8 @@
 package com.fulmicoton.collodion.processors.tokenpattern;
 
 import com.fulmicoton.collodion.processors.AnnotationKey;
+import com.fulmicoton.collodion.processors.tokenpattern.ast.AST;
+import com.fulmicoton.collodion.processors.tokenpattern.ast.CapturingGroupAST;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Machine;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.MachineBuilder;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatchResult;
@@ -34,11 +36,12 @@ public class TokenPatternTest {
 
     public void testTokenPatternSearch(final String ptn,
                                        final String testString,
-                                       final int... expectedPositions) {
+                                       final int... expectedPositions) throws Exception {
         final List<SemToken> tokenList = makeTokenList(testString);
-
         final MachineBuilder machineBuilder = new MachineBuilder();
-        machineBuilder.addPattern(ptn);
+        final AST ptnAST = AST.compile(ptn);
+        final CapturingGroupAST capturingGroupAST = new CapturingGroupAST(ptnAST, AnnotationKey.of("ROOT"));
+        machineBuilder.addPattern(capturingGroupAST);
         final Machine machine = machineBuilder.buildForSearch();
 
         final TokenPatternMatcher runner = machine.matcher();
@@ -57,7 +60,7 @@ public class TokenPatternTest {
         Assert.assertArrayEquals(actualPositionsArr, expectedPositions);
     }
 
-    public void testTokenPatternMatch(final String ptn, final String testString) {
+    public void testTokenPatternMatch(final String ptn, final String testString) throws Exception {
         final List<SemToken> tokenList = makeTokenList(testString);
         final java.util.regex.Matcher javaMatch = translateToJavaMatch(ptn, testString);
         final TokenPattern tokenPattern = TokenPattern.compile(ptn);
@@ -84,20 +87,20 @@ public class TokenPatternTest {
     }
 
     @Test
-    public void testPatternSearch() {
+    public void testPatternSearch() throws Exception {
         // TODO we unfortunately don't know how to do greedy search today.
         testTokenPatternSearch("[a]+", "aa", 0, 1, 1, 2);
         testTokenPatternSearch("[a]+", "aba", 0, 1, 2, 3);
     }
 
     @Test
-    public void testPatternNFA() {
-        testTokenPatternMatch("([a])", "a");
-        testTokenPatternMatch("([a])([b])", "ab");
-        testTokenPatternMatch("([a])*", "aaa");
-        testTokenPatternMatch("([a]|[b])*", "aba");
-        testTokenPatternMatch("([a])+", "aaa");
-        testTokenPatternMatch("([a])[b]", "ab");
+    public void testPatternNFA() throws Exception {
+        testTokenPatternMatch("(?<grp1>[a])", "a");
+        testTokenPatternMatch("(?<grp1>[a])(?<grp2>[b])", "ab");
+        testTokenPatternMatch("(?<grp1>[a])*", "aaa");
+        testTokenPatternMatch("(?<grp1>[a]|[b])*", "aba");
+        testTokenPatternMatch("(?<grp1>[a])+", "aaa");
+        testTokenPatternMatch("(?<grp1>[a])[b]", "ab");
         testTokenPatternMatch("(?:[a])[b]", "ab");
         testTokenPatternMatch("[a]*", "aaa");
         testTokenPatternMatch("[a]+", "aab");
@@ -116,20 +119,20 @@ public class TokenPatternTest {
         testTokenPatternMatch("[b][a]{2,3}", "baaaa");
         testTokenPatternMatch("[b]|[a]", "a");
         testTokenPatternMatch("[b]|[a]", "b");
-        testTokenPatternMatch("([b]|[a])+", "abb");
-        testTokenPatternMatch("[b]|([a])", "b");
-        testTokenPatternMatch("[b]|([a])", "a");
-        testTokenPatternMatch("([b]|[a])+", "");
+        testTokenPatternMatch("(?:[b]|[a])+", "abb");
+        testTokenPatternMatch("[b]|(?:[a])", "b");
+        testTokenPatternMatch("[b]|(?:[a])", "a");
+        testTokenPatternMatch("(?<grp1>[b]|[a])+", "");
         testTokenPatternMatch(".+", "ab");
         testTokenPatternMatch("[a]+", "");
         testTokenPatternMatch(".+", "");
         testTokenPatternMatch(".+", "a");
-        testTokenPatternMatch("((?:[a]|[b])*)", "aabaab");
+        testTokenPatternMatch("(?<grp3>(?:[a]|[b])*)", "aabaab");
     }
 
 
     @Test
-    public void testPatternNamedGroup() {
+    public void testPatternNamedGroup() throws Exception {
         final TokenPattern tokenPattern = TokenPattern.compile("[a](?<patternone>[a][b])[c](?<patterntwo>[d])[e]");
         final List<SemToken> tokenList = makeTokenList("aabcde");
         final TokenPatternMatchResult matchResult = tokenPattern.match(tokenList.iterator());
@@ -138,19 +141,19 @@ public class TokenPatternTest {
         Assert.assertEquals(matchResult.end("patternone"), 3);
         Assert.assertEquals(matchResult.start("patterntwo"), 4);
         Assert.assertEquals(matchResult.end("patterntwo"), 5);
-        final String errorMsg = "Group named patternthree is unknown. Available groupNames are patterntwo, patternone.";
+        final String errorMsg = "Group named patternthree is unknown. Available groupNames are patterntwo, TEST, patternone.";
         try {
             matchResult.start("patternthree");
             Assert.fail("should have thrown");
         }
-        catch (IllegalArgumentException e) {
+        catch (final IllegalArgumentException e) {
             Assert.assertEquals(e.getMessage(), errorMsg);
         }
         try {
             matchResult.end("patternthree");
             Assert.fail("should have thrown");
         }
-        catch (IllegalArgumentException e) {
+        catch (final IllegalArgumentException e) {
             Assert.assertEquals(e.getMessage(), errorMsg);
         }
 }

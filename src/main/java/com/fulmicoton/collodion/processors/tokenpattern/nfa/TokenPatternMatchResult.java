@@ -1,5 +1,6 @@
 package com.fulmicoton.collodion.processors.tokenpattern.nfa;
 
+import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.tokenpattern.GroupAllocator;
 
 public class TokenPatternMatchResult {
@@ -24,20 +25,27 @@ public class TokenPatternMatchResult {
         }
     }
 
+
+    public AnnotationKey getAnnotationForGroupId(final int groupId) {
+        return this.groupAllocator.annotationKeys.get(groupId);
+    }
+
     public boolean matches() {
         return this.matches;
     }
 
-    public static TokenPatternMatchResult doesMatch(int patternId, final Groups groups, final GroupAllocator groupAllocator) {
+    public static TokenPatternMatchResult doesMatch(final int patternId, final Groups groups, final GroupAllocator groupAllocator) {
         return new TokenPatternMatchResult(patternId, true, groups, groupAllocator);
     }
 
-    public static TokenPatternMatchResult doesNotMatch(int patternId, final GroupAllocator groupAllocator) {
+    public static TokenPatternMatchResult doesNotMatch(final int patternId, final GroupAllocator groupAllocator) {
         return new TokenPatternMatchResult(patternId, false, null, groupAllocator);
     }
 
-    public int start(int group) {
-        if (group < 0 || !this.matches) return -1;
+    public int start(final int group) {
+        if ((group < 0) || !this.matches) {
+            return -1;
+        }
         final Groups.GroupSegment groupSegment = this.groupSegments[group];
         if (groupSegment == null) {
             // Java's spec would be
@@ -49,8 +57,10 @@ public class TokenPatternMatchResult {
     }
 
 
-    public int end(int group) {
-        if (group < 0 || !this.matches) return -1;
+    public int end(final int group) {
+        if ((group < 0) || !this.matches) {
+            return -1;
+        }
         final Groups.GroupSegment groupSegment = this.groupSegments[group];
         if (groupSegment == null) {
             // Java's spec would be
@@ -62,7 +72,7 @@ public class TokenPatternMatchResult {
     }
 
     public int groupCount() {
-        return Math.max(0, this.groupAllocator.getNbGroups() - 1);
+        return Math.max(0, this.groupAllocator.getNumGroups() - 1);
     }
 
     public int start(final String groupName) {

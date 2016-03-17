@@ -1,7 +1,5 @@
 package com.fulmicoton.collodion.processors.tokenpattern.ast;
 
-import com.fulmicoton.multiregexp.Lexer;
-import com.fulmicoton.multiregexp.Token;
 import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.tokenpattern.GroupAllocator;
 import com.fulmicoton.collodion.processors.tokenpattern.SemToken;
@@ -11,10 +9,22 @@ import com.fulmicoton.collodion.processors.tokenpattern.parsing.Emitter;
 import com.fulmicoton.collodion.processors.tokenpattern.parsing.Grammar;
 import com.fulmicoton.collodion.processors.tokenpattern.parsing.LRParser;
 import com.fulmicoton.collodion.processors.tokenpattern.parsing.Rule;
+import com.fulmicoton.multiregexp.Lexer;
+import com.fulmicoton.multiregexp.Token;
 
 import java.util.List;
 
-import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.*;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.ANNOTATION;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.CLOSE_PARENTHESIS;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.COUNT;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.DOT;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.OPEN_NAMED_GROUP;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.OPEN_NON_GROUPING;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.OPEN_PARENTHESIS;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.OR;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.PLUS;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.QUESTION_MARK;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.STAR;
 import static com.fulmicoton.collodion.processors.tokenpattern.parsing.SequenceRule.seq;
 
 public abstract class AST {
@@ -27,14 +37,14 @@ public abstract class AST {
         }
 
         @Override
-        public boolean apply(SemToken token) {
+        public boolean apply(final SemToken token) {
             return true;
         }
     };
 
-    public final static Lexer<RegexPatternToken> LEXER = new Lexer<RegexPatternToken>()
+    public static final Lexer<RegexPatternToken> LEXER = new Lexer<RegexPatternToken>()
         .addRule(OPEN_NON_GROUPING, "\\(\\?\\:")
-        .addRule(OPEN_NAMED_GROUP, "\\(\\?\\<[a-zA-Z]+\\>")
+        .addRule(OPEN_NAMED_GROUP, "\\(\\?\\<[A-Za-z0-9_\\.]+\\>")
         .addRule(OPEN_PARENTHESIS, "\\(")
         .addRule(CLOSE_PARENTHESIS, "\\)")
         .addRule(PLUS, "\\+")
@@ -74,14 +84,14 @@ public abstract class AST {
                             public AST emit(List<AST> childrenEmission, List<Token<RegexPatternToken>> tokens) {
                                 final String tokenString = tokens.get(0).str;
                                 final String groupName = tokenString.substring(3, tokenString.length() - 1);
-                                return new CapturingGroupAST(childrenEmission.get(1), groupName);
+                                return new CapturingGroupAST(childrenEmission.get(1), AnnotationKey.of(groupName));
                             }
                         })
             .addRule(seq(OPEN_PARENTHESIS, EXPR, CLOSE_PARENTHESIS),
                     new Emitter<RegexPatternToken, AST>() {
                         @Override
                         public AST emit(List<AST> childrenEmission, List<Token<RegexPatternToken>> tokens) {
-                            return new CapturingGroupAST(childrenEmission.get(1), null);
+                            return childrenEmission.get(1);
                         }
                     })
             .addRule(seq(EXPR, EXPR),
@@ -129,18 +139,19 @@ public abstract class AST {
             .addRule(seq(EXPR, COUNT),
                         new Emitter<RegexPatternToken, AST>() {
                             @Override
-                            public AST emit(List<AST> childrenEmission, List<Token<RegexPatternToken>> tokens) {
+                            public AST emit(final List<AST> childrenEmission,
+                                            final List<Token<RegexPatternToken>> tokens) {
                                 final Token<RegexPatternToken> lastToken = tokens.get(tokens.size() - 1);
                                 final String match = lastToken.str;
                                 final String countString = match.substring(1, match.length() - 1);
-                                String[] parts = countString.split(",");
+                                final String[] parts = countString.split(",");
                                 if (parts.length == 1) {
-                                    int val = Integer.valueOf(parts[0]);
+                                    final int val = Integer.valueOf(parts[0]);
                                     return new RepeatPatternAST(childrenEmission.get(0), val, val);
                                 }
                                 else {
-                                    int minCount = Integer.valueOf(parts[0]);
-                                    int maxCount = Integer.valueOf(parts[1]);
+                                    final int minCount = Integer.valueOf(parts[0]);
+                                    final int maxCount = Integer.valueOf(parts[1]);
                                     return new RepeatPatternAST(childrenEmission.get(0), minCount, maxCount);
                                 }
                             }
@@ -158,11 +169,10 @@ public abstract class AST {
                     });
     }
 
-    private final static Grammar<RegexPatternToken, AST> GRAMMAR = buildGrammar();
+    private static final Grammar<RegexPatternToken, AST> GRAMMAR = buildGrammar();
+    private static final LRParser<RegexPatternToken, AST> PARSER = new LRParser<>(LEXER, GRAMMAR);
 
-    private final static LRParser<RegexPatternToken, AST> PARSER = new LRParser<>(LEXER, GRAMMAR);
-
-    public static AST compile(final String regex) {
+    public static AST compile(final String regex) throws Exception {
         return PARSER.parse(regex);
     }
 

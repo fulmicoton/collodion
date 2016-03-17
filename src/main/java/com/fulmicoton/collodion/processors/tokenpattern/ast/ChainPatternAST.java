@@ -4,7 +4,7 @@ import com.fulmicoton.collodion.processors.tokenpattern.nfa.State;
 
 public class ChainPatternAST extends BinaryPatternAST {
 
-    public ChainPatternAST(AST left, AST right) {
+    public ChainPatternAST(final AST left, final AST right) {
         super(left, right);
     }
 
@@ -14,7 +14,7 @@ public class ChainPatternAST extends BinaryPatternAST {
     }
 
     public String toDebugStringWrapped() {
-        return "(?:" + this.toDebugString() + ")";
+        return "(" + this.toDebugString() + ")";
     }
 
     @Override

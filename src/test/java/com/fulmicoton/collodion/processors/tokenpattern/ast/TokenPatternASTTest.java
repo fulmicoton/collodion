@@ -19,7 +19,7 @@ public class TokenPatternASTTest {
     }
 
 
-    public static void testParser(String ptn, String expected) {
+    public static void testParser(final String ptn, final String expected) throws Exception {
         final AST tokenPattern = AST.compile(ptn);
         final MultiGroupAllocator multiGroupAllocator = new MultiGroupAllocator();
         tokenPattern.allocateGroups(multiGroupAllocator.newAllocator());
@@ -36,12 +36,12 @@ public class TokenPatternASTTest {
         testTokenizer("[abc]|[bcd]", RegexPatternToken.ANNOTATION, RegexPatternToken.OR, RegexPatternToken.ANNOTATION);
     }
 
-    public boolean isValidExpression(String ptn) {
+    public boolean isValidExpression(final String ptn) {
         try {
             AST.compile(ptn);
             return true;
         }
-        catch (IllegalArgumentException e) {
+        catch (final Exception e) {
             return false;
         }
     }
@@ -54,20 +54,20 @@ public class TokenPatternASTTest {
     }
 
     @Test
-    public void testASTCompile() {
-        testParser("(([a]|[b])|.)+", "(0:(1:[a]|[b])|.)(0:(1:[a]|[b])|.)*");
-        testParser("(?:[a]|[b])*", "(?:[a]|[b])*");
-        testParser("(?:[a][b])*", "(?:[a][b])*");
-        testParser("(.)", "(0:.)");
+    public void testASTCompile() throws Exception {
+        testParser("(([a]|[b])|.)+", "([a]|[b])|.(([a]|[b])|.)*");
+        testParser("(?:[a]|[b])*", "([a]|[b])*");
+        testParser("(?:[a][b])*", "([a][b])*");
+        testParser(".", ".");
         testParser(".*", ".*");
         testParser("..", "..");
         testParser("[abc]{4,6}", "[abc]{4,6}");
         testParser("[abc]", "[abc]");
         testParser("(?:.)", ".");
-        testParser("([abc]?)[bcd]", "(0:[abc]{0,1})[bcd]");
+        testParser("([abc]?)[bcd]", "[abc]{0,1}[bcd]");
         testParser("[abc][bcd]+", "[abc][bcd][bcd]*");
-        testParser("([abc][bcd])+", "(0:[abc][bcd])(0:[abc][bcd])*");
-        testParser("([b]|[a])+", "(0:[b]|[a])(0:[b]|[a])*");
+        testParser("([abc][bcd])+", "[abc][bcd]([abc][bcd])*");
+        testParser("([b]|[a])+", "[b]|[a]([b]|[a])*");
         testParser(".+", "..*");
         testParser("(?<aaa>[bbb])", "(?<aaa:0>[bbb])");
     }
