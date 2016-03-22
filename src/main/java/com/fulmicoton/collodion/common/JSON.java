@@ -8,10 +8,10 @@ import com.fulmicoton.collodion.CollodionAnalyzer;
 import com.fulmicoton.collodion.processors.debug.DebugFilter;
 import com.fulmicoton.collodion.processors.numberparser.NumberParserFilter;
 import com.fulmicoton.collodion.processors.removetype.RemoveTypeFilter;
+import com.fulmicoton.collodion.processors.sequencematcher.MatchingMethod;
+import com.fulmicoton.collodion.processors.sequencematcher.Rule;
+import com.fulmicoton.collodion.processors.sequencematcher.SequenceVocabularyFilter;
 import com.fulmicoton.collodion.processors.tokenpattern.TokenPatternFilter;
-import com.fulmicoton.collodion.processors.vocabularymatcher.MatchingMethod;
-import com.fulmicoton.collodion.processors.vocabularymatcher.Rule;
-import com.fulmicoton.collodion.processors.vocabularymatcher.VocabularyFilter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -59,7 +59,7 @@ public class JSON {
     }
 
     static {
-        ProcessorBuilderAdapter.register("vocabulary", VocabularyFilter.Builder.class);
+        ProcessorBuilderAdapter.register("vocabulary", SequenceVocabularyFilter.Builder.class);
         ProcessorBuilderAdapter.register("debug", DebugFilter.Builder.class);
         ProcessorBuilderAdapter.register("stem", StemFilter.Builder.class);
         ProcessorBuilderAdapter.register("tokenpattern", TokenPatternFilter.Builder.class);

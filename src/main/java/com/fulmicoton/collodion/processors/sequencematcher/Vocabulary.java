@@ -48,14 +48,6 @@ public class Vocabulary implements Iterable<Rule> {
         return this.rules.iterator();
     }
 
-//    public SequenceVocabularyMatcher toSequenceVocabulary() {
-//        final SequenceVocabularyMatcher.Builder sequenceVocabularyBuilder = SequenceVocabularyMatcher.builder();
-//        for (final Rule rule: this.rules) {
-//            sequenceVocabularyBuilder.addRule(rule);
-//        }
-//        return sequenceVocabularyBuilder.build();
-//    }
-
     public EnumMap<MatchingMethod, List<Rule>> grouped() {
         final EnumMap<MatchingMethod, List<Rule>> rulesByMethod = new EnumMap<>(MatchingMethod.class);
         for (Rule rule: this) {

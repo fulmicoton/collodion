@@ -7,7 +7,6 @@ import com.fulmicoton.collodion.common.StateQueue;
 import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
-import com.fulmicoton.collodion.processors.tokenpattern.ast.AST;
 import com.fulmicoton.collodion.processors.tokenpattern.ast.CapturingGroupAST;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Machine;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.MachineBuilder;
@@ -95,9 +94,10 @@ public class TokenPatternFilter extends TokenFilter {
         super(input);
         this.maxLength = maxLength;
         this.stateQueue = StateQueue.forSourceWithSize(input, maxLength);
+        this.annotationAttribute = input.getAttribute(AnnotationAttribute.class);
         this.machineRunner = machine.matcher();
         this.semToken = new SemToken(input);
-        this.annotationAttribute = input.getAttribute(AnnotationAttribute.class);
+
     }
 
 
@@ -117,7 +117,7 @@ public class TokenPatternFilter extends TokenFilter {
         // updates the state and returns
         // - null if there will no next token.
         // - the next state.
-        public State incrementToken() throws IOException;
+        State incrementToken() throws IOException;
     }
 
     public State makeOutputState(final TokenPatternMatchResult matchResult) {
@@ -218,21 +218,21 @@ public class TokenPatternFilter extends TokenFilter {
          * Once numTokens have been emitted, returns the next
          * state as defined in next.
          */
-        int nbTokens;
+        int numTokens;
         final State next;
 
-        Flush(final int nbTokens, final State next) {
-            assert nbTokens != 0;
-            this.nbTokens = nbTokens;
+        Flush(final int numTokens, final State next) {
+            assert numTokens != 0;
+            this.numTokens = numTokens;
             this.next = next;
         }
 
         @Override
         public State incrementToken() throws IOException {
-            nbTokens -= 1;
+            numTokens -= 1;
             stateQueue.pop();
             emitted += 1;
-            if ((nbTokens == 0) || stateQueue.isEmpty()) {
+            if ((numTokens == 0) || stateQueue.isEmpty()) {
                 return this.next;
             }
             else {

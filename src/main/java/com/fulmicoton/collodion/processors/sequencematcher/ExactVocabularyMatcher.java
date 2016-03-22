@@ -13,6 +13,7 @@ import org.apache.lucene.util.fst.PositiveIntOutputs;
 import org.apache.lucene.util.fst.Util;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class ExactVocabularyMatcher extends VocabularyMatcher {
 
     ExactVocabularyMatcher(final List<TermAndId> termAndIds, final CharSequence charSequence) {
         super(charSequence);
+        Collections.sort(termAndIds);
         final PositiveIntOutputs positiveInts = PositiveIntOutputs.getSingleton();
         final Builder<Long> fstBuilder = new Builder<>(FST.INPUT_TYPE.BYTE1, positiveInts);
         final BytesRefBuilder scratchBytes = new BytesRefBuilder();

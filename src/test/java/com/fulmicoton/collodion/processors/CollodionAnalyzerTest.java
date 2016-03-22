@@ -82,7 +82,7 @@ public class CollodionAnalyzerTest {
     @Test
     public void testTokenPattern() throws Exception {
         final CollodionAnalyzer collodionAnalyzer = loadPipeline("tokenpatterntest-country-pipeline.json");
-        final TokenStream tokenStream = collodionAnalyzer.tokenStream("", "aaaa I live in UK for work.");
+        final TokenStream tokenStream = collodionAnalyzer.tokenStream("", "aaaa I live in United Kingdom for work.");
         tokenStream.reset();
         CharTermAttribute charTerm = tokenStream.getAttribute(CharTermAttribute.class);
         AnnotationAttribute vocabularyAnnotation = tokenStream.getAttribute(AnnotationAttribute.class);

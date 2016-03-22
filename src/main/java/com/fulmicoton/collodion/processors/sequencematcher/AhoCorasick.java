@@ -1,9 +1,8 @@
 package com.fulmicoton.collodion.processors.sequencematcher;
 
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
-
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 public class AhoCorasick {
 
@@ -21,7 +20,7 @@ public class AhoCorasick {
 
     public static class Node {
 
-        public final TIntList terminals = new TIntArrayList();
+        public final TIntSet terminals = new TIntHashSet();
         final TIntObjectHashMap<Node> branches = new TIntObjectHashMap<>();
 
         private void addTerminal(final int terminal) {
@@ -68,7 +67,12 @@ public class AhoCorasick {
         private Node get(final int token, final Node defaultResult) {
             final Node node = this.branches.get(token);
             if (node == null) {
-                return defaultResult;
+                if (defaultResult == this) {
+                    return this;
+                }
+                else {
+                    return defaultResult.get(token, defaultResult);
+                }
             }
             else {
                 return node;

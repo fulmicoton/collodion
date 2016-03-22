@@ -1,13 +1,21 @@
 package com.fulmicoton.collodion.processors.sequencematcher;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
+import gnu.trove.set.TIntSet;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 public class AhoCorasickTest {
 
+
+    public int[] toSortedArray(final TIntSet ints) {
+        final int[] sortedArr = ints.toArray();
+        Arrays.sort(sortedArr);
+        return sortedArr;
+    }
 
     @Test
     public void testAhoCorasick() {
@@ -21,23 +29,23 @@ public class AhoCorasickTest {
 
         AhoCorasick.Node node = ahoCorasick.getRoot();
         ahoCorasick.goTo(node, 5);
-        Assert.assertEquals("", node.terminals, ImmutableList.of());
-        ahoCorasick.goTo(node, 1);
-        Assert.assertEquals("", node.terminals, ImmutableList.of());
-        ahoCorasick.goTo(node, 2);
-        Assert.assertEquals("", node.terminals, ImmutableList.of());
-        ahoCorasick.goTo(node, 3);
-        Assert.assertEquals("", node.terminals, ImmutableList.of(1, 6));
-        ahoCorasick.goTo(node, 7);
-        Assert.assertEquals("", node.terminals, ImmutableList.of(4));
-        ahoCorasick.goTo(node, 2);
-        Assert.assertEquals("", node.terminals, ImmutableList.of());
-        ahoCorasick.goTo(node, 3);
-        Assert.assertEquals("", node.terminals, ImmutableList.of(6));
-        ahoCorasick.goTo(node, 4);
-        Assert.assertEquals("", node.terminals, ImmutableList.of(2));
-        ahoCorasick.goTo(node, 5);
-        Assert.assertEquals("", node.terminals, ImmutableList.of());
+        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
+        node = ahoCorasick.goTo(node, 1);
+        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
+        node = ahoCorasick.goTo(node, 2);
+        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
+        node = ahoCorasick.goTo(node, 3);
+        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{1, 6});
+        node = ahoCorasick.goTo(node, 7);
+        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{4});
+        node = ahoCorasick.goTo(node, 2);
+        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
+        node = ahoCorasick.goTo(node, 3);
+        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{6});
+        node = ahoCorasick.goTo(node, 4);
+        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
+        node = ahoCorasick.goTo(node, 5);
+        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
 
     }
 
