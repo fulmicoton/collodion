@@ -1,4 +1,4 @@
-package com.fulmicoton.collodion.processors.vocabularymatcher;
+package com.fulmicoton.collodion.processors.sequencematcher;
 
 import com.fulmicoton.collodion.common.JSON;
 import com.fulmicoton.collodion.common.loader.Loader;
@@ -39,7 +39,7 @@ public class Vocabulary implements Iterable<Rule> {
         this.rules = new ArrayList<>();
     }
 
-    public Vocabulary(List<Rule> rules) {
+    public Vocabulary(final List<Rule> rules) {
         this.rules = rules;
     }
 
@@ -48,10 +48,17 @@ public class Vocabulary implements Iterable<Rule> {
         return this.rules.iterator();
     }
 
+//    public SequenceVocabularyMatcher toSequenceVocabulary() {
+//        final SequenceVocabularyMatcher.Builder sequenceVocabularyBuilder = SequenceVocabularyMatcher.builder();
+//        for (final Rule rule: this.rules) {
+//            sequenceVocabularyBuilder.addRule(rule);
+//        }
+//        return sequenceVocabularyBuilder.build();
+//    }
 
     public EnumMap<MatchingMethod, List<Rule>> grouped() {
         final EnumMap<MatchingMethod, List<Rule>> rulesByMethod = new EnumMap<>(MatchingMethod.class);
-        for (final Rule rule: this) {
+        for (Rule rule: this) {
             List<Rule> rules = rulesByMethod.get(rule.method);
             if (rules == null) {
                 rules = new ArrayList<>();

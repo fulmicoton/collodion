@@ -13,6 +13,10 @@ public class Index<T> {
 
         private final Map<T, Integer> elToId = Maps.newHashMap();
 
+        public Map<T, Integer> getMap() {
+            return this.elToId;
+        }
+
         public int get(final T el) {
             final Integer index = this.elToId.get(el);
             if (index != null) return index;
