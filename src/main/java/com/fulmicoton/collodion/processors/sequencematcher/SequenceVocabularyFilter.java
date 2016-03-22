@@ -42,6 +42,9 @@ public class SequenceVocabularyFilter extends TokenFilter {
         private transient Index.Builder<MatchingMethodAndTerm> termIndex;
         private transient List<SequenceRule> sequences;
 
+
+
+
         @Override
         public void init(final Loader loader) throws IOException {
             final InputStream inputStream = loader.open(path);
@@ -92,7 +95,7 @@ public class SequenceVocabularyFilter extends TokenFilter {
             for (final SequenceRule sequenceRule: this.sequences) {
                 annotations.add(new Annotation(sequenceRule.annotationKey, sequenceRule.sequence.length));
             }
-            int maxLength = 0;
+            int maxLength = 1;
             final AhoCorasick ahoCorasick = new AhoCorasick();
             int i = 0;
             for (final SequenceRule rule: this.sequences) {
@@ -121,13 +124,25 @@ public class SequenceVocabularyFilter extends TokenFilter {
     private final AhoCorasick ahoCorasick;
     private final StateQueue stateQueue;
     private boolean tokenRemaining;
-    private Set<AhoCorasick.Node> curNodes;
 
     private final AnnotationAttribute annotationAttribute;
-    private Map<Integer, List<Annotation>> annotationsMap;
 
+    private Map<Integer, List<Annotation>> annotationsMap;
+    private Set<AhoCorasick.Node> curNodes;
     private int consumedToken = 0;
     private int emittedToken = 0;
+
+
+    @Override
+    public void reset() throws IOException {
+        this.input.reset();
+        this.emittedToken = 0;
+        this.consumedToken = 0;
+        this.tokenRemaining = true;
+        this.annotationsMap.clear();
+        this.curNodes = ImmutableSet.of(ahoCorasick.getRoot());
+    }
+
 
     SequenceVocabularyFilter(
             final TokenStream tokenStream,
@@ -184,7 +199,7 @@ public class SequenceVocabularyFilter extends TokenFilter {
                 final TIntSet matchingRuleIds = new TIntHashSet();
                 for (final AhoCorasick.Node node: this.curNodes) {
                     for (final int termId: matchList) {
-                        final AhoCorasick.Node nextNode = this.ahoCorasick.goTo(node, termId);
+                        final AhoCorasick.Node nextNode = node.goTo(termId);
                         nextNodes.add(nextNode);
                         matchingRuleIds.addAll(nextNode.terminals);
                     }

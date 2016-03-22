@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class AnnotationKey {
 
-    private static final Pattern ANNOTATION_PTN = Pattern.compile("[A-Za-z0-9_\\.]+");
+    // private static final Pattern ANNOTATION_PTN = Pattern.compile("[A-Za-z0-9_\\./]+");
 
     // TODO addPattern namespacing.
     private final String annotation;
@@ -18,7 +18,8 @@ public class AnnotationKey {
     }
 
     public static boolean isValidName(final String annotationName) {
-        return ANNOTATION_PTN.matcher(annotationName).matches();
+        //return ANNOTATION_PTN.matcher(annotationName).matches();
+        return true;
     }
 
     public static synchronized AnnotationKey of(final String annotation) {

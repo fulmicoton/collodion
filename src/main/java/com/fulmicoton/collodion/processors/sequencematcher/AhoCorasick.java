@@ -1,8 +1,12 @@
 package com.fulmicoton.collodion.processors.sequencematcher;
 
+import gnu.trove.iterator.TIntObjectIterator;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class AhoCorasick {
 
@@ -19,7 +23,8 @@ public class AhoCorasick {
     }
 
     public static class Node {
-
+        private Node fallback = null;
+        private int i;
         public final TIntSet terminals = new TIntHashSet();
         final TIntObjectHashMap<Node> branches = new TIntObjectHashMap<>();
 
@@ -43,45 +48,20 @@ public class AhoCorasick {
             return this.branches.values(EMPTY_NODE_ARRAY);
         }
 
-
-        private void insertOrConnect(final int[] sequence,
-                                    final int sequenceId,
-                                    final Node[] canonicalSequence,
-                                    final int canonicalSequenceId,
-                                    final int output) {
-            if (sequenceId == sequence.length) {
-                this.addTerminal(output);
-            }
-            else {
-                final int termId = sequence[sequenceId];
-                final Node nextNode = branches.get(termId);
-                if (nextNode == null) {
-                    this.branches.put(termId, canonicalSequence[canonicalSequenceId]);
-                }
-                else {
-                    nextNode.insertOrConnect(sequence, sequenceId + 1, canonicalSequence, canonicalSequenceId + 1, output);
-                }
-            }
-        }
-
-        private Node get(final int token, final Node defaultResult) {
+        public Node goTo(final int token) {
             final Node node = this.branches.get(token);
             if (node == null) {
-                if (defaultResult == this) {
+                if (this.fallback == this) {
                     return this;
                 }
                 else {
-                    return defaultResult.get(token, defaultResult);
+                    return this.fallback.goTo(token);
                 }
             }
             else {
                 return node;
             }
         }
-    }
-
-    public Node goTo(final Node from, final int token) {
-        return from.get(token, this.root);
     }
 
     public void insert(final int[] sequence, final int output) {
@@ -96,9 +76,34 @@ public class AhoCorasick {
             nodeSequence[i] = node;
         }
         node.addTerminal(output);
-        for (final Node child: this.root.children()) {
-            child.insertOrConnect(sequence, 0, nodeSequence, 0, output);
+    }
+
+    public void finalize() {
+        this.root.fallback = this.root;
+        final Queue<Node> queue = new LinkedList<>();
+        {
+            for (final Node node : this.root.branches.values(new Node[0])) {
+                node.fallback = this.root;
+                queue.add(node);
+            }
         }
+        while (!queue.isEmpty()) {
+            final Node node = queue.poll();
+            final TIntObjectIterator<Node> it = node.branches.iterator() ;
+            while (it.hasNext()) {
+                it.advance();
+                final int k = it.key();
+                final Node child = it.value();
+                queue.add(child);
+                Node v = node.fallback;
+                while (!v.branches.containsKey(k) && v!= this.root) {
+                    v = v.fallback;
+                }
+                child.fallback = v.goTo(k);
+                child.terminals.addAll(child.fallback.terminals);
+            }
+        }
+
     }
 
 }
