@@ -6,6 +6,7 @@ import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.fulmicoton.collodion.CollodionAnalyzer;
 import com.fulmicoton.collodion.processors.debug.DebugFilter;
+import com.fulmicoton.collodion.processors.lowercaser.LowerCaseFilter;
 import com.fulmicoton.collodion.processors.numberparser.NumberParserFilter;
 import com.fulmicoton.collodion.processors.removetype.RemoveTypeFilter;
 import com.fulmicoton.collodion.processors.sequencematcher.MatchingMethod;
@@ -62,6 +63,7 @@ public class JSON {
         ProcessorBuilderAdapter.register("vocabulary", SequenceVocabularyFilter.Builder.class);
         ProcessorBuilderAdapter.register("debug", DebugFilter.Builder.class);
         ProcessorBuilderAdapter.register("stem", StemFilter.Builder.class);
+        ProcessorBuilderAdapter.register("lower", LowerCaseFilter.Builder.class);
         ProcessorBuilderAdapter.register("tokenpattern", TokenPatternFilter.Builder.class);
         ProcessorBuilderAdapter.register("numberparser", NumberParserFilter.Builder.class);
         ProcessorBuilderAdapter.register("remove", RemoveTypeFilter.Builder.class);

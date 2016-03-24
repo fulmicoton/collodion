@@ -1,6 +1,7 @@
 package com.fulmicoton.collodion.processors.sequencematcher;
 
 
+import com.fulmicoton.collodion.processors.lowercaser.LowerCaseAttribute;
 import com.fulmicoton.collodion.processors.stemmer.StemAttribute;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -17,6 +18,15 @@ public enum MatchingMethod {
             return new ExactVocabularyMatcher(rules, this.extractForm(tokenStream));
         }
     },
+
+    LOWER(LowerCaseAttribute.class) {
+        @Override
+        public VocabularyMatcher createMatcher(final TokenStream tokenStream,
+                                               final List<TermAndId> rules) {
+            return new ExactVocabularyMatcher(rules, this.extractForm(tokenStream));
+        }
+    },
+
     STEM(StemAttribute.class) {
         @Override
         public VocabularyMatcher createMatcher(final TokenStream tokenStream,

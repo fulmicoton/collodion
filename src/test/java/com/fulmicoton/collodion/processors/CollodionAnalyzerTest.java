@@ -41,14 +41,14 @@ public class CollodionAnalyzerTest {
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "The");
-            Assert.assertEquals(stem.toString(), "The");
+            Assert.assertEquals(stem.toString(), "the");
             Assert.assertEquals(vocabularyAnnotation.toString(), "");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "baker");
             Assert.assertEquals(stem.toString(), "baker");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "containsa(1)");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
@@ -60,19 +60,19 @@ public class CollodionAnalyzerTest {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "bread");
             Assert.assertEquals(stem.toString(), "bread");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "containsa(1)");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "and");
             Assert.assertEquals(stem.toString(), "and");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "containsa(1)");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "jambon");
             Assert.assertEquals(stem.toString(), "jambon");
-            Assert.assertEquals(vocabularyAnnotation.toString(), "jambon(1); containsa(1)");
+            Assert.assertEquals(vocabularyAnnotation.toString(), "jambon(1)");
         }
         Assert.assertFalse(tokenStream.incrementToken());
     }

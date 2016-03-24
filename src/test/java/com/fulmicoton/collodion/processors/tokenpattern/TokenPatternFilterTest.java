@@ -23,14 +23,14 @@ public class TokenPatternFilterTest {
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals("Robert", charTerm.toString());
-            Assert.assertEquals("Robert", stem.toString());
+            Assert.assertEquals("robert", stem.toString());
             Assert.assertEquals("LIVEPTN(2); LIVEPTN.NAME(1)", annotationAttribute.toString());
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals("lives", charTerm.toString());
             Assert.assertEquals("live", stem.toString());
-            Assert.assertEquals("LIVE(1)", annotationAttribute.toString());
+            Assert.assertEquals("LIVE(1); LIVEVB(1)", annotationAttribute.toString());
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
@@ -41,20 +41,20 @@ public class TokenPatternFilterTest {
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals("France", charTerm.toString());
-            Assert.assertEquals("Franc", stem.toString());
+            Assert.assertEquals("franc", stem.toString());
             Assert.assertEquals("COUNTRY(1)", annotationAttribute.toString());
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "Lily");
-            Assert.assertEquals(stem.toString(), "Lili");
+            Assert.assertEquals(stem.toString(), "lili");
             Assert.assertEquals(annotationAttribute.toString(), "LIVEPTN(2); LIVEPTN.NAME(1)");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "lives");
             Assert.assertEquals(stem.toString(), "live");
-            Assert.assertEquals(annotationAttribute.toString(), "LIVE(1)");
+            Assert.assertEquals(annotationAttribute.toString(), "LIVE(1); LIVEVB(1)");
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
@@ -71,7 +71,7 @@ public class TokenPatternFilterTest {
         {
             Assert.assertTrue(tokenStream.incrementToken());
             Assert.assertEquals(charTerm.toString(), "UK");
-            Assert.assertEquals(stem.toString(), "UK");
+            Assert.assertEquals(stem.toString(), "uk");
             Assert.assertEquals(annotationAttribute.toString(), "COUNTRY(1)");
         }
     }

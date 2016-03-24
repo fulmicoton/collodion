@@ -78,10 +78,10 @@ public class TokenPatternFilter extends TokenFilter {
         }
     }
 
-    final StateQueue stateQueue;
     final SemToken semToken;
-
     final int maxLength;
+
+    final StateQueue stateQueue;
     private final TokenPatternMatcher machineRunner;
     private int emitted = 0;
     private State state;
@@ -94,19 +94,20 @@ public class TokenPatternFilter extends TokenFilter {
         super(input);
         this.maxLength = maxLength;
         this.stateQueue = StateQueue.forSourceWithSize(input, maxLength);
-        this.annotationAttribute = input.getAttribute(AnnotationAttribute.class);
         this.machineRunner = machine.matcher();
+        this.annotationAttribute = input.getAttribute(AnnotationAttribute.class);
         this.semToken = new SemToken(input);
-
     }
 
 
     @Override
     public void reset() throws IOException {
         super.reset();
+        this.stateQueue.reset();
+        this.machineRunner.reset();
         this.emitted = 0;
         this.state = new Start();
-        this.machineRunner.reset();
+
     }
 
     public static Builder builder() {
@@ -179,11 +180,11 @@ public class TokenPatternFilter extends TokenFilter {
                     }
                 }
             }
-
             // we just flush everything
             return new Flush(-1, null).incrementToken();
         }
     }
+
 
     class OutputMatch implements State {
 
@@ -229,10 +230,13 @@ public class TokenPatternFilter extends TokenFilter {
 
         @Override
         public State incrementToken() throws IOException {
-            numTokens -= 1;
+            this.numTokens -= 1;
+            if (stateQueue.isEmpty()) {
+                return null;
+            }
             stateQueue.pop();
             emitted += 1;
-            if ((numTokens == 0) || stateQueue.isEmpty()) {
+            if (this.numTokens == 0) {
                 return this.next;
             }
             else {
@@ -241,14 +245,14 @@ public class TokenPatternFilter extends TokenFilter {
         }
     }
 
-
-
     @Override
     public final boolean incrementToken() throws IOException {
+        System.out.println("before "+ this.state);
+        this.state = this.state.incrementToken();
+        System.out.println("after" + this.state);
         if (this.state == null) {
             return false;
         }
-        this.state = this.state.incrementToken();
         return true;
     }
 }

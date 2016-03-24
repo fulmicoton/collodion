@@ -19,4 +19,8 @@ public class Annotation {
     public String toString() {
         return this.key.name() + "(" + this.numTokens + ")";
     }
+
+    public Annotation typedClone() {
+        return new Annotation(this.key, this.numTokens);
+    }
 }

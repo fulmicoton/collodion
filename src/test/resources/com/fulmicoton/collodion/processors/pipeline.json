@@ -1,6 +1,9 @@
 {
   "processors": [
     {
+      "type": "lower"
+    },
+    {
         "type": "stem"
     },
     {

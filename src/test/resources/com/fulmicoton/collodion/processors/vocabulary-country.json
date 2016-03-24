@@ -1,4 +1,4 @@
-{"method": "exact" , "value": "France", "annotation": "COUNTRY"}
-{"method": "exact" , "value": "UK", "annotation": "COUNTRY"}
-{"method": "exact" , "value": "United Kingdom", "annotation": "COUNTRY"}
+{"method": "lower" , "value": "France", "annotation": "COUNTRY"}
+{"method": "lower" , "value": "UK", "annotation": "COUNTRY"}
+{"method": "lower" , "value": "United Kingdom", "annotation": "COUNTRY"}
 {"method": "stem" , "value": "live", "annotation": "LIVE"}

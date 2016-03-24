@@ -1,4 +1,4 @@
-package com.fulmicoton.collodion.processors.stemmer;
+package com.fulmicoton.collodion.processors.lowercaser;
 
 
 import com.fulmicoton.collodion.common.Jsonable;
@@ -8,13 +8,23 @@ import org.apache.lucene.util.ArrayUtil;
 import org.apache.lucene.util.AttributeImpl;
 import org.apache.lucene.util.RamUsageEstimator;
 
-public class StemAttributeImpl extends AttributeImpl implements StemAttribute, Jsonable {
+public class LowerCaseAttributeImpl extends AttributeImpl implements LowerCaseAttribute, Jsonable {
 
     private char[] termBuffer;
     private int termLength = 0;
 
-    public StemAttributeImpl() {
+    public LowerCaseAttributeImpl() {
         termBuffer = new char[300];
+    }
+
+    public char[] buffer() {
+        return this.termBuffer;
+    }
+
+    @Override
+    public void setLength(final int charTermLength) {
+        this.growTermBuffer(charTermLength);
+        this.termLength = charTermLength;
     }
 
     @Override
@@ -24,16 +34,16 @@ public class StemAttributeImpl extends AttributeImpl implements StemAttribute, J
 
     @Override
     public void copyTo(final AttributeImpl target) {
-        final StemAttributeImpl targetStem = (StemAttributeImpl)target;
-        targetStem.termLength = this.termLength;
-        if (this.termLength > targetStem.termBuffer.length) {
-            targetStem.termBuffer = new char[termLength];
+        final LowerCaseAttributeImpl lowerCaseImpl = (LowerCaseAttributeImpl)target;
+        lowerCaseImpl.termLength = this.termLength;
+        if (this.termLength > lowerCaseImpl.termBuffer.length) {
+            lowerCaseImpl.termBuffer = new char[termLength];
         }
-        targetStem.termLength = this.termLength;
-        System.arraycopy(termBuffer, 0, targetStem.termBuffer, 0, this.termLength);
+        lowerCaseImpl.termLength = this.termLength;
+        System.arraycopy(termBuffer, 0, lowerCaseImpl.termBuffer, 0, this.termLength);
     }
 
-    private void growTermBuffer(final int newSize) {
+    public void growTermBuffer(final int newSize) {
         if(termBuffer.length < newSize){
             termBuffer = new char[ArrayUtil.oversize(newSize, RamUsageEstimator.NUM_BYTES_CHAR)];
         }
@@ -46,8 +56,8 @@ public class StemAttributeImpl extends AttributeImpl implements StemAttribute, J
     }
 
     @Override
-    public StemAttributeImpl clone() {
-        final StemAttributeImpl clone = new StemAttributeImpl();
+    public LowerCaseAttributeImpl clone() {
+        final LowerCaseAttributeImpl clone = new LowerCaseAttributeImpl();
         this.copyTo(clone);
         return clone;
     }

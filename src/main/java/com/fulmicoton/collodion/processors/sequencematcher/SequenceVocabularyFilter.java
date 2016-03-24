@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.AbstractMap;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -71,7 +72,7 @@ public class SequenceVocabularyFilter extends TokenFilter {
 
         @Override
         public SequenceVocabularyFilter createFilter(final TokenStream prev) throws IOException {
-            final EnumMap<MatchingMethod, List<TermAndId>> vocabularies = new EnumMap<>(MatchingMethod.class);
+            final AbstractMap<MatchingMethod, List<TermAndId>> vocabularies = new EnumMap<>(MatchingMethod.class);
             for (final Map.Entry<MatchingMethodAndTerm, Integer> e: this.termIndex.getMap().entrySet()) {
                 final List<TermAndId> termAndIds;
                 final MatchingMethod matchingMethod = e.getKey().matchingMethod;
@@ -90,7 +91,6 @@ public class SequenceVocabularyFilter extends TokenFilter {
                 final VocabularyMatcher vocabularyMatcher = method.createMatcher(prev, e.getValue());
                 vocabularyMatchers.add(vocabularyMatcher);
             }
-
             final List<Annotation> annotations = Lists.newArrayList();
             for (final SequenceRule sequenceRule: this.sequences) {
                 annotations.add(new Annotation(sequenceRule.annotationKey, sequenceRule.sequence.length));
@@ -103,6 +103,7 @@ public class SequenceVocabularyFilter extends TokenFilter {
                 maxLength = Ints.max(rule.sequence.length, maxLength);
                 i += 1;
             }
+            ahoCorasick.finalize();
             return new SequenceVocabularyFilter(prev, vocabularyMatchers, ahoCorasick, annotations, maxLength);
         }
 
@@ -110,7 +111,8 @@ public class SequenceVocabularyFilter extends TokenFilter {
             final String[] tokens = WHITESPACE.split(rule.value); //< TODO use a proper tokenizer some day.
             final int[] sequenceTermIds = new int[tokens.length];
             for (int i=0; i<tokens.length; i++) {
-                final MatchingMethodAndTerm matchingMethodAndTerm = new MatchingMethodAndTerm(rule.method, tokens[i]);
+                final String lowercaseForm = tokens[i].toLowerCase(); // TODO use the pipeline to compute the correct thing
+                final MatchingMethodAndTerm matchingMethodAndTerm = new MatchingMethodAndTerm(rule.method, lowercaseForm);
                 sequenceTermIds[i] = this.termIndex.get(matchingMethodAndTerm);
             }
             this.sequences.add(new SequenceRule(rule.annotation, sequenceTermIds));
@@ -160,7 +162,6 @@ public class SequenceVocabularyFilter extends TokenFilter {
         this.tokenRemaining = true;
         this.stateQueue = StateQueue.forSourceWithSize(tokenStream, maxLength);
         this.annotationAttribute = tokenStream.getAttribute(AnnotationAttribute.class);
-
     }
 
     public void emitTokenFromQueue() {
@@ -216,7 +217,6 @@ public class SequenceVocabularyFilter extends TokenFilter {
                     final Annotation annotation = this.annotations.get(matchingRuleId);
                     addAnnotation(annotation);
                 }
-
                 this.consumedToken += 1;
                 stateQueue.push();
                 if (stateQueue.isFull()) {
@@ -234,15 +234,6 @@ public class SequenceVocabularyFilter extends TokenFilter {
         else {
             return false;
         }
-
-        //this.annotationAttr.reset(); //< not sure about that one.
-//        if (!res) {
-//            return false;
-//        }
-        //while (annotationIterator.hasNext()) {
-        //    this.annotationAttr.add(annotationIterator.next());
-        //
-        //  return true;
     }
 
     static class MatchingMethodAndTerm {

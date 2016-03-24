@@ -38,7 +38,7 @@ public class StateQueue {
     }
 
     public boolean isEmpty() {
-        return this.length == 0;
+        return this.length <= 0;
     }
 
     public boolean isFull() {
