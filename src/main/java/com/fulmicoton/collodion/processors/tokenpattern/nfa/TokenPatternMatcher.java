@@ -31,9 +31,13 @@ public class TokenPatternMatcher {
         this.reset();
     }
 
+    public void resetOffset() {
+        this.offset = 0;
+    }
+
+
     public void reset() {
         final Thread initialThread = this.createThread(0, null, offset);
-        this.offset = 0;
         threads = Lists.newArrayList(initialThread);
     }
 

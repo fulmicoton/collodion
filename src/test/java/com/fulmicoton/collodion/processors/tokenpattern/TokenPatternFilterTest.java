@@ -11,6 +11,13 @@ import org.junit.Test;
 
 public class TokenPatternFilterTest {
 
+    @Test
+    public void testTokenPatternEmpty() throws Exception {
+        final CollodionAnalyzer collodionAnalyzer = CollodionAnalyzerTest.loadPipeline("tokenpatterntest-country-pipeline.json");
+        final TokenStream tokenStream = collodionAnalyzer.tokenStream("", "");
+        tokenStream.reset();
+        Assert.assertFalse(tokenStream.incrementToken());
+    }
 
     @Test
     public void testTokenPattern() throws Exception {

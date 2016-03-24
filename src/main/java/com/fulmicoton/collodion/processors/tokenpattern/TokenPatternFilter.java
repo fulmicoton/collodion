@@ -104,6 +104,7 @@ public class TokenPatternFilter extends TokenFilter {
     public void reset() throws IOException {
         super.reset();
         this.stateQueue.reset();
+        this.machineRunner.resetOffset();
         this.machineRunner.reset();
         this.emitted = 0;
         this.state = new Start();
@@ -247,9 +248,7 @@ public class TokenPatternFilter extends TokenFilter {
 
     @Override
     public final boolean incrementToken() throws IOException {
-        System.out.println("before "+ this.state);
         this.state = this.state.incrementToken();
-        System.out.println("after" + this.state);
         if (this.state == null) {
             return false;
         }
