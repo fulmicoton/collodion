@@ -27,7 +27,7 @@ public class MachineBuilder {
     int numPatterns = 0;
 
     public MachineBuilder() {
-        this.startState = new State();
+        this.startState = new State(Integer.MAX_VALUE);
         this.multiGroupAllocator = new MultiGroupAllocator();
         this.stateResults = new HashMap<>();
         this.numPatterns = 0;
@@ -36,7 +36,7 @@ public class MachineBuilder {
     public int addPattern(final CapturingGroupAST ast) {
         final GroupAllocator groupAllocator = this.multiGroupAllocator.newAllocator();
         ast.allocateGroups(groupAllocator);
-        final State endState = ast.buildMachine(this.startState);
+        final State endState = ast.buildMachine(this.numPatterns, this.startState);
         this.stateResults.put(endState, numPatterns);
         return numPatterns++;
     }
@@ -51,9 +51,9 @@ public class MachineBuilder {
     }
 
     public Machine buildForSearch() {
-        final State initialState = new State();
+        final State initialState = new State(Integer.MAX_VALUE);
         initialState.addEpsilon(this.startState);
-        initialState.transition(AST.ALWAYS_TRUE).addEpsilon(initialState);
+        initialState.transition(0, AST.ALWAYS_TRUE).addEpsilon(initialState);
         return this.build(initialState);
     }
 
@@ -64,6 +64,10 @@ public class MachineBuilder {
     private Machine build(final State initialState) {
         final Index<State> stateIndex = makeStateIndex(initialState);
         final int numStates = stateIndex.size();
+        final int[] maxAccessiblePatternIds = new int[numStates];
+        for (int stateId=0; stateId<numStates; stateId++) {
+            maxAccessiblePatternIds[stateId] = stateIndex.elFromId(stateId).minAccessiblePatternId();
+        }
         final int[][] transitions = new int[numStates][];
         final Predicate[][] predicates = new Predicate[numStates][];
         final int[][] openGroups = new int[numStates][];
@@ -73,12 +77,12 @@ public class MachineBuilder {
             openGroups[stateId] = Ints.toArray(state.allOpenGroups());
             closeGroups[stateId] = Ints.toArray(state.allCloseGroups());
             final List<Transition> transitionList = state.allTransitions();
-            final int stateNbTransitions = transitionList.size();
-            final int[] stateTransitions = new int[stateNbTransitions];
+            final int stateNumTransitions = transitionList.size();
+            final int[] stateTransitions = new int[stateNumTransitions];
             transitions[stateId] = stateTransitions;
-            final Predicate[] statePredicates = new Predicate[stateNbTransitions];
+            final Predicate[] statePredicates = new Predicate[stateNumTransitions];
             predicates[stateId] = statePredicates;
-            for (int transitionId=0; transitionId<stateNbTransitions; transitionId++) {
+            for (int transitionId=0; transitionId<stateNumTransitions; transitionId++) {
                 final Transition transition = transitionList.get(transitionId);
                 stateTransitions[transitionId] = stateIndex.get(transition.getDestination());
                 statePredicates[transitionId] = transition.predicate;
@@ -87,6 +91,7 @@ public class MachineBuilder {
         final int[] stateResultsArr = computeStateResults(stateIndex);
         return new Machine(stateResultsArr,
                            this.numPatterns,
+                           maxAccessiblePatternIds,
                            transitions,
                            predicates,
                            openGroups,

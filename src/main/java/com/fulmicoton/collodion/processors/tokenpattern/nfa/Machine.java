@@ -9,22 +9,25 @@ import java.util.Iterator;
 public class Machine {
 
     final int[] statesResults;
-    final int nbPatterns;
+    final int numPatterns;
     final int[][] transitions;
+    final int[] minAccessiblePatternIds;
     final Predicate[][] predicates;
     final int[][] openGroups;
     final int[][] closeGroups;
     final MultiGroupAllocator multiGroupAllocator;
 
     public Machine(final int[] statesResults,
-                   final int nbPatterns,
+                   final int numPatterns,
+                   final int[] minAccessiblePatternIds,
                    final int[][] transitions,
                    final Predicate[][] predicates,
                    final int[][] openGroups,
                    final int[][] closeGroups,
                    final MultiGroupAllocator multiGroupAllocator) {
         this.statesResults = statesResults;
-        this.nbPatterns = nbPatterns;
+        this.numPatterns = numPatterns;
+        this.minAccessiblePatternIds = minAccessiblePatternIds;
         this.transitions = transitions;
         this.predicates = predicates;
         this.openGroups = openGroups;
@@ -38,15 +41,13 @@ public class Machine {
     }
 
     public MultiMatcher match(final Iterator<SemToken> tokens) {
-        TokenPatternMatcher runner = this.matcher();
+        int offset = 0;
+        final TokenPatternMatcher runner = this.matcher();
         while (tokens.hasNext()) {
-            runner.processToken(tokens.next());
+            runner.processToken(offset, tokens.next());
+            offset += 1;
         }
         return runner.matchers();
     }
 
-    /*
-    public Multi search(Iterator<SemToken> tokens) {
-    }
-    */
 }

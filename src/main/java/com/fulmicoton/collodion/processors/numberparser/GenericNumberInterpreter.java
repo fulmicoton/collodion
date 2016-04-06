@@ -12,14 +12,14 @@ public abstract class GenericNumberInterpreter implements NumberInterpreter {
         };
     }
 
-    final static GenericNumberInterpreter ENGLISH = new GenericNumberInterpreter() {
+    static final GenericNumberInterpreter ENGLISH = new GenericNumberInterpreter() {
         @Override
         public String transform(String val) {
             return val.replaceAll("[,a-zA-Z]", "");
         }
     };
 
-    final static GenericNumberInterpreter FRENCH = new GenericNumberInterpreter() {
+    static final GenericNumberInterpreter FRENCH = new GenericNumberInterpreter() {
         @Override
         public String transform(String val) {
             return val.replaceAll("[\\.a-zA-Z]", "").replace(",", ".");

@@ -13,8 +13,8 @@ public class StarPatternAST extends UnaryPatternAST {
     }
 
     @Override
-    public State buildMachine(final State fromState) {
-        final State dest = this.pattern.buildMachine(fromState);
+    public State buildMachine(final int patternId, final State fromState) {
+        final State dest = this.pattern.buildMachine(patternId, fromState);
         dest.addEpsilon(fromState);
         return fromState;
     }

@@ -62,9 +62,9 @@ public class StateQueue {
         this.source.restoreState(this.savedTokens[innerPos].state);
     }
 
-    public static StateQueue forSourceWithSize(final AttributeSource attrSource, int nbTokens) {
-        SavedToken[] savedTokens = new SavedToken[nbTokens];
-        for (int i=0; i<nbTokens; i++) {
+    public static StateQueue forSourceWithSize(final AttributeSource attrSource, int numTokens) {
+        SavedToken[] savedTokens = new SavedToken[numTokens];
+        for (int i=0; i<numTokens; i++) {
             savedTokens[i] = new SavedToken();
         }
         return new StateQueue(attrSource, savedTokens);

@@ -7,7 +7,8 @@ import org.apache.lucene.analysis.TokenStream;
 public class SemToken {
 
     final AnnotationAttribute annotationAttribute;
-    public SemToken(AnnotationAttribute annotationAttribute) {
+
+    public SemToken(final AnnotationAttribute annotationAttribute) {
         this.annotationAttribute = annotationAttribute;
     }
 
@@ -15,11 +16,11 @@ public class SemToken {
         this(tokenStream.getAttribute(AnnotationAttribute.class));
     }
 
-    public boolean hasAnnotation(AnnotationKey annotation) {
+    public boolean hasAnnotation(final AnnotationKey annotation) {
         return this.annotationAttribute.contains(annotation);
     }
 
     public String toString() {
-        return "" + this.annotationAttribute;
+        return String.valueOf(this.annotationAttribute);
     }
 }

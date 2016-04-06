@@ -18,8 +18,8 @@ public class ChainPatternAST extends BinaryPatternAST {
     }
 
     @Override
-    public State buildMachine(final State fromState) {
-        final State afterLeft = left.buildMachine(fromState);
-        return right.buildMachine(afterLeft);
+    public State buildMachine(final int patternId, final State fromState) {
+        final State afterLeft = left.buildMachine(patternId, fromState);
+        return right.buildMachine(patternId, afterLeft);
     }
 }

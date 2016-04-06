@@ -39,7 +39,7 @@ public class Benchmark {
         List<Double> stepTimes = new ArrayList<>();
         for (int i = 0; i <= processorBuilders.size(); i++) {
             final List<ProcessorBuilder> subListProcessorBuilders = processorBuilders.subList(0, i);
-            final CollodionAnalyzer partialAnalyzer = new CollodionAnalyzer(subListProcessorBuilders);
+            final CollodionAnalyzer partialAnalyzer = new CollodionAnalyzer(CollodionAnalyzer.TokenizerType.STANDARD, subListProcessorBuilders);
             timeRun(corpus, partialAnalyzer);
             long result = timeRun(corpus, partialAnalyzer);
             final double averagePerDoc = (double)result / corpus.size();

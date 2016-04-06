@@ -115,6 +115,14 @@ public class JSON {
         public CollodionAnalyzer deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
             final JsonObject jsonObj = json.getAsJsonObject();
             final List<ProcessorBuilder> processors = new ArrayList<>();
+            final CollodionAnalyzer.TokenizerType tokenizerType;
+            if (jsonObj.has("tokenizer")) {
+                final String tokenizerTypeString = jsonObj.get("tokenizer").getAsString();
+                tokenizerType = CollodionAnalyzer.TokenizerType.valueOf(tokenizerTypeString.toUpperCase());
+            }
+            else {
+                tokenizerType = CollodionAnalyzer.TokenizerType.STANDARD;
+            }
             if (!jsonObj.has("processors")) {
                 throw new JsonParseException("The pipeline configuration file must contain a processors field.");
             }
@@ -125,7 +133,7 @@ public class JSON {
                     processors.add(processorBuilder);
                 }
             }
-            return new CollodionAnalyzer(processors);
+            return new CollodionAnalyzer(tokenizerType, processors);
         }
 
         @Override

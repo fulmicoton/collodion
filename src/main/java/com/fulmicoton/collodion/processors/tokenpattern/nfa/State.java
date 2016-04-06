@@ -13,6 +13,7 @@ import java.util.TreeSet;
 
 public class State {
 
+    private int minPatternId;
     private TreeSet<Integer> openGroups = new TreeSet<>();
     private TreeSet<Integer> closeGroups = new TreeSet<>();
     private List<Arrow> arrows = new ArrayList<>();
@@ -23,18 +24,35 @@ public class State {
         return this.epsilonOrigins;
     }
 
+    public State(final int patternId) {
+        this.minPatternId = patternId;
+    }
+
     // TODO check how to make priority still work
-    public State transition(final Predicate predicate) {
+    public State transition(final int patternId, final Predicate predicate) {
         State state = transitionCache.get(predicate);
         if (state == null) {
-            state = new State();
+            state = new State(patternId);
             this.addArrow(new Transition(state, predicate));
             transitionCache.put(predicate, state);
+        }
+        else {
+            state.updateMinPatternId(patternId);
         }
         return state;
     }
 
-    private void addArrow(Arrow transition) {
+    public int minAccessiblePatternId() {
+        return this.minPatternId;
+    }
+
+    public void updateMinPatternId(final int patternId) {
+        if (patternId < this.minPatternId) {
+            this.minPatternId = patternId;
+        }
+    }
+
+    private void addArrow(final Arrow transition) {
         arrows.add(transition);
     }
 
@@ -47,8 +65,8 @@ public class State {
     }
 
     public Iterable<State> epsilonSuccessors() {
-        List<State> epsilonSuccessors = Lists.newArrayList();
-        for (Arrow transition: this.arrows) {
+        final List<State> epsilonSuccessors = Lists.newArrayList();
+        for (final Arrow transition: this.arrows) {
             if (transition instanceof Epsilon) {
                 epsilonSuccessors.add(transition.getDestination());
             }
@@ -73,19 +91,20 @@ public class State {
         return closeGroups;
     }
 
-    public void addOpenGroup(int groupId) {
+    public void addOpenGroup(final int groupId) {
         this.openGroups.add(groupId);
     }
 
-    public void addCloseGroup(int groupId) {
+    public void addCloseGroup(final int groupId) {
         this.closeGroups.add(groupId);
     }
 
-    private void addEpsilonOrigin(State origin) {
+    private void addEpsilonOrigin(final State origin) {
         this.epsilonOrigins.add(origin);
     }
 
     public void addEpsilon(final State dest) {
+        this.updateMinPatternId(dest.minAccessiblePatternId());
         dest.addEpsilonOrigin(this);
         this.addArrow(new Epsilon(dest));
     }

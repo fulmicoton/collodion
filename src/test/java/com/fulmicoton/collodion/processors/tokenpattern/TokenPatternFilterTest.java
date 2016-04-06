@@ -53,9 +53,9 @@ public class TokenPatternFilterTest {
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());
-            Assert.assertEquals(charTerm.toString(), "Lily");
-            Assert.assertEquals(stem.toString(), "lili");
-            Assert.assertEquals(annotationAttribute.toString(), "LIVEPTN(2); LIVEPTN.NAME(1)");
+            Assert.assertEquals("Lily", charTerm.toString());
+            Assert.assertEquals("lili", stem.toString());
+            Assert.assertEquals("LIVEPTN(2); LIVEPTN.NAME(1)", annotationAttribute.toString());
         }
         {
             Assert.assertTrue(tokenStream.incrementToken());

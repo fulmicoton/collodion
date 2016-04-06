@@ -22,14 +22,14 @@ public class RepeatPatternAST extends UnaryPatternAST {
     }
 
     @Override
-    public State buildMachine(final State fromState) {
+    public State buildMachine(final int patternId, final State fromState) {
         State finalState = fromState;
         final Set<State> okStates = Sets.newHashSet();
         for (int i=0; i<max; i++) {
             if (i >= min) {
                 okStates.add(finalState);
             }
-            finalState = pattern.buildMachine(finalState);
+            finalState = pattern.buildMachine(patternId, finalState);
         }
         for (final State state: okStates) {
             state.addEpsilon(finalState);

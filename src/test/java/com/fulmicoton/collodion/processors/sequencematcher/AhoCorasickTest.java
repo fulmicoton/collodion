@@ -27,25 +27,24 @@ public class AhoCorasickTest {
         ahoCorasick.insert(Ints.toArray(ImmutableList.of(2, 3)), 6);
         ahoCorasick.finalize();
 
-        AhoCorasick.Node node = ahoCorasick.getRoot();
-        node.goTo(5);
-        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
-        node = node.goTo(1);
-        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
-        node = node.goTo(2);
-        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
-        node = node.goTo(3);
-        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{1, 6});
-        node = node.goTo( 7);
-        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{4});
-        node = node.goTo(2);
-        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
-        node = node.goTo(3);
-        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{6});
-        node = node.goTo(4);
-        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
-        node = node.goTo(5);
-        Assert.assertArrayEquals("", toSortedArray(node.terminals), new int[]{});
+        int node = ahoCorasick.getRoot();
+        Assert.assertArrayEquals("", toSortedArray(ahoCorasick.getTerminals(node)), new int[]{});
+        node = ahoCorasick.goTo(node, 1);
+        Assert.assertArrayEquals("", toSortedArray(ahoCorasick.getTerminals(node)), new int[]{});
+        node = ahoCorasick.goTo(node, 2);
+        Assert.assertArrayEquals("", toSortedArray(ahoCorasick.getTerminals(node)), new int[]{});
+        node = ahoCorasick.goTo(node, 3);
+        Assert.assertArrayEquals("", toSortedArray(ahoCorasick.getTerminals(node)), new int[]{1, 6});
+        node = ahoCorasick.goTo(node, 7);
+        Assert.assertArrayEquals("", toSortedArray(ahoCorasick.getTerminals(node)), new int[]{4});
+        node = ahoCorasick.goTo(node, 2);
+        Assert.assertArrayEquals("", toSortedArray(ahoCorasick.getTerminals(node)), new int[]{});
+        node = ahoCorasick.goTo(node, 3);
+        Assert.assertArrayEquals("", toSortedArray(ahoCorasick.getTerminals(node)), new int[]{6});
+        node = ahoCorasick.goTo(node, 4);
+        Assert.assertArrayEquals("", toSortedArray(ahoCorasick.getTerminals(node)), new int[]{});
+        node = ahoCorasick.goTo(node, 5);
+        Assert.assertArrayEquals("", toSortedArray(ahoCorasick.getTerminals(node)), new int[]{});
 
     }
 

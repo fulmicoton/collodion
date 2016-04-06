@@ -43,8 +43,9 @@ public class NumberAttributeImpl extends AttributeImpl implements NumberAttribut
     }
 
     @Override
-    public void copyTo(AttributeImpl target) {
-
+    public void copyTo(final AttributeImpl target) {
+        final NumberAttributeImpl targetNumberAttribute = (NumberAttributeImpl)target;
+        targetNumberAttribute.setVal(this.val);
     }
 
     @Override

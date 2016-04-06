@@ -20,15 +20,15 @@ public class CapturingGroupAST extends UnaryPatternAST {
     }
 
     @Override
-    public State buildMachine(final State fromState) {
-        final State virtualStateOpen = new State();
+    public State buildMachine(final int patternId, final State fromState) {
+        final State virtualStateOpen = new State(patternId);
         virtualStateOpen.addOpenGroup(this.groupId);
         fromState.addEpsilon(virtualStateOpen);
-        final State patternStart = new State();
+        final State patternStart = new State(patternId);
         virtualStateOpen.addEpsilon(patternStart);
-        final State patternEnd = this.pattern.buildMachine(patternStart);
+        final State patternEnd = this.pattern.buildMachine(patternId, patternStart);
         patternEnd.addCloseGroup(this.groupId);
-        final State groupEnd = new State();
+        final State groupEnd = new State(patternId);
         patternEnd.addEpsilon(groupEnd);
         return groupEnd;
     }

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AnnotationAttributeImpl extends AttributeImpl implements AnnotationAttribute, Jsonable {
 
-    private static final int MAX_NUM_ANNOTATIONS = 20;
+    private static final int MAX_NUM_ANNOTATIONS = 100;
     private final Annotation[] annotations;
     private int length = 0;
 

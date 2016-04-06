@@ -59,7 +59,7 @@ public class NumberParserFilter extends TokenFilter {
     // ------------------------
 
 
-    final static int MAX_STATES = 10;
+    static final int MAX_STATES = 10;
     final MultiPatternAutomaton automaton;
     final StringBuffer buffer = new StringBuffer(300);
     final StateQueue stateQueue = StateQueue.forSourceWithSize(this, MAX_STATES);
@@ -98,10 +98,10 @@ public class NumberParserFilter extends TokenFilter {
         int matchedPattern = -1;
         int matchedNbTokens = 0;
         OUTER_LOOP:
-        for (int nbToken = 0; nbToken < MAX_STATES; nbToken++) {
+        for (int numTokens = 0; numTokens < MAX_STATES; numTokens++) {
             // TODO Perf get rid of the extraneous copy in the default case.
-            if (!peekAhead(nbToken)) {
-                if (nbToken == 0) {
+            if (!peekAhead(numTokens)) {
+                if (numTokens == 0) {
                     // no more tokens apparently.
                     return false;
                 }
@@ -120,7 +120,7 @@ public class NumberParserFilter extends TokenFilter {
             final int[] accepted = automaton.accept[p];
             if (accepted.length > 0) {
                 matchedPattern = accepted[0];
-                matchedNbTokens = nbToken + 1;
+                matchedNbTokens = numTokens + 1;
             }
         }
         if (matchedPattern == -1) {

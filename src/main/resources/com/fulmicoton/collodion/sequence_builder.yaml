@@ -1,0 +1,7 @@
+tokenizer: "custom"
+processors:
+  - type: "remove"
+  - type: "lower"
+  - type: "stem"
+  - type: "remove"
+    typeToRemove: "SYMBOL"

@@ -176,7 +176,7 @@ public abstract class AST {
         return PARSER.parse(regex);
     }
 
-    public abstract State buildMachine(final State fromState);
+    public abstract State buildMachine(final int patternId, final State fromState);
 
     public abstract void allocateGroups(final GroupAllocator groupAllocator);
 }

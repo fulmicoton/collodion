@@ -17,8 +17,9 @@ import static com.fulmicoton.collodion.processors.tokenpattern.TokenPatternTest.
 public class MultiPatternTest {
 
 
-    private static int addPattern(final MachineBuilder machineBuilder,
-                            final String ptn) throws Exception {
+    private static int addPattern(
+            final MachineBuilder machineBuilder,
+            final String ptn) throws Exception {
         final AST ast = AST.compile(ptn);
         final CapturingGroupAST capturingGroupAST = new CapturingGroupAST(ast, AnnotationKey.of("TEST"));
         return machineBuilder.addPattern(capturingGroupAST);

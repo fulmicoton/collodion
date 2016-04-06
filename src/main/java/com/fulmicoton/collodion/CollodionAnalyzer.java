@@ -6,11 +6,14 @@ import com.fulmicoton.collodion.common.loader.ChainLoader;
 import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.fulmicoton.collodion.processors.resetannotation.ResetAnnotationFilter;
+import com.fulmicoton.collodion.tokenizer.RegexpTokenizer;
 import com.fulmicoton.collodion.tokenizer.SolilessTokenizer;
+import com.fulmicoton.multiregexp.Lexer;
 import com.google.common.collect.ImmutableList;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.WhitespaceTokenizer;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 
 import java.io.IOException;
@@ -26,14 +29,47 @@ public class CollodionAnalyzer extends Analyzer {
 
     private transient Loader loader;
 
-    public final ImmutableList<ProcessorBuilder> processorBuilders;
+    public enum TokenizerType {
+        STANDARD {
+            @Override
+            public Tokenizer getTokenizer(final Reader reader) {
+                return new SolilessTokenizer(new StandardTokenizer(reader), reader);
+            }
+        },
+        WHITESPACE {
+            @Override
+            public Tokenizer getTokenizer(final Reader reader) {
+                return new SolilessTokenizer(new WhitespaceTokenizer(reader), reader);
+            }
+        },
+        CUSTOM {
+            @Override
+            public Tokenizer getTokenizer(final Reader reader) {
+                final Lexer<RegexpTokenizer.TokenType> lexer = new Lexer<>();
+                lexer.addRule(RegexpTokenizer.TokenType.WHITESPACE, "[ \t\n]+");
+                lexer.addRule(RegexpTokenizer.TokenType.NUMBER, "[0-9][0-9,\\.]+");
+                lexer.addRule(RegexpTokenizer.TokenType.WORD, "[a-zA-Z0-9]+");
+                lexer.addRule(RegexpTokenizer.TokenType.SYMBOL, ".");
+                final RegexpTokenizer.Configuration configuration = new RegexpTokenizer.Configuration(lexer);
+                return new RegexpTokenizer(reader, configuration);
+            }
+        };
 
-    public CollodionAnalyzer(final List<ProcessorBuilder> processorBuilders) {
-        this(processorBuilders, Loader.DEFAULT_LOADER);
+        public abstract Tokenizer getTokenizer(final Reader reader);
+    }
+    public final ImmutableList<ProcessorBuilder> processorBuilders;
+    public TokenizerType tokenizer;
+
+    public CollodionAnalyzer(
+            final TokenizerType tokenizer,
+            final List<ProcessorBuilder> processorBuilders) {
+        this(tokenizer, processorBuilders, Loader.DEFAULT_LOADER);
     }
 
-    public CollodionAnalyzer(final List<ProcessorBuilder> processorBuilders,
+    public CollodionAnalyzer(final TokenizerType tokenizer,
+                             final List<ProcessorBuilder> processorBuilders,
                              final Loader loader) {
+        this.tokenizer = tokenizer;
         this.processorBuilders = ImmutableList.copyOf(processorBuilders);
         this.loader = loader;
     }
@@ -44,7 +80,7 @@ public class CollodionAnalyzer extends Analyzer {
                 .addAll(this.processorBuilders)
                 .add(newProcessorBuilder)
                 .build();
-        return new CollodionAnalyzer(newProcessorBuilders, this.loader);
+        return new CollodionAnalyzer(this.tokenizer, newProcessorBuilders, this.loader);
     }
 
     public void prependLoader(final Loader loader) {
@@ -61,7 +97,7 @@ public class CollodionAnalyzer extends Analyzer {
     protected TokenStreamComponents createComponents(
             final String fieldName,
             final Reader reader) {
-        final Tokenizer source = new SolilessTokenizer(new StandardTokenizer(reader), reader);
+        final Tokenizer source = this.tokenizer.getTokenizer(reader);
         TokenStream lastFilter = new ResetAnnotationFilter(source);
         for (final ProcessorBuilder processorBuilder: this.processorBuilders) {
             try {

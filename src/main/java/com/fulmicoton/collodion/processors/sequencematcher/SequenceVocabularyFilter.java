@@ -1,5 +1,6 @@
 package com.fulmicoton.collodion.processors.sequencematcher;
 
+import com.fulmicoton.collodion.CollodionAnalyzer;
 import com.fulmicoton.collodion.common.Annotation;
 import com.fulmicoton.collodion.common.AnnotationAttribute;
 import com.fulmicoton.collodion.common.Index;
@@ -36,15 +37,11 @@ import java.util.regex.Pattern;
 public class SequenceVocabularyFilter extends TokenFilter {
 
     public static class Builder implements ProcessorBuilder<SequenceVocabularyFilter>  {
-
-
         // TODO can be optimized.
         private String path;
         private transient Index.Builder<MatchingMethodAndTerm> termIndex;
         private transient List<SequenceRule> sequences;
-
-
-
+        private CollodionAnalyzer collodionAnalyzer;
 
         @Override
         public void init(final Loader loader) throws IOException {
@@ -54,25 +51,41 @@ public class SequenceVocabularyFilter extends TokenFilter {
             }
             this.termIndex = Index.builder();
             this.sequences = Lists.newArrayList();
+            try {
+                this.collodionAnalyzer = CollodionAnalyzer.fromPath("sequence_builder.yaml");
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
             loadRules(inputStream);
         }
 
         private void loadRules(final InputStream inputStream) throws IOException {
             final InputStreamReader reader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+            int line = 0;
             try (final BufferedReader bufferedReader = new BufferedReader(reader)) {
                 String ruleJson = bufferedReader.readLine();
                 while (ruleJson != null) {
-                    final Rule rule = JSON.fromJson(ruleJson, Rule.class);
-                    this.addRule(rule);
-                    ruleJson = bufferedReader.readLine();
+                    try {
+                        final Rule rule = JSON.fromJson(ruleJson, Rule.class);
+                        if (rule != null) {
+                            this.addRule(rule);
+                        }
+                    }
+                    catch (final Exception e) {
+                        System.err.println("Error when reading line " + line);
+                    }
+                    finally {
+                        ruleJson = bufferedReader.readLine();
+                        line += 1;
+                    }
                 }
-
             }
         }
 
         @Override
         public SequenceVocabularyFilter createFilter(final TokenStream prev) throws IOException {
             final AbstractMap<MatchingMethod, List<TermAndId>> vocabularies = new EnumMap<>(MatchingMethod.class);
+
             for (final Map.Entry<MatchingMethodAndTerm, Integer> e: this.termIndex.getMap().entrySet()) {
                 final List<TermAndId> termAndIds;
                 final MatchingMethod matchingMethod = e.getKey().matchingMethod;
@@ -107,18 +120,36 @@ public class SequenceVocabularyFilter extends TokenFilter {
             return new SequenceVocabularyFilter(prev, vocabularyMatchers, ahoCorasick, annotations, maxLength);
         }
 
-        private void addRule(final Rule rule) {
-            final String[] tokens = WHITESPACE.split(rule.value); //< TODO use a proper tokenizer some day.
-            final int[] sequenceTermIds = new int[tokens.length];
-            for (int i=0; i<tokens.length; i++) {
-                final String lowercaseForm = tokens[i].toLowerCase(); // TODO use the pipeline to compute the correct thing
-                final MatchingMethodAndTerm matchingMethodAndTerm = new MatchingMethodAndTerm(rule.method, lowercaseForm);
-                sequenceTermIds[i] = this.termIndex.get(matchingMethodAndTerm);
+        private List<String> splitAndAnalyze(final String form, final MatchingMethod matchingMethod) throws IOException {
+            final List<String> tokens = Lists.newArrayList();
+            final TokenStream tokenStream = this.collodionAnalyzer.tokenStream("field", form);
+            final CharSequence tokenCharSeq = matchingMethod.extractForm(tokenStream);
+            try {
+                tokenStream.reset();
+                while (tokenStream.incrementToken()) {
+                    tokens.add(new StringBuilder().append(tokenCharSeq).toString());
+                }
+                return tokens;
             }
-            this.sequences.add(new SequenceRule(rule.annotation, sequenceTermIds));
+            finally {
+                tokenStream.end();
+                tokenStream.close();
+            }
         }
 
-
+        private void addRule(final Rule rule) throws IOException {
+            final List<String> tokens = splitAndAnalyze(rule.value, rule.method);
+            if (!tokens.isEmpty()) {
+                final int[] sequenceTermIds = new int[tokens.size()];
+                int i = 0;
+                for (final String token : tokens) {
+                    final MatchingMethodAndTerm matchingMethodAndTerm = new MatchingMethodAndTerm(rule.method, token);
+                    sequenceTermIds[i] = this.termIndex.get(matchingMethodAndTerm);
+                    i++;
+                }
+                this.sequences.add(new SequenceRule(rule.annotation, sequenceTermIds));
+            }
+        }
     }
 
     private final List<VocabularyMatcher> vocabularyMatchers;
@@ -129,8 +160,8 @@ public class SequenceVocabularyFilter extends TokenFilter {
 
     private final AnnotationAttribute annotationAttribute;
 
-    private Map<Integer, List<Annotation>> annotationsMap;
-    private Set<AhoCorasick.Node> curNodes;
+    private Map<Integer, Map<AnnotationKey, Integer>> annotationsMap;
+    private Set<Integer> curNodes;
     private int consumedToken = 0;
     private int emittedToken = 0;
 
@@ -166,10 +197,10 @@ public class SequenceVocabularyFilter extends TokenFilter {
 
     public void emitTokenFromQueue() {
         this.stateQueue.pop();
-        final List<Annotation> annotations = this.annotationsMap.get(this.emittedToken);
+        final Map<AnnotationKey, Integer> annotations = this.annotationsMap.get(this.emittedToken);
         if (annotations != null) {
-            for (final Annotation ann: annotations) {
-                this.annotationAttribute.add(ann.key, ann.numTokens);
+            for (final Map.Entry<AnnotationKey, Integer> kv: annotations.entrySet()) {
+                this.annotationAttribute.add(kv.getKey(), kv.getValue());
             }
         }
         this.emittedToken += 1;
@@ -179,13 +210,16 @@ public class SequenceVocabularyFilter extends TokenFilter {
 
     private void addAnnotation(final Annotation annotation) {
         final int annStart = this.consumedToken - annotation.numTokens + 1;
-        List<Annotation> annotations = this.annotationsMap.get(annStart);
+        Map<AnnotationKey, Integer> annotations = this.annotationsMap.get(annStart);
         if (annotations == null) {
-            annotations = Lists.newArrayList();
+            annotations = Maps.newHashMap();
             // TODO  make sure there cannot be any duplicates
             this.annotationsMap.put(annStart, annotations);
         }
-        annotations.add(annotation);
+        final Integer prevCount = annotations.get(annotation.key);
+        if ((prevCount == null) || (prevCount < annotation.numTokens)) {
+            annotations.put(annotation.key, annotation.numTokens);
+        }
     }
 
     @Override
@@ -196,13 +230,13 @@ public class SequenceVocabularyFilter extends TokenFilter {
                 for (final VocabularyMatcher vocabularyMatcher: this.vocabularyMatchers) {
                     vocabularyMatcher.match(matchList);
                 }
-                final Set<AhoCorasick.Node> nextNodes = new HashSet<>();
+                final Set<Integer> nextNodes = new HashSet<>();
                 final TIntSet matchingRuleIds = new TIntHashSet();
-                for (final AhoCorasick.Node node: this.curNodes) {
+                for (final int nodeId: this.curNodes) {
                     for (final int termId: matchList) {
-                        final AhoCorasick.Node nextNode = node.goTo(termId);
+                        final int nextNode = ahoCorasick.goTo(nodeId, termId);
                         nextNodes.add(nextNode);
-                        matchingRuleIds.addAll(nextNode.terminals);
+                        matchingRuleIds.addAll(ahoCorasick.getTerminals(nextNode));
                     }
                 }
                 if (!nextNodes.isEmpty()) {
@@ -257,5 +291,4 @@ public class SequenceVocabularyFilter extends TokenFilter {
         }
     }
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
-
 }

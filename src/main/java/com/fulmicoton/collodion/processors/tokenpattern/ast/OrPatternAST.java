@@ -4,7 +4,7 @@ import com.fulmicoton.collodion.processors.tokenpattern.nfa.State;
 
 public class OrPatternAST extends BinaryPatternAST {
 
-    public OrPatternAST(AST left, AST right) {
+    public OrPatternAST(final AST left, final AST right) {
         super(left, right);
     }
 
@@ -19,9 +19,9 @@ public class OrPatternAST extends BinaryPatternAST {
     }
 
     @Override
-    public State buildMachine(State fromState) {
-        final State leftFinalState = this.left.buildMachine(fromState);
-        final State rightFinalState = this.right.buildMachine(fromState);
+    public State buildMachine(final int patternId, final State fromState) {
+        final State leftFinalState = this.left.buildMachine(patternId, fromState);
+        final State rightFinalState = this.right.buildMachine(patternId, fromState);
         rightFinalState.addEpsilon(leftFinalState);
         return leftFinalState;
     }

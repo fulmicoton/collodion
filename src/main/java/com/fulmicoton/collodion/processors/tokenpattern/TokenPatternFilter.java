@@ -163,6 +163,8 @@ public class TokenPatternFilter extends TokenFilter {
                 if (match != null) {
                     machineRunner.reset();
                     final int matchStart = match.start(0);
+                    machineRunner.killThreadsWithLowerPriority(matchStart, match.patternId);
+                    // TODO remove all thread which do not start at 0.
                     final State outputMatch = makeOutputState(match);
                     if ((matchStart - emitted) > 0) {
                         return new Flush(matchStart - emitted, outputMatch).incrementToken();

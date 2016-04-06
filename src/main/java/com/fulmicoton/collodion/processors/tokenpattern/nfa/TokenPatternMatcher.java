@@ -14,15 +14,17 @@ public class TokenPatternMatcher {
     int offset = 0;
     private final Machine machine;
 
-    private Thread createThread(final int stateId,
+    private Thread createThread(final int maxAccessiblePatternId,
+                                final int start,
+                                final int stateId,
                                 final Groups groups,
                                 final int offset) {
         if ((this.machine.openGroups.length + this.machine.closeGroups.length) > 0) {
             final Groups newGroups = new Groups(this.machine.openGroups[stateId], this.machine.closeGroups[stateId], offset, groups);
-            return new Thread(stateId, newGroups);
+            return new Thread(start, maxAccessiblePatternId, stateId, newGroups);
         }
         else {
-            return new Thread(stateId, groups);
+            return new Thread(start, maxAccessiblePatternId, stateId, groups);
         }
     }
 
@@ -37,12 +39,12 @@ public class TokenPatternMatcher {
 
 
     public void reset() {
-        final Thread initialThread = this.createThread(0, null, offset);
+        final Thread initialThread = this.createThread(-1, -1, 0, null, offset);
         threads = Lists.newArrayList(initialThread);
     }
 
     public MultiMatcher matchers() {
-        final TokenPatternMatchResult[] matchResults = new TokenPatternMatchResult[machine.nbPatterns];
+        final TokenPatternMatchResult[] matchResults = new TokenPatternMatchResult[machine.numPatterns];
         for (final Thread thread: threads) {
             final int matchingPattern = machine.statesResults[thread.state];
             if (matchingPattern != -1) {
@@ -50,7 +52,7 @@ public class TokenPatternMatcher {
                 matchResults[matchingPattern] = matchResult;
             }
         }
-        for (int i=0; i<machine.nbPatterns; i++) {
+        for (int i = 0; i<machine.numPatterns; i++) {
             if (matchResults[i] == null) {
                 matchResults[i] = TokenPatternMatchResult.doesNotMatch(i, machine.multiGroupAllocator.get(i));
             }
@@ -58,11 +60,27 @@ public class TokenPatternMatcher {
         return new MultiMatcher(matchResults);
     }
 
-    public void processToken(final SemToken token) {
-        offset++;
+    public void killThreadsWithLowerPriority(final int matchStart, final int patternId) {
+        this.threads = Lists.newArrayList();
+        for (final Thread thread: this.threads) {
+            if (thread.start < matchStart) {
+                continue;
+            }
+            if (thread.start > matchStart) {
+                continue;
+            }
+            if (this.machine.minAccessiblePatternIds[thread.state] > patternId) {
+                break;
+            }
+        };
+    }
+
+    // TODO consider putting position as an attribute
+    public void processToken(final int position, final SemToken token) {
+        this.offset++;
         final Set<Integer> states = new HashSet<>();
         final List<Thread> newThreads = new ArrayList<>();
-        for (final Thread thread: threads) {
+        for (final Thread thread: this.threads) {
             final int[] stateTransitions = machine.transitions[thread.state];
             final Predicate[] statePredicates = machine.predicates[thread.state];
             for (int i=0; i < stateTransitions.length; i++) {
@@ -70,7 +88,15 @@ public class TokenPatternMatcher {
                 if (predicate.apply(token)) {
                     final int dest = stateTransitions[i];
                     if (states.add(dest)) {
-                        final Thread newThread = this.createThread(dest, thread.groups, offset);
+                        final int newThreadStart;
+                        if (thread.start == -1) {
+                            newThreadStart = this.offset - 1;
+                        }
+                        else {
+                            newThreadStart = thread.start;
+                        }
+                        final int maxAccessiblePatternId = this.machine.minAccessiblePatternIds[dest];
+                        final Thread newThread = this.createThread(maxAccessiblePatternId, newThreadStart, dest, thread.groups, offset);
                         newThreads.add(newThread);
                     }
                 }
@@ -80,10 +106,10 @@ public class TokenPatternMatcher {
     }
 
     public TokenPatternMatchResult search(final SemToken newToken) {
-        this.processToken(newToken);
+        this.processToken(this.offset, newToken);
         int highestPriorityMatchingPattern = Integer.MAX_VALUE;
         TokenPatternMatchResult matchResult = null;
-        for (final Thread thread: threads) {
+        for (final Thread thread: this.threads) {
             final int matchingPattern = machine.statesResults[thread.state];
             if ((matchingPattern >=0) && (matchingPattern < highestPriorityMatchingPattern)) {
                 highestPriorityMatchingPattern = matchingPattern;
