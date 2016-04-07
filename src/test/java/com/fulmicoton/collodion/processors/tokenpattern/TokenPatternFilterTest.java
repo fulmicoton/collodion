@@ -45,11 +45,12 @@ public class TokenPatternFilterTest {
         // no trick
         testHelper(
                 "tokenpatterntest-country-pipeline.json",
-                "Robert lives in UK.",
+                "Robert lives in UK. Something",
                 "Robert:LIVEPTN(4); LIVEPTN.NAME(1)",
                 "lives:LIVE(1); LIVEVB(1)",
                 "in:IN(1)",
-                "UK:COUNTRY(1); LIVECOUNTRY(1)"
+                "UK:COUNTRY(1); LIVECOUNTRY(1)",
+                "Something:"
         );
         // search
         testHelper(
@@ -65,7 +66,7 @@ public class TokenPatternFilterTest {
         // chaining
         testHelper(
                 "tokenpatterntest-country-pipeline.json",
-                "Because Robert lives in France. Lily lives in the UK.",
+                "Because Robert lives in France. Lily lives in a house.",
                 "Because:",
                 "Robert:LIVEPTN(4); LIVEPTN.NAME(1)",
                 "lives:LIVE(1); LIVEVB(1)",
@@ -74,44 +75,28 @@ public class TokenPatternFilterTest {
                 "Lily:LIVEPTN(2); LIVEPTN.NAME(1)",
                 "lives:LIVE(1); LIVEVB(1)",
                 "in:IN(1)",
-                "the:",
-                "UK:COUNTRY(1)"
+                "a:",
+                "house:"
         );
-//        // annotation with more than one token
-//        testHelper(
-//                "tokenpatterntest-country-pipeline.json",
-//                "Robert lives in United Kingdom.",
-//                "Robert:LIVEPTN(5); LIVEPTN.NAME(1)",
-//                "lives:LIVE(1); LIVEVB(1)",
-//                "in:IN(1)",
-//                "United:COUNTRY(2);  LIVECOUNTRY(1)",
-//                "Kingdom:"
-//        );
-//        testHelper(
-//                "tokenpatterntest-country-pipeline.json",
-//                "Robert lives in France. Lily lives in the UK",
-//                "Robert:LIVEPTN(2); LIVEPTN.NAME(1)",
-//                "lives:LIVE(1); LIVEVB(1)",
-//                "in:IN(1)",
-//                "France:COUNTRY(1)",
-//                "Lily:LIVEPTN(2); LIVEPTN.NAME(1)",
-//                "lives:LIVE(1); LIVEVB(1)",
-//                "in:IN(1)",
-//                "the:",
-//                "UK:COUNTRY(1)"
-//        );
-//        testHelper(
-//                "tokenpatterntest-country-pipeline.json",
-//                "Robert lives in France. Lily lives in the",
-//                "Robert:LIVEPTN(2); LIVEPTN.NAME(1)",
-//                "lives:LIVE(1); LIVEVB(1)",
-//                "in:IN(1)",
-//                "France:COUNTRY(1)",
-//                "Lily:LIVEPTN(2); LIVEPTN.NAME(1)",
-//                "lives:LIVE(1); LIVEVB(1)",
-//                "in:IN(1)",
-//                "the:"
-//        );
+        testHelper(
+                "tokenpatterntest-country-pipeline.json",
+                "United Kingdom is in Europe.",
+                "United:COUNTRY(2); A(5); COUNTRY.NAME(2)",
+                "Kingdom:",
+                "is:IS(1)",
+                "in:IN(1)",
+                "Europe:CONTINENT(1); COUNTRY.CONTINENT(1)"
+        );
+        // annotation with more than one token
+        testHelper(
+                "tokenpatterntest-country-pipeline.json",
+                "Robert lives in United Kingdom.",
+                "Robert:LIVEPTN(5); LIVEPTN.NAME(1)",
+                "lives:LIVE(1); LIVEVB(1)",
+                "in:IN(1)",
+                "United:COUNTRY(2); LIVECOUNTRY(2)",
+                "Kingdom:"
+        );
     }
 
 

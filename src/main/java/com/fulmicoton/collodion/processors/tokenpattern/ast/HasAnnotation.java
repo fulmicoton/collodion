@@ -5,6 +5,7 @@ import com.fulmicoton.collodion.processors.tokenpattern.SemToken;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Predicate;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HasAnnotation implements Predicate {
@@ -31,7 +32,7 @@ public class HasAnnotation implements Predicate {
     }
 
     @Override
-    public boolean apply(SemToken semToken) {
+    public List<Integer> apply(final SemToken semToken) {
         return semToken.hasAnnotation(annotation);
     }
 

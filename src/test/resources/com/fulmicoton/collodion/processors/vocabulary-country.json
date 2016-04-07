@@ -2,4 +2,6 @@
 {"method": "lower" , "value": "UK", "annotation": "COUNTRY"}
 {"method": "lower" , "value": "United Kingdom", "annotation": "COUNTRY"}
 {"method": "stem" , "value": "live", "annotation": "LIVE"}
+{"method": "lower" , "value": "is", "annotation": "IS"}
 {"method": "lower" , "value": "in", "annotation": "IN"}
+{"method": "lower" , "value": "Europe", "annotation": "CONTINENT"}

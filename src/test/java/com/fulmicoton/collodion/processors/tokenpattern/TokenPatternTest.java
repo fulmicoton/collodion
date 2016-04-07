@@ -47,13 +47,15 @@ public class TokenPatternTest {
         final TokenPatternMatcher runner = machine.matcher();
         final Iterator<SemToken> tokenIt = tokenList.iterator();
         final List<Integer> actualPositions = new ArrayList<>();
+        int cursor = 0;
         while (tokenIt.hasNext()) {
             final SemToken semToken = tokenIt.next();
+            cursor+=1;
             final TokenPatternMatchResult matchResult = runner.search(semToken);
             if (matchResult != null) {
                 actualPositions.add(matchResult.start(0));
                 actualPositions.add(matchResult.end(0));
-                runner.reset();
+                runner.reset(cursor);
             }
         }
         final int[] actualPositionsArr = Ints.toArray(actualPositions);

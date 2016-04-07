@@ -25,7 +25,6 @@ public class TokenPatternMatchResult {
         }
     }
 
-
     public AnnotationKey getAnnotationForGroupId(final int groupId) {
         return this.groupAllocator.annotationKeys.get(groupId);
     }

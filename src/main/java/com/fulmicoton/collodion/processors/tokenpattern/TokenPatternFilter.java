@@ -8,7 +8,6 @@ import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
 import com.fulmicoton.collodion.processors.tokenpattern.ast.AST;
-import com.fulmicoton.collodion.processors.tokenpattern.ast.CapturingGroupAST;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Machine;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.MachineBuilder;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.TokenPatternMatchResult;
@@ -83,7 +82,7 @@ public class TokenPatternFilter extends TokenFilter {
 
     final StateQueue stateQueue;
     private final TokenPatternMatcher machineRunner;
-    private int processToken = 0;
+    private int cursor = 0;
     private int emitted = 0;
     private State state;
 
@@ -103,22 +102,30 @@ public class TokenPatternFilter extends TokenFilter {
     @Override
     public void reset() throws IOException {
         super.reset();
+        this.cursor = 0;
         this.stateQueue.reset();
-        this.machineRunner.resetOffset();
-        this.machineRunner.reset();
+        this.machineRunner.reset(0);
         this.emitted = 0;
         this.state = new Start();
 
     }
 
     public boolean loadNextToken() throws IOException {
-        if (!input.incrementToken()) {
-            return false;
+        if (TokenPatternFilter.this.cursor < TokenPatternFilter.this.emitted + stateQueue.length()) {
+            this.stateQueue.loadState(this.cursor);
+            this.cursor += 1;
+            return true;
         }
         else {
-            assert !stateQueue.isFull();
-            stateQueue.push();
-            return true;
+            if (!input.incrementToken()) {
+                return false;
+            }
+            else {
+                TokenPatternFilter.this.cursor += 1;
+                assert !stateQueue.isFull();
+                stateQueue.push();
+                return true;
+            }
         }
     }
 
@@ -173,8 +180,9 @@ public class TokenPatternFilter extends TokenFilter {
 
         State selectMatch() throws IOException {
             final State outputMatch = makeOutputState(match);
-            machineRunner.reset();
+            machineRunner.reset(cursor);
             if ((matchStart - emitted) > 0) {
+                TokenPatternFilter.this.cursor = match.end(0);
                 return new Flush(matchStart - emitted, outputMatch).incrementToken();
             }
             else {
@@ -214,7 +222,7 @@ public class TokenPatternFilter extends TokenFilter {
 
     public class Start implements State {
         Start() {
-            machineRunner.reset();
+            machineRunner.reset(cursor);
         }
 
         @Override

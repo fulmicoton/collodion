@@ -3,6 +3,9 @@ package com.fulmicoton.collodion.processors.tokenpattern;
 import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.common.AnnotationAttribute;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+
+import java.util.List;
 
 public class SemToken {
 
@@ -16,7 +19,7 @@ public class SemToken {
         this(tokenStream.getAttribute(AnnotationAttribute.class));
     }
 
-    public boolean hasAnnotation(final AnnotationKey annotation) {
+    public List<Integer> hasAnnotation(final AnnotationKey annotation) {
         return this.annotationAttribute.contains(annotation);
     }
 

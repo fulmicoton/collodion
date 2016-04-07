@@ -17,7 +17,7 @@ public class SparseQueue<T> {
         public final int position;
         public final T val;
 
-        private Element(int position, T val) {
+        private Element(final int position, final T val) {
             this.position = position;
             this.val = val;
         }

@@ -10,10 +10,7 @@ import java.util.List;
 /**
  * Kind of a linked list to handle group operation.
  * In order to avoid copying things here an there,
- * we use an immutable thread.
- *
- * When a thread is forked, the child can use the father
- * group structure.
+ * we keep this immutable datastruct.
  *
  * It's only at the very end that we read through
  * the chain of groups and actually compute what the group
@@ -21,19 +18,21 @@ import java.util.List;
  */
 public class Groups  {
 
-
     final int[] openGroupId;
     final int[] closeGroupId;
     final int offset;
+    final int matchLength;
     final Groups next;
 
     public Groups(final int[] openGroupId,
                   final int[] closeGroupId,
                   final int offset,
+                  final int matchLength,
                   final Groups next) {
         this.openGroupId = openGroupId;
         this.closeGroupId = closeGroupId;
         this.offset = offset;
+        this.matchLength = matchLength;
         this.next = next;
     }
 
@@ -42,28 +41,28 @@ public class Groups  {
         int start = -1;
         int end = -1;
 
-        GroupSegment(int start, int end) {
+        GroupSegment(final int start, final int end) {
             this.start = start;
             this.end = end;
         }
     }
 
     GroupSegment[] groupSegments(final GroupAllocator groupAllocator) {
-        final int nbGroups = groupAllocator.getNumGroups();
-        final GroupSegment[] complete = new GroupSegment[nbGroups];
-        final GroupSegment[] incomplete = new GroupSegment[nbGroups];
-        for (Groups groups: this.reverseList()) {
-            for (int groupId: groups.openGroupId) {
+        final int numGroups = groupAllocator.getNumGroups();
+        final GroupSegment[] complete = new GroupSegment[numGroups];
+        final GroupSegment[] incomplete = new GroupSegment[numGroups];
+        for (final Groups groups: this.reverseList()) {
+            for (final int groupId: groups.openGroupId) {
                 if ((groupAllocator.offset <= groupId) && (groupAllocator.offset + groupAllocator.getNumGroups() > groupId)) {
                     final GroupSegment newGroupSegment = new GroupSegment(groups.offset, -1);
                     incomplete[groupId - groupAllocator.offset] = newGroupSegment;
                 }
             }
-            for (int groupId: groups.closeGroupId) {
+            for (final int groupId: groups.closeGroupId) {
                 if ((groupAllocator.offset <= groupId) && (groupAllocator.offset + groupAllocator.getNumGroups() > groupId)) {
                     final GroupSegment groupSegment = incomplete[groupId - groupAllocator.offset];
                     assert groupSegment.start != -1;
-                    groupSegment.end = groups.offset;
+                    groupSegment.end = groups.offset + groups.matchLength - 1;
                     complete[groupId - groupAllocator.offset] = groupSegment;
                 }
             }

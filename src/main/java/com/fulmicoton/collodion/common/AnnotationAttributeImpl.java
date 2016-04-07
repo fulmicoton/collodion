@@ -3,6 +3,7 @@ package com.fulmicoton.collodion.common;
 
 import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.lucene.util.AttributeImpl;
@@ -60,13 +61,14 @@ public class AnnotationAttributeImpl extends AttributeImpl implements Annotation
     }
 
     @Override
-    public boolean contains(final AnnotationKey annotation) {
+    public List<Integer> contains(final AnnotationKey annotation) {
+        final List<Integer> matchLength = Lists.newArrayList();
         for (final Annotation ann: this) {
             if (ann.key == annotation) {
-                return true;
+                matchLength.add(ann.numTokens);
             }
         }
-        return false;
+        return matchLength;
     }
 
     @Override

@@ -42,6 +42,16 @@ public class State {
         return state;
     }
 
+    public State transition(final Predicate predicate, final State dest) {
+        State state = transitionCache.get(predicate);
+        assert state == null; // cannot specify state if there is already a destination state.
+        if (state == null) {
+            this.addArrow(new Transition(dest, predicate));
+            transitionCache.put(predicate, dest);
+        }
+        return dest;
+    }
+
     public int minAccessiblePatternId() {
         return this.minPatternId;
     }

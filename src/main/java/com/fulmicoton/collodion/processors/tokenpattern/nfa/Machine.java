@@ -41,11 +41,9 @@ public class Machine {
     }
 
     public MultiMatcher match(final Iterator<SemToken> tokens) {
-        int offset = 0;
         final TokenPatternMatcher runner = this.matcher();
         while (tokens.hasNext()) {
-            runner.processToken(offset, tokens.next());
-            offset += 1;
+            runner.processToken(tokens.next());
         }
         return runner.matchers();
     }

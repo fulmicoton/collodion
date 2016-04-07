@@ -18,28 +18,25 @@ public class TokenPatternMatcher {
                                 final int start,
                                 final int stateId,
                                 final Groups groups,
-                                final int offset) {
+                                final int offset,
+                                final int matchLength) {
         if ((this.machine.openGroups.length + this.machine.closeGroups.length) > 0) {
-            final Groups newGroups = new Groups(this.machine.openGroups[stateId], this.machine.closeGroups[stateId], offset, groups);
-            return new Thread(start, maxAccessiblePatternId, stateId, newGroups);
+            final Groups newGroups = new Groups(this.machine.openGroups[stateId], this.machine.closeGroups[stateId], offset, matchLength, groups);
+            return new Thread(start, maxAccessiblePatternId, stateId, newGroups, matchLength - 1);
         }
         else {
-            return new Thread(start, maxAccessiblePatternId, stateId, groups);
+            return new Thread(start, maxAccessiblePatternId, stateId, groups, matchLength - 1);
         }
     }
 
     TokenPatternMatcher(final Machine machine) {
         this.machine = machine;
-        this.reset();
+        this.reset(0);
     }
 
-    public void resetOffset() {
-        this.offset = 0;
-    }
-
-
-    public void reset() {
-        final Thread initialThread = this.createThread(-1, -1, 0, null, offset);
+    public void reset(final int offset) {
+        this.offset = offset;
+        final Thread initialThread = this.createThread(-1, -1, 0, null, offset, 1);
         threads = Lists.newArrayList(initialThread);
     }
 
@@ -80,37 +77,41 @@ public class TokenPatternMatcher {
     }
 
     // TODO consider putting position as an attribute
-    public void processToken(final int position, final SemToken token) {
+    public void processToken(final SemToken token) {
         this.offset++;
         final Set<Integer> states = new HashSet<>();
         final List<Thread> newThreads = new ArrayList<>();
         for (final Thread thread: this.threads) {
-            final int[] stateTransitions = machine.transitions[thread.state];
-            final Predicate[] statePredicates = machine.predicates[thread.state];
-            for (int i=0; i < stateTransitions.length; i++) {
-                final Predicate predicate = statePredicates[i];
-                if (predicate.apply(token)) {
-                    final int dest = stateTransitions[i];
-                    if (states.add(dest)) {
-                        final int newThreadStart;
-                        if (thread.start == -1) {
-                            newThreadStart = this.offset - 1;
+            if (thread.sleep > 0) {
+                newThreads.add(thread);
+                thread.sleep -= 1;
+            }
+            else {
+                final int[] stateTransitions = machine.transitions[thread.state];
+                final Predicate[] statePredicates = machine.predicates[thread.state];
+                for (int i = 0; i < stateTransitions.length; i++) {
+                    final Predicate predicate = statePredicates[i];
+                    for (final int transitionLength : predicate.apply(token)) {
+                        final int dest = stateTransitions[i];
+                        if (states.add(dest)) {
+                            final int newThreadStart;
+                            if (thread.state == 0) {
+                                newThreadStart = this.offset - 1;
+                            } else {
+                                newThreadStart = thread.start;
+                            }
+                            final int maxAccessiblePatternId = this.machine.minAccessiblePatternIds[dest];
+                            final Thread newThread = this.createThread(maxAccessiblePatternId, newThreadStart, dest, thread.groups, offset, transitionLength);
+                            newThreads.add(newThread);
                         }
-                        else {
-                            newThreadStart = thread.start;
-                        }
-                        final int maxAccessiblePatternId = this.machine.minAccessiblePatternIds[dest];
-                        final Thread newThread = this.createThread(maxAccessiblePatternId, newThreadStart, dest, thread.groups, offset);
-                        newThreads.add(newThread);
                     }
                 }
             }
         }
         threads = newThreads;
     }
-
     public TokenPatternMatchResult search(final SemToken newToken) {
-        this.processToken(this.offset, newToken);
+        this.processToken(newToken);
         int highestPriorityMatchingPattern = Integer.MAX_VALUE;
         TokenPatternMatchResult matchResult = null;
         for (final Thread thread: this.threads) {
@@ -119,6 +120,7 @@ public class TokenPatternMatcher {
                 highestPriorityMatchingPattern = matchingPattern;
                 matchResult = TokenPatternMatchResult.doesMatch(highestPriorityMatchingPattern, thread.groups, machine.multiGroupAllocator.get(matchingPattern));
             }
+
         }
         return matchResult;
     }

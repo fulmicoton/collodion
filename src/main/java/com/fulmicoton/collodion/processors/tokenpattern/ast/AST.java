@@ -11,6 +11,7 @@ import com.fulmicoton.collodion.processors.tokenpattern.parsing.LRParser;
 import com.fulmicoton.collodion.processors.tokenpattern.parsing.Rule;
 import com.fulmicoton.multiregexp.Lexer;
 import com.fulmicoton.multiregexp.Token;
+import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
@@ -31,6 +32,9 @@ import static com.fulmicoton.collodion.processors.tokenpattern.parsing.SequenceR
 
 public abstract class AST {
 
+    public static List<Integer> EMPTY = ImmutableList.of();
+    public static List<Integer> SINGLETON_ONE = ImmutableList.of(1);
+
     public static Predicate ALWAYS_TRUE = new Predicate() {
 
         @Override
@@ -39,8 +43,8 @@ public abstract class AST {
         }
 
         @Override
-        public boolean apply(final SemToken token) {
-            return true;
+        public List<Integer> apply(final SemToken token) {
+            return SINGLETON_ONE;
         }
     };
 

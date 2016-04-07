@@ -2,6 +2,8 @@ package com.fulmicoton.collodion.processors.tokenpattern.nfa;
 
 import com.fulmicoton.collodion.processors.tokenpattern.SemToken;
 
+import java.util.List;
+
 public interface Predicate {
-    public boolean apply(final SemToken token);
+    List<Integer> apply(final SemToken token);
 }

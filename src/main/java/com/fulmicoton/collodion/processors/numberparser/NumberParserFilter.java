@@ -81,13 +81,14 @@ public class NumberParserFilter extends TokenFilter {
 
     public boolean peekAhead(int posAhead) throws IOException {
         // stateQueue = 0, posAhead = 0 --> 1
-        for (int i=0; i<posAhead - this.stateQueue.size() + 1; i++) {
+        for (int i = 0; i < ((posAhead - this.stateQueue.length()) + 1); i++) {
             if (!this.input.incrementToken()) {
                 return false;
             }
             this.stateQueue.push();
         }
-        this.stateQueue.peekAhead(posAhead);
+        // TODO fix that
+        // this.stateQueue.peekAhead(posAhead);
         return true;
     }
 
@@ -96,7 +97,7 @@ public class NumberParserFilter extends TokenFilter {
     public final boolean incrementToken() throws IOException {
         int p = 0;
         int matchedPattern = -1;
-        int matchedNbTokens = 0;
+        int matchedNumTokens = 0;
         OUTER_LOOP:
         for (int numTokens = 0; numTokens < MAX_STATES; numTokens++) {
             // TODO Perf get rid of the extraneous copy in the default case.
@@ -120,7 +121,7 @@ public class NumberParserFilter extends TokenFilter {
             final int[] accepted = automaton.accept[p];
             if (accepted.length > 0) {
                 matchedPattern = accepted[0];
-                matchedNbTokens = numTokens + 1;
+                matchedNumTokens = numTokens + 1;
             }
         }
         if (matchedPattern == -1) {
@@ -129,9 +130,9 @@ public class NumberParserFilter extends TokenFilter {
             return true;
         }
         else {
-            assert matchedNbTokens > 0;
+            assert matchedNumTokens > 0;
             buffer.setLength(0);
-            for (int i=0; i<matchedNbTokens; i++) {
+            for (int i=0; i<matchedNumTokens; i++) {
                 this.stateQueue.pop();
                 buffer.append(this.termAttr);
             }

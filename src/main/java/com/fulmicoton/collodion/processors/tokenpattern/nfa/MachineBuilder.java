@@ -53,7 +53,7 @@ public class MachineBuilder {
     public Machine buildForSearch() {
         final State initialState = new State(Integer.MAX_VALUE);
         initialState.addEpsilon(this.startState);
-        initialState.transition(0, AST.ALWAYS_TRUE).addEpsilon(initialState);
+        initialState.transition(AST.ALWAYS_TRUE, initialState);
         return this.build(initialState);
     }
 
