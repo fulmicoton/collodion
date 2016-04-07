@@ -19,6 +19,14 @@ public class StateQueue {
         this.reset();
     }
 
+    public int start() {
+        return this.start;
+    }
+
+    public int end() {
+        return this.end;
+    }
+
     public void push() {
         assert (length() < savedTokens.length);
         final SavedToken savedToken = this.savedTokens[this.end % this.savedTokens.length];
@@ -32,7 +40,7 @@ public class StateQueue {
 
     public void loadState(final int pos) {
         assert (pos >= start) && (pos < end);
-        this.source.restoreState(this.savedTokens[this.start % this.savedTokens.length].state);
+        this.source.restoreState(this.savedTokens[pos % this.savedTokens.length].state);
     }
 
     public void reset() {

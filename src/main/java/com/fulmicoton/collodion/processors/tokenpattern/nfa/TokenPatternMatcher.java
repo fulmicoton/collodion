@@ -78,7 +78,6 @@ public class TokenPatternMatcher {
 
     // TODO consider putting position as an attribute
     public void processToken(final SemToken token) {
-        this.offset++;
         final Set<Integer> states = new HashSet<>();
         final List<Thread> newThreads = new ArrayList<>();
         for (final Thread thread: this.threads) {
@@ -96,18 +95,19 @@ public class TokenPatternMatcher {
                         if (states.add(dest)) {
                             final int newThreadStart;
                             if (thread.state == 0) {
-                                newThreadStart = this.offset - 1;
+                                newThreadStart = this.offset;
                             } else {
                                 newThreadStart = thread.start;
                             }
                             final int maxAccessiblePatternId = this.machine.minAccessiblePatternIds[dest];
-                            final Thread newThread = this.createThread(maxAccessiblePatternId, newThreadStart, dest, thread.groups, offset, transitionLength);
+                            final Thread newThread = this.createThread(maxAccessiblePatternId, newThreadStart, dest, thread.groups, offset + 1, transitionLength);
                             newThreads.add(newThread);
                         }
                     }
                 }
             }
         }
+        this.offset++;
         threads = newThreads;
     }
     public TokenPatternMatchResult search(final SemToken newToken) {
