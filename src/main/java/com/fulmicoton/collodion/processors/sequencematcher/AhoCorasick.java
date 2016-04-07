@@ -132,8 +132,7 @@ public class AhoCorasick {
             throw new IllegalArgumentException("Does not accept empty sequence");
         }
         int nodeId = getRoot();
-        for (int i=0; i < sequence.length; i++) {
-            final int termId = sequence[i];
+        for (final int termId: sequence) {
             nodeId = this.getOrInsert(nodeId, termId);
         }
         this.addTerminal(nodeId, output);
@@ -156,7 +155,6 @@ public class AhoCorasick {
     }
 
     public void finalize() {
-        System.out.println("finalize");
         final int root = this.getRoot();
         this.nodeFallbacks.set(root, root);
 

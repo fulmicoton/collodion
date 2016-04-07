@@ -65,16 +65,6 @@ public class StateQueue {
     public String toString() {
         return "StateQueue(" + this.start + "," + this.end + ")";
     }
-//    private int innerPos(final int pos) {
-//        return (this.start + pos) % this.savedTokens.length;
-//    }
-
-//    public void peekAhead(int posAhead) {
-//        this.loadState(pos);
-//        assert posAhead < this.length;
-//        final int innerPos = this.innerPos(posAhead);
-//        this.source.restoreState(this.savedTokens[innerPos].state);
-//    }
 
     public static StateQueue forSourceWithSize(final AttributeSource attrSource, int numTokens) {
         SavedToken[] savedTokens = new SavedToken[numTokens];
