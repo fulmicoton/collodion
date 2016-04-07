@@ -17,12 +17,13 @@ import java.util.List;
  * The actual lexing rules are in the AST class.
  */
 public enum RegexPatternToken implements Rule<RegexPatternToken>, RuleMatcher<RegexPatternToken> {
-
+    ASSIGN,
     OPEN_NON_GROUPING,
     OPEN_NAMED_GROUP,
     OPEN_PARENTHESIS,
     CLOSE_PARENTHESIS,
     ANNOTATION,
+    NAME,
     OR,
     COUNT,
     DOT,

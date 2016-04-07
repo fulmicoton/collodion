@@ -7,6 +7,7 @@ import com.fulmicoton.collodion.common.StateQueue;
 import com.fulmicoton.collodion.common.loader.Loader;
 import com.fulmicoton.collodion.processors.AnnotationKey;
 import com.fulmicoton.collodion.processors.ProcessorBuilder;
+import com.fulmicoton.collodion.processors.tokenpattern.ast.AST;
 import com.fulmicoton.collodion.processors.tokenpattern.ast.CapturingGroupAST;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.Machine;
 import com.fulmicoton.collodion.processors.tokenpattern.nfa.MachineBuilder;
@@ -31,7 +32,7 @@ public class TokenPatternFilter extends TokenFilter {
 
         public String path;
         public int maxLength = 10;
-        private transient List<TokenPatternMapping> patterns = null;
+        private transient List<AST> patterns = null;
 
         @Override
         public void init(final Loader loader) throws IOException {
@@ -57,8 +58,8 @@ public class TokenPatternFilter extends TokenFilter {
             final String noCommentLine = line.replaceFirst("#.*", "").trim();
             if (!noCommentLine.isEmpty()) {
                 try {
-                    final TokenPatternMapping tokenPatternMapping = TokenPatternMapping.parse(noCommentLine);
-                    this.patterns.add(tokenPatternMapping);
+                    final AST tokenPatternRule = AST.compile(noCommentLine);//TokenPatternMapping.parse(noCommentLine);
+                    this.patterns.add(tokenPatternRule);
                 }
                 catch (final Exception e) {
                     throw new InvalidPatternException(lineNumber, noCommentLine, e.getMessage());
@@ -69,9 +70,8 @@ public class TokenPatternFilter extends TokenFilter {
         @Override
         public TokenPatternFilter createFilter(final TokenStream prev) throws IOException {
             final MachineBuilder machineBuilder = new MachineBuilder();
-            for (final TokenPatternMapping pattern: this.patterns) {
-                final CapturingGroupAST capturingGroupAST = new CapturingGroupAST(pattern.definition, pattern.annotationKey);
-                machineBuilder.addPattern(capturingGroupAST);
+            for (final AST patternAST: this.patterns) {
+                machineBuilder.addPattern(patternAST);
             }
             final Machine machine = machineBuilder.buildForSearch();
             return new TokenPatternFilter(prev, machine, maxLength);
@@ -83,6 +83,7 @@ public class TokenPatternFilter extends TokenFilter {
 
     final StateQueue stateQueue;
     private final TokenPatternMatcher machineRunner;
+    private int processToken = 0;
     private int emitted = 0;
     private State state;
 
@@ -99,7 +100,6 @@ public class TokenPatternFilter extends TokenFilter {
         this.semToken = new SemToken(input);
     }
 
-
     @Override
     public void reset() throws IOException {
         super.reset();
@@ -109,6 +109,17 @@ public class TokenPatternFilter extends TokenFilter {
         this.emitted = 0;
         this.state = new Start();
 
+    }
+
+    public boolean loadNextToken() throws IOException {
+        if (!input.incrementToken()) {
+            return false;
+        }
+        else {
+            assert !stateQueue.isFull();
+            stateQueue.push();
+            return true;
+        }
     }
 
     public static Builder builder() {
@@ -149,38 +160,74 @@ public class TokenPatternFilter extends TokenFilter {
         return new OutputMatch(annotationsQueue);
     }
 
-    public class Start implements State {
+    public class GreedyMatching implements State {
 
+        final int matchStart;
+        TokenPatternMatchResult match;
+
+        GreedyMatching(final TokenPatternMatchResult match) {
+            this.match = match;
+            this.matchStart = match.start(0);
+            machineRunner.killThreadsWithLowerPriority(this.matchStart, match.patternId);
+        }
+
+        State selectMatch() throws IOException {
+            final State outputMatch = makeOutputState(match);
+            machineRunner.reset();
+            if ((matchStart - emitted) > 0) {
+                return new Flush(matchStart - emitted, outputMatch).incrementToken();
+            }
+            else {
+                return outputMatch.incrementToken();
+            }
+        }
+
+        @Override
+        public State incrementToken() throws IOException {
+            // focus on finding the best match.
+            while (machineRunner.hasActiveThreads()) {
+                if (stateQueue.isFull()) {
+                    emitted += 1;
+                    stateQueue.pop();
+                    return this;
+                }
+                if (emitted > this.match.start(0)) {
+                    // we cannot progress more, or we will start
+                    // releasing tokens that belong to our current match.
+                    return selectMatch();
+                }
+                if (!loadNextToken()) {
+                    return selectMatch();
+                }
+                final TokenPatternMatchResult newMatch = machineRunner.search(semToken);
+                if (newMatch != null) {
+                    if (newMatch.start(0) >= emitted) {
+                        if (newMatch.hasStrictlyHigherPriority(this.match)) {
+                            this.match = newMatch;
+                        }
+                    }
+                }
+            }
+            return selectMatch();
+        }
+    }
+
+    public class Start implements State {
         Start() {
             machineRunner.reset();
         }
 
         @Override
         public State incrementToken() throws IOException {
-            while (input.incrementToken()) {
-                stateQueue.push();
+            if (stateQueue.isFull()) {
+                emitted += 1;
+                stateQueue.pop();
+                return this;
+            }
+            while (loadNextToken()) {
                 final TokenPatternMatchResult match = machineRunner.search(semToken);
                 if (match != null) {
-                    machineRunner.reset();
-                    final int matchStart = match.start(0);
-                    machineRunner.killThreadsWithLowerPriority(matchStart, match.patternId);
-                    // TODO remove all thread which do not start at 0.
-                    final State outputMatch = makeOutputState(match);
-                    if ((matchStart - emitted) > 0) {
-                        return new Flush(matchStart - emitted, outputMatch).incrementToken();
-                    }
-                    else {
-                        return outputMatch.incrementToken();
-                    }
-                }
-                else {
-                    if (stateQueue.isFull()) {
-                        // the queue is full, we need to release
-                        // a token.
-                        emitted += 1;
-                        stateQueue.pop();
-                        return this;
-                    }
+                    return new GreedyMatching(match).incrementToken();
                 }
             }
             // we just flush everything
@@ -188,9 +235,7 @@ public class TokenPatternFilter extends TokenFilter {
         }
     }
 
-
     class OutputMatch implements State {
-
         private final SparseQueue<List<Annotation>> annotationQueue;
 
         private OutputMatch(final SparseQueue<List<Annotation>> annotationQueue) {

@@ -61,18 +61,22 @@ public class TokenPatternMatcher {
     }
 
     public void killThreadsWithLowerPriority(final int matchStart, final int patternId) {
-        this.threads = Lists.newArrayList();
+        final List<Thread> trimmedThreads = Lists.newArrayList();
         for (final Thread thread: this.threads) {
             if (thread.start < matchStart) {
-                continue;
+                trimmedThreads.add(thread);
             }
-            if (thread.start > matchStart) {
-                continue;
+            else if (thread.start == matchStart) {
+                if (thread.minAccessiblePatternId < patternId) {
+                    trimmedThreads.add(thread);
+                }
             }
-            if (this.machine.minAccessiblePatternIds[thread.state] > patternId) {
-                break;
-            }
-        };
+        }
+        this.threads = trimmedThreads;
+    }
+
+    public boolean hasActiveThreads() {
+        return !this.threads.isEmpty();
     }
 
     // TODO consider putting position as an attribute

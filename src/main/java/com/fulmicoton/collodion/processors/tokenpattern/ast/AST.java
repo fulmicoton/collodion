@@ -23,8 +23,10 @@ import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternT
 import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.OPEN_PARENTHESIS;
 import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.OR;
 import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.PLUS;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.ASSIGN;
 import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.QUESTION_MARK;
 import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.STAR;
+import static com.fulmicoton.collodion.processors.tokenpattern.ast.RegexPatternToken.NAME;
 import static com.fulmicoton.collodion.processors.tokenpattern.parsing.SequenceRule.seq;
 
 public abstract class AST {
@@ -43,6 +45,7 @@ public abstract class AST {
     };
 
     public static final Lexer<RegexPatternToken> LEXER = new Lexer<RegexPatternToken>()
+        .addRule(ASSIGN, ":=")
         .addRule(OPEN_NON_GROUPING, "\\(\\?\\:")
         .addRule(OPEN_NAMED_GROUP, "\\(\\?\\<[A-Za-z0-9_\\.]+\\>")
         .addRule(OPEN_PARENTHESIS, "\\(")
@@ -55,6 +58,7 @@ public abstract class AST {
         .addRule(COUNT, "\\{[0-9]+\\}")
         .addRule(COUNT, "\\{[0-9]+,[0-9]+\\}")
         .addRule(ANNOTATION, "\\[[a-zA-Z\\.]+\\]")
+        .addRule(NAME, "[a-zA-Z]+")
     ;
 
     public String toDebugStringWrapped() {
@@ -71,6 +75,13 @@ public abstract class AST {
         final Grammar<RegexPatternToken, AST> grammar = new Grammar<>();
         final Rule<RegexPatternToken> EXPR = grammar.expr;
         return grammar
+            .addRule(seq(NAME, ASSIGN, EXPR),
+                    new Emitter<RegexPatternToken, AST>() {
+                        @Override
+                        public AST emit(List<AST> childrenEmission, List<Token<RegexPatternToken>> tokens) {
+                            return new CapturingGroupAST(childrenEmission.get(2), AnnotationKey.of(tokens.get(0).str));
+                        }
+                    })
             .addRule(seq(OPEN_NON_GROUPING, EXPR, CLOSE_PARENTHESIS),
                         new Emitter<RegexPatternToken, AST>() {
                             @Override

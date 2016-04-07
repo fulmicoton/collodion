@@ -83,4 +83,13 @@ public class TokenPatternMatchResult {
         return this.end(this.groupAllocator.getGroupIdFromName(groupName));
     }
 
+    public boolean hasStrictlyHigherPriority(final TokenPatternMatchResult other) {
+        if (this.start(0) != other.start(0)) {
+            return this.start(0) < other.start(0);
+        }
+        if (this.patternId != other.patternId) {
+            return this.patternId < other.patternId;
+        }
+        return this.end(0) > other.start(0);
+    }
 }

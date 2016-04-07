@@ -33,7 +33,7 @@ public class MachineBuilder {
         this.numPatterns = 0;
     }
 
-    public int addPattern(final CapturingGroupAST ast) {
+    public int addPattern(final AST ast) {
         final GroupAllocator groupAllocator = this.multiGroupAllocator.newAllocator();
         ast.allocateGroups(groupAllocator);
         final State endState = ast.buildMachine(this.numPatterns, this.startState);
