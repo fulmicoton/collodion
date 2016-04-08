@@ -99,5 +99,35 @@ public class TokenPatternFilterTest {
         );
     }
 
+    @Test
+    public void testTokenSalaryPattern() throws Exception {
+        // no trick
+        testHelper(
+                "pipeline-price-yaml.yaml",
+                "42,000 a b c d e f g",
+                "42,000:NUMBER(1)",
+                "a:",
+                "b:",
+                "c:",
+                "d:",
+                "e:",
+                "f:",
+                "g:"
+        );
+        testHelper(
+                "pipeline-price-yaml.yaml",
+                "$42,000 a b c d e f g",
+                "$:DOLLAR(1); SALARY(2)",
+                "42,000:NUMBER(1); SALARY.MIN(1)",
+                "a:",
+                "b:",
+                "c:",
+                "d:",
+                "e:",
+                "f:",
+                "g:"
+        );
+    }
+
 
 }

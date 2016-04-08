@@ -48,7 +48,7 @@ public class SimpleCorpus implements Corpus {
     }
 
     @Override
-    public Document get(int docId) {
+    public Document get(final int docId) {
         return this.documents.get(docId);
     }
 

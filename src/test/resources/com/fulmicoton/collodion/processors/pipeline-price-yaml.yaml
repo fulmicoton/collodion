@@ -1,0 +1,17 @@
+tokenizer: "custom"
+processors:
+
+  - type: "lower"
+
+  - type: "stem"
+
+  - type: "numberparser"
+
+  - type: "vocabulary"
+    path: "vocabulary-price.json"
+
+  - type: "tokenpattern"
+    path: "pattern"
+    maxLength: 5
+
+  - type: "debug"

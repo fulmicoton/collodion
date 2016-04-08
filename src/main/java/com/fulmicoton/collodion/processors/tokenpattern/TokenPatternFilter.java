@@ -107,7 +107,6 @@ public class TokenPatternFilter extends TokenFilter {
         this.machineRunner.reset(0);
         this.emitted = 0;
         this.state = new Start();
-
     }
 
     public boolean loadNextToken() throws IOException {
@@ -236,6 +235,11 @@ public class TokenPatternFilter extends TokenFilter {
                 final TokenPatternMatchResult match = machineRunner.search(semToken);
                 if (match != null) {
                     return new GreedyMatching(match).incrementToken();
+                }
+                if (stateQueue.isFull()) {
+                    emitted += 1;
+                    stateQueue.pop();
+                    return this;
                 }
             }
             // we just flush everything
